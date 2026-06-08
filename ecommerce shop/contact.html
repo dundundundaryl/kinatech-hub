@@ -6,14 +6,22 @@
   <title>Contact Us — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
+  <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
+    /* ── FULL HEIGHT BODY ───────────────────── */
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    footer { margin-top: 0 !important; }
+
     /* ── CONTACT LAYOUT ─────────────────────── */
     .contact-section {
+      flex: 1;
       max-width: 1100px;
+      width: 100%;
       margin: 0 auto;
-      padding: 56px 48px;
+      padding: calc(80px + 24px) 48px 64px;
       display: grid;
       grid-template-columns: 1fr 1.4fr;
       gap: 64px;
@@ -148,9 +156,8 @@
       .contact-section {
         grid-template-columns: 1fr;
         gap: 40px;
-        padding: 32px 20px;
+        padding: calc(72px + 16px) 20px 48px;
       }
-
       .contact-left h1 { font-size: 2.2rem; }
     }
   </style>
@@ -286,6 +293,24 @@
   </footer>
 
   <script>
+    // Pre-fill message from inquiry list
+    document.addEventListener('DOMContentLoaded', () => {
+      const list = window.Shortlist?.getList?.() || [];
+      if (list.length > 0) {
+        const ta = document.getElementById('message');
+        if (ta && !ta.value) {
+          ta.value = 'Hi, I would like to request a quote for the following products:\n\n' +
+            list.map(x => `• ${x.model} ${x.name}${x.categoryLabel ? ' (' + x.categoryLabel + ')' : ''}`).join('\n') +
+            '\n\nPlease provide pricing, availability, and any applicable discounts for bulk orders. Thank you!';
+          const notice = document.createElement('div');
+          notice.style.cssText = 'background:#f0f7ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#2a5a2a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;';
+          notice.innerHTML = `<span>✓ Your inquiry list (${list.length} product${list.length !== 1 ? 's' : ''}) has been added to your message.</span>
+            <button onclick="document.getElementById('message').value='';this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#888;font-size:0.75rem;text-decoration:underline;font-family:inherit;">Clear</button>`;
+          ta.parentElement.insertBefore(notice, ta);
+        }
+      }
+    });
+
     // Load Formspree endpoint from site settings
     document.addEventListener('settingsLoaded', function(e) {
       const endpoint = e.detail?.contact?.formspreeEndpoint;

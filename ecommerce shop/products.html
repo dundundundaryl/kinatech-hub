@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Products — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="settings-loader.js"></script>
+  <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -194,6 +196,30 @@
       color: var(--text);
     }
 
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    .sl-card-btn {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1.5px solid #ddd;
+      background: transparent;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: inherit;
+      white-space: nowrap;
+      transition: all 0.18s;
+      flex-shrink: 0;
+    }
+    .sl-card-btn:hover { border-color: var(--tan-dark); color: var(--text); }
+
     /* ── LOADING / ERROR STATES ───────────── */
     .loading-state {
       max-width: 1100px;
@@ -344,19 +370,30 @@
         </div>`;
     }
 
-    function renderCard(p) {
+    function renderCard(p, catLabel) {
       const imgHtml = p.image
         ? `<img src="${p.image}" class="product-3d-img" alt="${p.model} ${p.name}">`
         : imgPlaceholder(p.model, p.name);
 
       return `
-        <a href="product-detail.html?id=${p.id}" class="product-card">
+        <div class="product-card" onclick="location.href='product-detail.html?id=${p.id}'" style="cursor:pointer;">
           <div class="product-img-wrap">${imgHtml}</div>
           <span class="model">${p.model}</span>
           <h3>${p.name}</h3>
           <p class="card-desc">${p.description}</p>
-          <span class="learn-more">Learn More &rsaquo;</span>
-        </a>`;
+          <div class="card-foot">
+            <span class="learn-more">Learn More &rsaquo;</span>
+            <button class="sl-card-btn"
+              data-sl-id="${p.id}"
+              data-sl-label="+ Inquiry"
+              data-sl-model="${p.model}"
+              data-sl-name="${p.name}"
+              data-sl-cat="${catLabel}"
+              onclick="event.stopPropagation();slToggle(this)">
+              + Inquiry
+            </button>
+          </div>
+        </div>`;
     }
 
     function renderSection(cat, products, isFirst) {
@@ -367,7 +404,7 @@
           <h2>${cat.label}</h2>
           <p class="cat-desc">${cat.description}</p>
           <div class="product-grid">
-            ${products.map(renderCard).join('')}
+            ${products.map(p => renderCard(p, cat.label)).join('')}
           </div>
         </section>`;
     }
@@ -460,6 +497,8 @@
       });
 
       main.innerHTML = html || '<p style="padding:48px;color:var(--text-muted)">No products found.</p>';
+      // Update inquiry button states (in case items already in list)
+      window.Shortlist?.refreshWidget?.();
     }
 
     init();

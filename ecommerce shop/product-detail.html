@@ -6,6 +6,7 @@
   <title>Product — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
+  <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -346,6 +347,21 @@
       flex-direction: column;
       gap: 12px;
     }
+
+    .btn-inquiry {
+      padding: 14px 32px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--text);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.03em;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .btn-inquiry:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
     .btn-quote {
       padding: 16px 32px;
@@ -708,7 +724,16 @@
             ${sectionsHtml}
 
             <div class="cta-area">
-              <a href="contact.html" class="btn btn-primary btn-quote">GET A QUOTE</a>
+              <a href="contact.html" class="btn btn-primary btn-quote">REQUEST A QUOTE</a>
+              <button class="btn-inquiry"
+                data-sl-id="${product.id}"
+                data-sl-label="+ Add to Inquiry List"
+                data-sl-model="${product.model}"
+                data-sl-name="${product.name}"
+                data-sl-cat="${catLabel}"
+                onclick="slToggle(this)">
+                + Add to Inquiry List
+              </button>
               <p class="bulk-note"><em>Bulk discounts available for multiple units</em></p>
             </div>
           </div>
@@ -757,6 +782,8 @@
 
       const category = data.categories.find(c => c.id === product.category);
       renderPage(product, category);
+      // Update inquiry button state after render
+      window.Shortlist?.refreshWidget?.();
     }
 
     init();
