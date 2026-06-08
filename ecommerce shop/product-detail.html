@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="settings-loader.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -12,12 +13,51 @@
     .product-detail {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 56px 48px;
+      padding: 32px 48px 80px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 64px;
       align-items: start;
     }
+
+    /* ── BACK + BREADCRUMB BAR ──────────────── */
+    .nav-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: calc(80px + 16px) 48px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #ddd;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: var(--tan-dark); background: var(--bg-alt); }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .breadcrumb a:hover { text-decoration: underline; color: var(--text); }
 
     /* ── IMAGE GALLERY ──────────────────────── */
     .gallery {
@@ -35,7 +75,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: opacity 0.15s;
     }
+
+    .main-img.has-image { cursor: zoom-in; }
 
     .main-img img {
       width: 100%;
@@ -49,6 +92,27 @@
       border-radius: 0;
       font-size: 0.82rem;
     }
+
+    .zoom-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.72rem;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text);
+      transition: background 0.2s;
+      z-index: 2;
+    }
+    .zoom-btn:hover { background: white; }
 
     .gallery-controls {
       display: flex;
@@ -133,6 +197,81 @@
     .gallery-thumb.active,
     .gallery-thumb:hover { border-color: var(--tan-dark); }
 
+    /* ── LIGHTBOX ────────────────────────────── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.93);
+      z-index: 600;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+
+    .lightbox-img {
+      max-width: min(1100px, 90vw);
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 4px;
+      cursor: default;
+      user-select: none;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      line-height: 1;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+
+    .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      width: 48px;
+      height: 72px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      line-height: 1;
+    }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.28); }
+    #lbPrev { left: 16px; }
+    #lbNext { right: 16px; }
+
+    .lightbox-counter {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.6);
+      font-size: 0.82rem;
+      font-family: 'Inter', sans-serif;
+      pointer-events: none;
+    }
+
     /* ── PRODUCT INFO ────────────────────────── */
     .product-info {
       display: flex;
@@ -159,14 +298,12 @@
       font-size: 0.95rem;
     }
 
-    /* ── BADGE ───────────────────────────────── */
     .badges {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    /* ── SPECS BLOCK ─────────────────────────── */
     .specs-block h3 {
       font-size: 0.9rem;
       font-weight: 700;
@@ -199,13 +336,11 @@
       flex-shrink: 0;
     }
 
-    /* ── DIVIDER ─────────────────────────────── */
     .info-divider {
       border: none;
       border-top: 1px solid var(--tan-light);
     }
 
-    /* ── CTA AREA ────────────────────────────── */
     .cta-area {
       display: flex;
       flex-direction: column;
@@ -223,20 +358,6 @@
       font-size: 0.85rem;
       color: var(--text-muted);
     }
-
-    /* ── BREADCRUMB ──────────────────────────── */
-    .breadcrumb {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px 48px 0;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .breadcrumb a:hover { text-decoration: underline; }
 
     /* ── LOADING / ERROR ─────────────────────── */
     .detail-loading, .detail-error {
@@ -256,13 +377,13 @@
     }
 
     @media (max-width: 900px) {
+      .nav-row { padding: calc(72px + 12px) 20px 0; }
       .product-detail {
         grid-template-columns: 1fr;
         gap: 32px;
-        padding: 32px 20px;
+        padding: 24px 20px 60px;
       }
       .gallery { position: static; }
-      .breadcrumb { padding: 16px 20px 0; }
     }
   </style>
 </head>
@@ -295,6 +416,15 @@
       <a href="who-we-serve.html">Who We Serve</a>
       <a href="contact.html">Contact Us</a>
     </div>
+  </div>
+
+  <!-- ── LIGHTBOX ───────────────────────────── -->
+  <div id="lightbox" onclick="closeLightbox(event)">
+    <img class="lightbox-img" id="lbImg" src="" alt="" />
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">×</button>
+    <button class="lightbox-nav" id="lbPrev" onclick="lbNav(-1);event.stopPropagation();">&#8249;</button>
+    <button class="lightbox-nav" id="lbNext" onclick="lbNav(1);event.stopPropagation();">&#8250;</button>
+    <div class="lightbox-counter" id="lbCounter"></div>
   </div>
 
   <!-- ── PAGE CONTENT (injected by JS) ──────── -->
@@ -373,7 +503,13 @@
       if (!mainImg) return;
 
       if (slide.src) {
-        mainImg.innerHTML = `<img src="${slide.src}" alt="${slide.label}">`;
+        mainImg.innerHTML = `<img src="${slide.src}" alt="${slide.label}">
+          <button class="zoom-btn" onclick="openLightbox(${current});event.stopPropagation();">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+            Enlarge
+          </button>`;
+        mainImg.classList.add('has-image');
+        mainImg.onclick = () => openLightbox(current);
       } else {
         mainImg.innerHTML = `
           <div class="img-placeholder" style="height:100%">
@@ -381,17 +517,15 @@
             <strong>${slide.label}</strong>
             ${slide.desc}
           </div>`;
+        mainImg.classList.remove('has-image');
+        mainImg.onclick = null;
       }
 
       const counter = document.getElementById('slideCounter');
       if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
 
-      document.querySelectorAll('.gallery-dot').forEach((d, i) => {
-        d.classList.toggle('active', i === current);
-      });
-      document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
-        t.classList.toggle('active', i === current);
-      });
+      document.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+      document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === current));
     }
 
     function changeSlide(dir) {
@@ -404,19 +538,64 @@
       updateGallery();
     }
 
+    /* ── Lightbox ──────────────────────────── */
+    function openLightbox(idx) {
+      const realSlides = slides.filter(s => s.src);
+      if (realSlides.length === 0) return;
+      // Map current slide index to lightbox index
+      const lbSlides = slides.map((s, i) => s.src ? i : -1).filter(i => i >= 0);
+      let lbIdx = lbSlides.indexOf(idx);
+      if (lbIdx === -1) lbIdx = 0;
+      window._lbSlides = lbSlides;
+      window._lbIdx = lbIdx;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateLightbox() {
+      const lbSlides = window._lbSlides;
+      const lbIdx = window._lbIdx;
+      const slideIdx = lbSlides[lbIdx];
+      const slide = slides[slideIdx];
+      document.getElementById('lbImg').src = slide.src;
+      document.getElementById('lbImg').alt = slide.label;
+      document.getElementById('lbCounter').textContent = lbSlides.length > 1 ? `${lbIdx + 1} / ${lbSlides.length}` : '';
+      document.getElementById('lbPrev').style.display = lbSlides.length > 1 ? 'flex' : 'none';
+      document.getElementById('lbNext').style.display = lbSlides.length > 1 ? 'flex' : 'none';
+    }
+
+    function lbNav(dir) {
+      const lbSlides = window._lbSlides;
+      window._lbIdx = (window._lbIdx + dir + lbSlides.length) % lbSlides.length;
+      updateLightbox();
+    }
+
+    function closeLightbox(e) {
+      if (e && e.target !== document.getElementById('lightbox') && e.target !== document.querySelector('.lightbox-close')) return;
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      const lb = document.getElementById('lightbox');
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') { lb.classList.remove('open'); document.body.style.overflow = ''; }
+      if (e.key === 'ArrowLeft')  lbNav(-1);
+      if (e.key === 'ArrowRight') lbNav(1);
+    });
+
     /* ── Gallery HTML builder ──────────────── */
     function buildGallery(product) {
-      const hasImages = product.images && product.images.length > 0;
+      const hasImages = product.images && product.images.filter(Boolean).length > 0;
 
-      // Build slides array
       if (hasImages) {
-        slides = product.images.map((src, i) => ({
+        slides = product.images.filter(Boolean).map((src, i) => ({
           src,
           label: `Image ${i + 1}`,
           desc: `${product.model} ${product.name}`
         }));
       } else {
-        // Single placeholder when no images uploaded yet
         slides = [{
           src: '',
           label: `${product.model} ${product.name}`,
@@ -450,19 +629,26 @@
         </div>
         <div class="gallery-thumbs">${thumbsHtml}</div>` : '';
 
-      // Initial main image
       const initSlide = slides[0];
+      const zoomBtn = initSlide.src ? `<button class="zoom-btn" onclick="openLightbox(0);event.stopPropagation();">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+        Enlarge
+      </button>` : '';
+
       const mainImgInner = initSlide.src
-        ? `<img src="${initSlide.src}" alt="${initSlide.label}">`
+        ? `<img src="${initSlide.src}" alt="${initSlide.label}">${zoomBtn}`
         : `<div class="img-placeholder" style="height:100%">
             ${placeholderIcon}
             <strong>${initSlide.label}</strong>
             ${initSlide.desc}
            </div>`;
 
+      const hasImgClass = initSlide.src ? ' has-image' : '';
+      const hasImgClick = initSlide.src ? `onclick="openLightbox(0)"` : '';
+
       return `
         <div class="gallery">
-          <div class="main-img" id="mainImg">${mainImgInner}</div>
+          <div class="main-img${hasImgClass}" id="mainImg" ${hasImgClick}>${mainImgInner}</div>
           ${navHtml}
         </div>`;
     }
@@ -492,14 +678,20 @@
         <hr class="info-divider" />`).join('');
 
       const catLabel = category ? category.label : 'Product';
+      const backUrl = document.referrer && document.referrer.includes(window.location.hostname)
+        ? document.referrer
+        : `products.html#${product.category}`;
 
       document.getElementById('pageContent').innerHTML = `
-        <div class="breadcrumb">
-          <a href="products.html">Products</a>
-          <span>›</span>
-          <a href="products.html#${product.category}">${catLabel}</a>
-          <span>›</span>
-          <span>${product.name}</span>
+        <div class="nav-row">
+          <a href="${backUrl}" class="back-btn">← Back</a>
+          <div class="breadcrumb">
+            <a href="products.html">Products</a>
+            <span>›</span>
+            <a href="products.html#${product.category}">${catLabel}</a>
+            <span>›</span>
+            <span>${product.name}</span>
+          </div>
         </div>
 
         <div class="product-detail">

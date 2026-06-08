@@ -443,20 +443,30 @@
     </div>
 
     <div class="form-group">
-      <label>Product Image</label>
-      <div class="img-upload-row">
-        <div>
-          <div style="display:flex;gap:8px;margin-bottom:6px;">
-            <input type="text" id="fImage" placeholder="images/tp80nb-m.png" style="flex:1" oninput="updateModalImgPreview()" />
-            <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile').click()">📁 Upload</button>
-            <input type="file" id="productImgFile" accept="image/*" onchange="handleProductImageUpload(this)" />
-          </div>
-          <p class="upload-progress" id="productImgProgress"></p>
-          <p class="form-hint">Upload a transparent-bg PNG for the best 3D card effect.</p>
+      <label>Product Images <span style="font-weight:400;color:var(--muted)">(up to 5 — first is the main/thumbnail)</span></label>
+      <p class="form-hint" style="margin-bottom:10px;">Upload transparent-bg PNGs for the best effect. First image shows on the product card.</p>
+
+      <!-- Image Slot 1 -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+        <span style="font-size:0.75rem;font-weight:700;color:var(--muted);width:16px;flex-shrink:0">1</span>
+        <input type="text" id="fImage" placeholder="images/product.png" style="flex:1;font-size:0.82rem;" oninput="updateModalImgPreview()" />
+        <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile1').click()">📁</button>
+        <input type="file" id="productImgFile1" accept="image/*" onchange="handleProductImageUpload(this, 'fImage', 'productImgProgress')" />
+        <div class="img-preview" id="modalImgPreview" style="width:48px;height:38px;flex-shrink:0"><div class="no-prev">–</div></div>
+      </div>
+      <p class="upload-progress" id="productImgProgress"></p>
+
+      <!-- Image Slots 2–5 -->
+      <div id="extraImageSlots">
+        ${[2,3,4,5].map(n => `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <span style="font-size:0.75rem;font-weight:700;color:var(--muted);width:16px;flex-shrink:0">${n}</span>
+          <input type="text" id="fImage${n}" placeholder="Optional extra image" style="flex:1;font-size:0.82rem;" />
+          <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile${n}').click()">📁</button>
+          <input type="file" id="productImgFile${n}" accept="image/*" onchange="handleProductImageUpload(this, 'fImage${n}', 'imgProg${n}')" />
+          <div style="width:48px;flex-shrink:0"></div>
         </div>
-        <div class="img-preview" id="modalImgPreview">
-          <div class="no-prev">No image</div>
-        </div>
+        <p class="upload-progress" id="imgProg${n}"></p>`).join('')}
       </div>
     </div>
 
@@ -502,6 +512,21 @@
     <div class="form-group">
       <label>Description</label>
       <textarea id="catDesc" placeholder="Brief description shown on the products page…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Category Image <span style="font-weight:400;color:var(--muted)">(shown on homepage card)</span></label>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div style="flex:1">
+          <div style="display:flex;gap:8px;margin-bottom:6px;">
+            <input type="text" id="catImage" placeholder="images/category.jpg" style="flex:1" oninput="updateCatImgPreview()" />
+            <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('catImgFile').click()">📁 Upload</button>
+            <input type="file" id="catImgFile" accept="image/*" onchange="handleCatImageUpload(this)" />
+          </div>
+          <p class="upload-progress" id="catImgProgress"></p>
+          <p class="form-hint">Recommended: 400×300px JPG or PNG.</p>
+        </div>
+        <div class="img-preview" id="catImgPreview"><div class="no-prev">No image</div></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeCatModal()">Cancel</button>
@@ -674,8 +699,8 @@ function buildSectionsFromFields() {
 function openAddModal() {
   document.getElementById('modalTitle').textContent = 'Add Product';
   document.getElementById('editId').value = '';
-  ['fModel','fName','fDesc','fBadge','fImage','fFeatures','fSpecs','fDurability'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('productImgProgress').textContent = '';
+  ['fModel','fName','fDesc','fBadge','fImage','fImage2','fImage3','fImage4','fImage5','fFeatures','fSpecs','fDurability'].forEach(id => document.getElementById(id).value = '');
+  ['productImgProgress','imgProg2','imgProg3','imgProg4','imgProg5'].forEach(id => document.getElementById(id).textContent = '');
   updateModalImgPreview();
   const sel = document.getElementById('fCategory');
   if (currentView !== 'all' && !['publish','settings','categories','site-settings'].includes(currentView)) sel.value = currentView;
@@ -692,8 +717,13 @@ function openEditModal(id) {
   document.getElementById('fDesc').value     = p.description;
   document.getElementById('fCategory').value = p.category;
   document.getElementById('fBadge').value    = p.badge || '';
-  document.getElementById('fImage').value    = p.image || '';
-  document.getElementById('productImgProgress').textContent = '';
+  const imgs = (p.images && p.images.filter(Boolean).length) ? p.images.filter(Boolean) : (p.image ? [p.image] : []);
+  document.getElementById('fImage').value   = imgs[0] || '';
+  document.getElementById('fImage2').value  = imgs[1] || '';
+  document.getElementById('fImage3').value  = imgs[2] || '';
+  document.getElementById('fImage4').value  = imgs[3] || '';
+  document.getElementById('fImage5').value  = imgs[4] || '';
+  ['productImgProgress','imgProg2','imgProg3','imgProg4','imgProg5'].forEach(id => document.getElementById(id).textContent = '');
   const s = getSectionsFromProduct(p);
   document.getElementById('fFeatures').value  = s.features;
   document.getElementById('fSpecs').value     = s.specs;
@@ -710,11 +740,12 @@ function saveProduct() {
   const desc  = document.getElementById('fDesc').value.trim();
   const category = document.getElementById('fCategory').value;
   const badge = document.getElementById('fBadge').value.trim();
-  const image = document.getElementById('fImage').value.trim();
   const editId= document.getElementById('editId').value;
   if (!model || !name || !desc || !category) { showToast('Please fill in all required fields.', 'error'); return; }
   const sections = buildSectionsFromFields();
-  const entry = { model, name, description: desc, category, image, images: [], badge, sections };
+  const images = ['fImage','fImage2','fImage3','fImage4','fImage5'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+  const image = images[0] || '';
+  const entry = { model, name, description: desc, category, image, images, badge, sections };
   if (editId) {
     const idx = products.findIndex(p => p.id === editId);
     if (idx !== -1) { entry.id = editId; products[idx] = entry; }
@@ -775,15 +806,17 @@ async function uploadFileToGitHub(file, folder) {
   return path;
 }
 
-async function handleProductImageUpload(input) {
+async function handleProductImageUpload(input, targetFieldId, progressId) {
   const file = input.files[0];
   if (!file) return;
-  const progress = document.getElementById('productImgProgress');
+  const fieldId = targetFieldId || 'fImage';
+  const progId  = progressId   || 'productImgProgress';
+  const progress = document.getElementById(progId);
   progress.textContent = '⏳ Uploading…'; progress.className = 'upload-progress uploading';
   try {
     const path = await uploadFileToGitHub(file, 'images');
-    document.getElementById('fImage').value = path;
-    updateModalImgPreview();
+    document.getElementById(fieldId).value = path;
+    if (fieldId === 'fImage') updateModalImgPreview();
     progress.textContent = `✅ Uploaded: ${path}`; progress.className = 'upload-progress done';
     showToast('Image uploaded!', 'success');
   } catch(e) {
@@ -854,6 +887,9 @@ function openAddCatModal() {
   document.getElementById('catEditId').value = '';
   document.getElementById('catLabel').value = '';
   document.getElementById('catDesc').value  = '';
+  document.getElementById('catImage').value = '';
+  document.getElementById('catImgProgress').textContent = '';
+  updateCatImgPreview();
   document.getElementById('categoryModal').classList.add('open');
 }
 
@@ -864,6 +900,9 @@ function openEditCatModal(id) {
   document.getElementById('catEditId').value = cat.id;
   document.getElementById('catLabel').value  = cat.label;
   document.getElementById('catDesc').value   = cat.description || '';
+  document.getElementById('catImage').value  = cat.image || '';
+  document.getElementById('catImgProgress').textContent = '';
+  updateCatImgPreview();
   document.getElementById('categoryModal').classList.add('open');
 }
 
@@ -873,14 +912,15 @@ function saveCategory() {
   const label = document.getElementById('catLabel').value.trim();
   const desc  = document.getElementById('catDesc').value.trim();
   const editId= document.getElementById('catEditId').value;
+  const image = document.getElementById('catImage').value.trim();
   if (!label) { showToast('Category label is required.', 'error'); return; }
   if (editId) {
     const idx = categories.findIndex(c => c.id === editId);
-    if (idx !== -1) categories[idx] = { id: editId, label, description: desc };
+    if (idx !== -1) categories[idx] = { id: editId, label, description: desc, image };
   } else {
     const id = slugify(label);
     if (categories.find(c => c.id === id)) { showToast('A category with that name already exists.', 'error'); return; }
-    categories.push({ id, label, description: desc });
+    categories.push({ id, label, description: desc, image });
   }
   markDirty(); buildSidebar(); renderCategoryList(); closeCatModal();
   showToast(editId ? 'Category updated!' : 'Category added!', 'success');
@@ -893,6 +933,30 @@ function deleteCategory(id) {
   categories = categories.filter(c => c.id !== id);
   markDirty(); buildSidebar(); renderCategoryList();
   showToast('Category deleted.', '');
+}
+
+function updateCatImgPreview() {
+  const path = document.getElementById('catImage').value.trim();
+  const el = document.getElementById('catImgPreview');
+  el.innerHTML = path ? `<img src="${path}" onerror="this.parentElement.innerHTML='<div class=no-prev>Not found</div>'">` : '<div class="no-prev">No image</div>';
+}
+
+async function handleCatImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const progress = document.getElementById('catImgProgress');
+  progress.textContent = '⏳ Uploading…'; progress.className = 'upload-progress uploading';
+  try {
+    const path = await uploadFileToGitHub(file, 'images');
+    document.getElementById('catImage').value = path;
+    updateCatImgPreview();
+    progress.textContent = `✅ Uploaded: ${path}`; progress.className = 'upload-progress done';
+    showToast('Category image uploaded!', 'success');
+  } catch(e) {
+    progress.textContent = `❌ ${e.message}`; progress.className = 'upload-progress err';
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+  input.value = '';
 }
 
 /* ══ SETTINGS ══ */

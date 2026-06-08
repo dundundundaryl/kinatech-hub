@@ -13,7 +13,10 @@
     .page-header {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 56px 48px 48px;
+      padding: calc(80px + 24px) 48px 48px;
+    }
+    @media (max-width: 860px) {
+      .page-header { padding: calc(72px + 16px) 20px 48px; }
     }
     .page-header h1 {
       font-size: 2.2rem;
