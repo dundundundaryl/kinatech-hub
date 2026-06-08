@@ -4,13 +4,13 @@
       "id": "pos-printers",
       "label": "POS Printers",
       "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--10-.png"
     },
     {
       "id": "scanners",
       "label": "Barcode Scanners",
       "description": "Fast, accurate scanning solutions for inventory management and checkout operations",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--7-.png"
     },
     {
       "id": "label-printers",
@@ -52,7 +52,8 @@
       "image": "images/Copy-of-Kinatech-Website--9-.png",
       "images": [
         "images/Copy-of-Kinatech-Website--9-.png",
-        "images/Copy-of-Kinatech-Website--11-.png"
+        "images/Copy-of-Kinatech-Website--11-.png",
+        "images/Copy-of-Kinatech-Website--7-.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
