@@ -338,7 +338,7 @@
         {
           "title": "Key Features",
           "items": [
-            "Omnidirectional scanning — reads from any angle",
+            "Omnidirectional scanning â reads from any angle",
             "Hands-free desktop presentation mode",
             "Supports 1D, 2D, and QR codes",
             "High scan rate for fast checkout lines",
@@ -452,7 +452,7 @@
     {
       "id": "zq200-single",
       "model": "HPRT",
-      "name": "ZQ200 · SINGLE",
+      "name": "ZQ200 Â· SINGLE",
       "description": "Clear single display monitor for retail, restaurants and business environments",
       "category": "pos-terminal",
       "image": "",
@@ -483,7 +483,7 @@
     {
       "id": "zq200-dual",
       "model": "HPRT",
-      "name": "ZQ200 · DUAL",
+      "name": "ZQ200 Â· DUAL",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
       "category": "pos-terminal",
       "image": "",
