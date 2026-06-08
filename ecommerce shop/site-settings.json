@@ -20,5 +20,14 @@
   },
   "contact": {
     "formspreeEndpoint": ""
-  }
+  },
+  "homeIndustryImages": {
+    "ecommerce": "images/Copy-of-Kinatech-Website--7-.png",
+    "retail": "",
+    "fnb": "",
+    "warehouse": "",
+    "office": "",
+    "hospitality": ""
+  },
+  "logo": ""
 }
