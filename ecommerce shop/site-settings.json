@@ -1,1 +1,22 @@
-{ "hero": { "image": "" } }
+{
+  "hero": { "image": "" },
+  "colors": {
+    "tan": "#c9b89a",
+    "tanDark": "#a89070",
+    "tanLight": "#e8ddd0",
+    "tanFooter": "#c4b398",
+    "bgAlt": "#f7f3ee",
+    "cardBg": "#ede4d8"
+  },
+  "industryImages": {
+    "ecommerce": "",
+    "retail": "",
+    "fnb": "",
+    "warehouse": "",
+    "office": "",
+    "hospitality": ""
+  },
+  "contact": {
+    "formspreeEndpoint": ""
+  }
+}

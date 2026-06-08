@@ -147,6 +147,21 @@
 
     /* file input hidden */
     input[type="file"] { display: none; }
+
+    /* COLOR GRID */
+    .color-grid { display: flex; flex-direction: column; gap: 12px; }
+    .color-row { display: flex; align-items: center; gap: 14px; }
+    .color-row input[type="color"] { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; padding: 2px; background: none; display: block; flex-shrink: 0; }
+    .color-row div strong { display: block; font-size: 0.88rem; font-weight: 600; }
+    .color-row div span { font-size: 0.75rem; color: var(--muted); }
+
+    /* INDUSTRY IMAGE GRID */
+    .industry-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .industry-img-card { background: var(--white); border-radius: var(--radius); border: 1.5px solid var(--border); padding: 16px; }
+    .industry-img-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+    .industry-img-preview { width: 100%; height: 120px; border-radius: 8px; background: #f0ece6; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
+    .industry-img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .industry-img-preview .no-prev { font-size: 0.72rem; color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
@@ -206,6 +221,9 @@
       <button class="sidebar-btn" id="sideCats" onclick="showPanel('categories')">
         🗂 Categories
       </button>
+      <button class="sidebar-btn" id="sideIndustries" onclick="showPanel('industries')">
+        🏢 Industries
+      </button>
 
       <div class="sidebar-label">Site</div>
       <button class="sidebar-btn" id="sideSiteSettings" onclick="showPanel('site-settings')">
@@ -244,6 +262,15 @@
         <div class="category-list" id="categoryList"></div>
       </div>
 
+      <!-- INDUSTRIES PANEL -->
+      <div id="panelIndustries" style="display:none;">
+        <div class="main-header">
+          <h2>Who We Serve — Images</h2>
+        </div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px;max-width:560px;">Upload images for each industry section on the "Who We Serve" page. Recommended: 500×300px JPG.</p>
+        <div id="industryImagesList"></div>
+      </div>
+
       <!-- SITE SETTINGS PANEL -->
       <div id="panelSiteSettings" style="display:none;">
         <div class="main-header"><h2>Site Settings</h2></div>
@@ -251,20 +278,82 @@
         <div class="settings-card">
           <h3>🖼 Hero Background Image</h3>
           <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
-            This is the full-width image on the homepage. Recommended size: 1440×560px JPG.
+            Full-width homepage banner. Recommended: 1440×560px JPG.
           </p>
           <div class="hero-preview" id="heroPreview">
             <div class="no-prev">No hero image set yet</div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <button class="btn btn-tan" onclick="document.getElementById('heroFileInput').click()">
-              📁 Choose Image
-            </button>
+            <button class="btn btn-tan" onclick="document.getElementById('heroFileInput').click()">📁 Choose Image</button>
             <input type="file" id="heroFileInput" accept="image/*" onchange="handleHeroUpload(this)" />
             <button class="btn btn-outline" onclick="clearHeroImage()" id="clearHeroBtn" style="display:none;">Remove Image</button>
           </div>
           <p class="upload-progress" id="heroUploadProgress"></p>
-          <p class="form-hint" style="margin-top:8px;">Uploading will push the image to your GitHub repo and update the site automatically.</p>
+        </div>
+
+        <div class="settings-card">
+          <h3>🎨 Site Colors</h3>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Changes apply across the whole site instantly after publishing.</p>
+          <div class="color-grid">
+            <div class="color-row">
+              <input type="color" id="colorFooter" value="#c4b398" oninput="previewColor('--tan-footer', this.value)" />
+              <div>
+                <strong>Footer Color</strong>
+                <span>Background color of the footer</span>
+              </div>
+            </div>
+            <div class="color-row">
+              <input type="color" id="colorTan" value="#c9b89a" oninput="previewColor('--tan', this.value)" />
+              <div>
+                <strong>Accent Color</strong>
+                <span>Nav pill, buttons, badges</span>
+              </div>
+            </div>
+            <div class="color-row">
+              <input type="color" id="colorTanDark" value="#a89070" oninput="previewColor('--tan-dark', this.value)" />
+              <div>
+                <strong>Accent Dark</strong>
+                <span>Hover states, CTA buttons</span>
+              </div>
+            </div>
+            <div class="color-row">
+              <input type="color" id="colorCardBg" value="#ede4d8" oninput="previewColor('--card-bg', this.value)" />
+              <div>
+                <strong>Card Background</strong>
+                <span>Product cards, image placeholders</span>
+              </div>
+            </div>
+            <div class="color-row">
+              <input type="color" id="colorBgAlt" value="#f7f3ee" oninput="previewColor('--bg-alt', this.value)" />
+              <div>
+                <strong>Section Background</strong>
+                <span>Alternating section backgrounds</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn btn-tan" onclick="saveColors()">Save Colors</button>
+            <button class="btn btn-outline" onclick="resetColors()">Reset to Default</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>📬 Contact Form</h3>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
+            Connect your contact form to <strong>Formspree</strong> so submissions are emailed to you.
+          </p>
+          <div class="settings-note">
+            <strong>How to set up:</strong><br>
+            1. Go to <a href="https://formspree.io" target="_blank" style="color:#0066cc">formspree.io</a> → create a free account<br>
+            2. Click <strong>New Form</strong> → enter your email address<br>
+            3. Copy the endpoint URL (looks like <code>https://formspree.io/f/xxxxxxxx</code>)<br>
+            4. Paste it below → Publish
+          </div>
+          <div class="form-group">
+            <label>Formspree Endpoint URL</label>
+            <input type="text" id="formspreeUrl" placeholder="https://formspree.io/f/xxxxxxxx" />
+          </div>
+          <button class="btn btn-tan" onclick="saveContactSettings()">Save & Publish</button>
         </div>
       </div>
 
@@ -466,6 +555,7 @@ async function bootAdmin() {
   loadSettings();
   await loadProductsData();
   await loadSiteSettings();
+  populateSettingsUI();
   buildSidebar();
   renderProductPanel('all');
 }
@@ -497,6 +587,12 @@ async function loadSiteSettings() {
       if (res.ok) { const file = await res.json(); siteSettings = JSON.parse(atob(file.content.replace(/\n/g,''))); }
     } catch(e) {}
   }
+  // Ensure full structure with defaults
+  if (!siteSettings) siteSettings = {};
+  if (!siteSettings.hero) siteSettings.hero = { image: '' };
+  if (!siteSettings.colors) siteSettings.colors = { tan:'#c9b89a', tanDark:'#a89070', tanLight:'#e8ddd0', tanFooter:'#c4b398', bgAlt:'#f7f3ee', cardBg:'#ede4d8' };
+  if (!siteSettings.industryImages) siteSettings.industryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
+  if (!siteSettings.contact) siteSettings.contact = { formspreeEndpoint: '' };
   updateHeroPreview();
 }
 
@@ -519,15 +615,16 @@ function buildSidebar() {
 function showPanel(view) {
   currentView = view;
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  const sideMap = { all:'sideAll', categories:'sideCats', 'site-settings':'sideSiteSettings' };
+  const sideMap = { all:'sideAll', categories:'sideCats', industries:'sideIndustries', 'site-settings':'sideSiteSettings' };
   const sideId = sideMap[view] || `side-${view}`;
   document.getElementById(sideId)?.classList.add('active');
-  ['panelProducts','panelCategories','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
+  ['panelProducts','panelCategories','panelIndustries','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   if (view === 'publish')       { document.getElementById('panelPublish').style.display = 'block'; return; }
   if (view === 'settings')      { document.getElementById('panelSettings').style.display = 'block'; return; }
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
+  if (view === 'industries')    { document.getElementById('panelIndustries').style.display = 'block'; renderIndustryImages(); return; }
   if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); return; }
   document.getElementById('panelProducts').style.display = 'block';
   renderProductPanel(view);
@@ -862,6 +959,133 @@ function downloadJSON() {
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
   a.href = url; a.download = 'products.json'; a.click(); URL.revokeObjectURL(url);
   showToast('products.json downloaded!', 'success');
+}
+
+/* ══ COLORS ══ */
+const DEFAULT_COLORS = { tan:'#c9b89a', tanDark:'#a89070', tanLight:'#e8ddd0', tanFooter:'#c4b398', bgAlt:'#f7f3ee', cardBg:'#ede4d8' };
+
+function previewColor(cssVar, value) {
+  document.documentElement.style.setProperty(cssVar, value);
+}
+
+function populateSettingsUI() {
+  const c = siteSettings.colors || DEFAULT_COLORS;
+  document.getElementById('colorFooter').value  = c.tanFooter || '#c4b398';
+  document.getElementById('colorTan').value     = c.tan       || '#c9b89a';
+  document.getElementById('colorTanDark').value = c.tanDark   || '#a89070';
+  document.getElementById('colorCardBg').value  = c.cardBg    || '#ede4d8';
+  document.getElementById('colorBgAlt').value   = c.bgAlt     || '#f7f3ee';
+  document.getElementById('formspreeUrl').value = siteSettings.contact?.formspreeEndpoint || '';
+}
+
+async function saveColors() {
+  siteSettings.colors = {
+    tan:       document.getElementById('colorTan').value,
+    tanDark:   document.getElementById('colorTanDark').value,
+    tanLight:  siteSettings.colors?.tanLight || '#e8ddd0',
+    tanFooter: document.getElementById('colorFooter').value,
+    bgAlt:     document.getElementById('colorBgAlt').value,
+    cardBg:    document.getElementById('colorCardBg').value,
+  };
+  try {
+    await publishSiteSettings();
+    showToast('Colors saved & published!', 'success');
+  } catch(e) {
+    showToast('Save failed: ' + e.message, 'error');
+  }
+}
+
+async function resetColors() {
+  if (!confirm('Reset all colors to default?')) return;
+  siteSettings.colors = { ...DEFAULT_COLORS };
+  populateSettingsUI();
+  // Apply defaults to current page
+  Object.entries({ '--tan': DEFAULT_COLORS.tan, '--tan-dark': DEFAULT_COLORS.tanDark, '--tan-footer': DEFAULT_COLORS.tanFooter, '--card-bg': DEFAULT_COLORS.cardBg, '--bg-alt': DEFAULT_COLORS.bgAlt }).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  try {
+    await publishSiteSettings();
+    showToast('Colors reset & published!', 'success');
+  } catch(e) {
+    showToast('Reset failed: ' + e.message, 'error');
+  }
+}
+
+/* ══ CONTACT SETTINGS ══ */
+async function saveContactSettings() {
+  const url = document.getElementById('formspreeUrl').value.trim();
+  if (!siteSettings.contact) siteSettings.contact = {};
+  siteSettings.contact.formspreeEndpoint = url;
+  try {
+    await publishSiteSettings();
+    showToast('Contact settings saved & published!', 'success');
+  } catch(e) {
+    showToast('Save failed: ' + e.message, 'error');
+  }
+}
+
+/* ══ INDUSTRY IMAGES ══ */
+const INDUSTRY_LABELS = {
+  ecommerce:   'E-Commerce / Online Sellers',
+  retail:      'Retail Stores',
+  fnb:         'Food & Beverage',
+  warehouse:   'Warehousing & Logistics',
+  office:      'Offices & Enterprises',
+  hospitality: 'Hospitality'
+};
+
+function renderIndustryImages() {
+  const el = document.getElementById('industryImagesList');
+  const imgs = siteSettings.industryImages || {};
+  el.innerHTML = `<div class="industry-img-grid">${
+    Object.entries(INDUSTRY_LABELS).map(([id, label]) => {
+      const src = imgs[id] || '';
+      return `<div class="industry-img-card">
+        <h4>${label}</h4>
+        <div class="industry-img-preview" id="ind-prev-${id}">
+          ${src
+            ? `<img src="${src}" alt="${label}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
+            : `<div class="no-prev">No image set</div>`}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-tan btn-sm" onclick="document.getElementById('ind-file-${id}').click()">📁 Upload</button>
+          <input type="file" id="ind-file-${id}" accept="image/*" onchange="handleIndustryImageUpload('${id}', this)" />
+          ${src ? `<button class="btn btn-outline btn-sm" onclick="clearIndustryImage('${id}')">Remove</button>` : ''}
+        </div>
+        <p class="upload-progress" id="ind-prog-${id}"></p>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+async function handleIndustryImageUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const prog = document.getElementById(`ind-prog-${id}`);
+  prog.textContent = '⏳ Uploading…'; prog.className = 'upload-progress uploading';
+  try {
+    const path = await uploadFileToGitHub(file, 'images');
+    if (!siteSettings.industryImages) siteSettings.industryImages = {};
+    siteSettings.industryImages[id] = path;
+    await publishSiteSettings();
+    renderIndustryImages(); // re-render with new image
+    prog.textContent = `✅ Uploaded!`; prog.className = 'upload-progress done';
+    showToast(`${INDUSTRY_LABELS[id]} image updated!`, 'success');
+  } catch(e) {
+    prog.textContent = `❌ ${e.message}`; prog.className = 'upload-progress err';
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+  input.value = '';
+}
+
+async function clearIndustryImage(id) {
+  if (!confirm('Remove this industry image?')) return;
+  if (siteSettings.industryImages) siteSettings.industryImages[id] = '';
+  try {
+    await publishSiteSettings();
+    renderIndustryImages();
+    showToast('Image removed.', '');
+  } catch(e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
 }
 
 /* ══ DIRTY STATE ══ */

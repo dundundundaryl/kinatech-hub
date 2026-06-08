@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="settings-loader.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -237,7 +238,7 @@
           <textarea id="message" name="message" placeholder=""></textarea>
         </div>
         <button type="submit" class="form-submit">Submit</button>
-        <p class="form-note">Your Canva profile name won't be shared. Never submit passwords.</p>
+        <p class="form-note">We'll get back to you within 1–2 business days.</p>
       </form>
       <div class="form-success" id="formSuccess">
         ✓ Thanks! We'll be in touch shortly.
@@ -285,10 +286,35 @@
   </footer>
 
   <script>
-    function handleSubmit(e) {
-      e.preventDefault();
+    // Load Formspree endpoint from site settings
+    document.addEventListener('settingsLoaded', function(e) {
+      const endpoint = e.detail?.contact?.formspreeEndpoint;
+      if (endpoint) {
+        document.getElementById('contactForm').setAttribute('action', endpoint);
+        document.getElementById('contactForm').setAttribute('method', 'POST');
+        document.getElementById('contactForm').removeAttribute('onsubmit');
+        // Add hidden redirect field so Formspree shows our success state
+        const input = document.createElement('input');
+        input.type = 'hidden'; input.name = '_next'; input.value = window.location.href + '?sent=1';
+        document.getElementById('contactForm').appendChild(input);
+      }
+    });
+
+    // Show success message if redirected back after Formspree submit
+    if (window.location.search.includes('sent=1')) {
       document.getElementById('contactForm').style.display = 'none';
       document.getElementById('formSuccess').style.display = 'block';
+    }
+
+    function handleSubmit(e) {
+      // Fallback if no Formspree endpoint set — show local success message
+      const form = document.getElementById('contactForm');
+      if (!form.action || form.action === window.location.href) {
+        e.preventDefault();
+        form.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      }
+      // Otherwise let Formspree handle it via normal form POST
     }
     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobileNav');

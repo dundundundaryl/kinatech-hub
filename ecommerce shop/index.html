@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kinatech Hub — Reliable Hardware for Business</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="settings-loader.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -296,7 +297,7 @@
 
     <div class="categories-grid">
 
-      <a href="products.html#pos-printers" class="cat-card">
+      <a href="products.html#pos-printers" class="cat-card" data-cat="pos-printers">
         <div class="cat-card-top">
           <h3>POS Printers</h3>
           <p>Receipt printing for daily transactions</p>
@@ -314,7 +315,7 @@
         </div>
       </a>
 
-      <a href="products.html#scanners" class="cat-card">
+      <a href="products.html#scanners" class="cat-card" data-cat="scanners">
         <div class="cat-card-top">
           <h3>Scanners</h3>
           <p>Faster checkout and stock handling</p>
@@ -331,7 +332,7 @@
         </div>
       </a>
 
-      <a href="products.html#label-printers" class="cat-card">
+      <a href="products.html#label-printers" class="cat-card" data-cat="label-printers">
         <div class="cat-card-top">
           <h3>Label &amp; Waybill Printers</h3>
           <p>Shipping labels and order fulfillment</p>
@@ -548,18 +549,31 @@
   </script>
 
   <script>
-    // Load hero image from site-settings.json (managed via admin panel)
-    fetch('site-settings.json?nocache=' + Date.now())
+    // Load category card images from products.json
+    fetch('products.json?v=' + Date.now())
       .then(r => r.json())
-      .then(s => {
-        if (s.hero && s.hero.image) {
-          const hero = document.getElementById('heroSection');
-          hero.style.backgroundImage = "url('" + s.hero.image + "')";
-          const placeholder = document.querySelector('.hero-bg-placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        }
+      .then(data => {
+        data.categories.forEach(cat => {
+          if (!cat.image) return;
+          const card = document.querySelector('[data-cat="' + cat.id + '"]');
+          if (!card) return;
+          const imgWrap = card.querySelector('.cat-card-img');
+          if (imgWrap) {
+            imgWrap.innerHTML = '<img src="' + cat.image + '" class="cat-product-img" alt="' + cat.label + '" onerror="this.style.display='none'">';
+          }
+        });
       })
       .catch(() => {});
+
+    // Apply hero image from site settings
+    document.addEventListener('settingsLoaded', function(e) {
+      const s = e.detail;
+      if (s.hero && s.hero.image) {
+        document.getElementById('heroSection').style.backgroundImage = "url('" + s.hero.image + "')";
+        const ph = document.querySelector('.hero-bg-placeholder');
+        if (ph) ph.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>

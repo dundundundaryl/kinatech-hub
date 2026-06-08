@@ -1,160 +1,574 @@
 {
   "categories": [
-    { "id": "pos-printers",   "label": "POS Printers",            "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments" },
-    { "id": "scanners",       "label": "Barcode Scanners",         "description": "Fast, accurate scanning solutions for inventory management and checkout operations" },
-    { "id": "label-printers", "label": "Label & Waybill Printers", "description": "Professional labeling and shipping solutions for e-commerce and logistics operations" },
-    { "id": "hard-drives",    "label": "Storage Solutions",        "description": "High-capacity drives and storage systems for data backup" },
-    { "id": "pos-terminal",   "label": "POS Terminal",             "description": "Reliable and responsive POS monitors designed to streamline transactions and improve efficiency" },
-    { "id": "eftpos",         "label": "EFTPOS Terminals",         "description": "All-in-one payment systems for restaurants and service businesses" },
-    { "id": "mobile-label",   "label": "Mobile Label Printers",    "description": "Portable labeling for on-the-go workflows" }
+    {
+      "id": "pos-printers",
+      "label": "POS Printers",
+      "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments",
+      "image": ""
+    },
+    {
+      "id": "scanners",
+      "label": "Barcode Scanners",
+      "description": "Fast, accurate scanning solutions for inventory management and checkout operations",
+      "image": ""
+    },
+    {
+      "id": "label-printers",
+      "label": "Label & Waybill Printers",
+      "description": "Professional labeling and shipping solutions for e-commerce and logistics operations",
+      "image": ""
+    },
+    {
+      "id": "hard-drives",
+      "label": "Storage Solutions",
+      "description": "High-capacity drives and storage systems for data backup",
+      "image": ""
+    },
+    {
+      "id": "pos-terminal",
+      "label": "POS Terminal",
+      "description": "Reliable and responsive POS monitors designed to streamline transactions and improve efficiency",
+      "image": ""
+    },
+    {
+      "id": "eftpos",
+      "label": "EFTPOS Terminals",
+      "description": "All-in-one payment systems for restaurants and service businesses",
+      "image": ""
+    },
+    {
+      "id": "mobile-label",
+      "label": "Mobile Label Printers",
+      "description": "Portable labeling for on-the-go workflows",
+      "image": ""
+    }
   ],
   "products": [
     {
-      "id": "tp80nb-m", "model": "HPRT", "name": "TP80NB-M",
+      "id": "tp80nb-m",
+      "model": "HPRT",
+      "name": "TP80NB-M",
       "description": "Most affordable POS printer with USB + Ethernet, 200mm/s printing",
-      "category": "pos-printers", "image": "", "images": [], "badge": "1 Year Warranty",
+      "category": "pos-printers",
+      "image": "",
+      "images": [],
+      "badge": "1 Year Warranty",
       "sections": [
-        { "title": "Key Features", "items": ["Fast printing up to 200mm/s", "USB + Ethernet connectivity", "Supports 1D & 2D barcode printing", "Compact design with easy paper loading", "Most affordable entry-level POS printer"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Print Speed: Up to 200mm/s", "Paper Width: Up to 80mm", "Interface: USB + Ethernet"] },
-        { "title": "Durability", "items": ["Print Head Life: 100 km", "Cutter Life: 1 million cuts"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Fast printing up to 200mm/s",
+            "USB + Ethernet connectivity",
+            "Supports 1D & 2D barcode printing",
+            "Compact design with easy paper loading",
+            "Most affordable entry-level POS printer"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Print Speed: Up to 200mm/s",
+            "Paper Width: Up to 80mm",
+            "Interface: USB + Ethernet"
+          ]
+        },
+        {
+          "title": "Durability",
+          "items": [
+            "Print Head Life: 100 km",
+            "Cutter Life: 1 million cuts"
+          ]
+        }
       ]
     },
     {
-      "id": "tp80k-l", "model": "HPRT", "name": "TP80K-L",
+      "id": "tp80k-l",
+      "model": "HPRT",
+      "name": "TP80K-L",
       "description": "Compact thermal printer with fast and reliable everyday checkout use",
-      "category": "pos-printers", "image": "", "images": [], "badge": "",
+      "category": "pos-printers",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Compact and lightweight design", "USB connectivity for easy setup", "Auto-cutter for fast receipt handling", "Low noise operation", "Reliable performance for everyday checkout"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Paper Width: Up to 80mm", "Interface: USB"] },
-        { "title": "Durability", "items": ["Print Head Life: 100 km", "Cutter Life: 1 million cuts"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Compact and lightweight design",
+            "USB connectivity for easy setup",
+            "Auto-cutter for fast receipt handling",
+            "Low noise operation",
+            "Reliable performance for everyday checkout"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Paper Width: Up to 80mm",
+            "Interface: USB"
+          ]
+        },
+        {
+          "title": "Durability",
+          "items": [
+            "Print Head Life: 100 km",
+            "Cutter Life: 1 million cuts"
+          ]
+        }
       ]
     },
     {
-      "id": "tp80rl", "model": "HPRT", "name": "TP80RL",
+      "id": "tp80rl",
+      "model": "HPRT",
+      "name": "TP80RL",
       "description": "Durable POS printer with USB, Ethernet, and fast everyday checkout",
-      "category": "pos-printers", "image": "", "images": [], "badge": "",
+      "category": "pos-printers",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["USB + Ethernet dual connectivity", "Durable construction for high-volume use", "Auto-cutter included", "Fast and consistent print speed", "Easy paper roll loading"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Paper Width: Up to 80mm", "Interface: USB + Ethernet"] },
-        { "title": "Durability", "items": ["Print Head Life: 100 km", "Cutter Life: 1 million cuts"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "USB + Ethernet dual connectivity",
+            "Durable construction for high-volume use",
+            "Auto-cutter included",
+            "Fast and consistent print speed",
+            "Easy paper roll loading"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Paper Width: Up to 80mm",
+            "Interface: USB + Ethernet"
+          ]
+        },
+        {
+          "title": "Durability",
+          "items": [
+            "Print Head Life: 100 km",
+            "Cutter Life: 1 million cuts"
+          ]
+        }
       ]
     },
     {
-      "id": "tp80bs", "model": "HPRT", "name": "TP80BS",
+      "id": "tp80bs",
+      "model": "HPRT",
+      "name": "TP80BS",
       "description": "Fastest printing with USB, Ethernet, Serial and long-life head",
-      "category": "pos-printers", "image": "", "images": [], "badge": "",
+      "category": "pos-printers",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Fastest print speed in the TP80 lineup", "USB + Ethernet + Serial connectivity", "Long-life print head for heavy-duty use", "Auto-cutter with extended lifespan", "Ideal for high-volume retail and hospitality"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Paper Width: Up to 80mm", "Interface: USB + Ethernet + Serial"] },
-        { "title": "Durability", "items": ["Print Head Life: 150 km", "Cutter Life: 1.5 million cuts"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Fastest print speed in the TP80 lineup",
+            "USB + Ethernet + Serial connectivity",
+            "Long-life print head for heavy-duty use",
+            "Auto-cutter with extended lifespan",
+            "Ideal for high-volume retail and hospitality"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Paper Width: Up to 80mm",
+            "Interface: USB + Ethernet + Serial"
+          ]
+        },
+        {
+          "title": "Durability",
+          "items": [
+            "Print Head Life: 150 km",
+            "Cutter Life: 1.5 million cuts"
+          ]
+        }
       ]
     },
     {
-      "id": "n90", "model": "HPRT", "name": "N90",
+      "id": "n90",
+      "model": "HPRT",
+      "name": "N90",
       "description": "Affordable handheld scanner with fast and accurate 1D reading",
-      "category": "scanners", "image": "", "images": [], "badge": "",
+      "category": "scanners",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Fast and accurate 1D barcode reading", "Lightweight and ergonomic handheld design", "Plug-and-play USB connection", "Audible and LED scan confirmation", "Most affordable option in the scanner lineup"] },
-        { "title": "Specifications", "items": ["Scan Type: 1D Linear", "Interface: USB", "Light Source: LED", "Scan Rate: Up to 100 scans/sec"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Fast and accurate 1D barcode reading",
+            "Lightweight and ergonomic handheld design",
+            "Plug-and-play USB connection",
+            "Audible and LED scan confirmation",
+            "Most affordable option in the scanner lineup"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Scan Type: 1D Linear",
+            "Interface: USB",
+            "Light Source: LED",
+            "Scan Rate: Up to 100 scans/sec"
+          ]
+        }
       ]
     },
     {
-      "id": "n102", "model": "HPRT", "name": "N102",
+      "id": "n102",
+      "model": "HPRT",
+      "name": "N102",
       "description": "Affordable handheld scanner with stand-capable and reliable 1D reading",
-      "category": "scanners", "image": "", "images": [], "badge": "",
+      "category": "scanners",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["1D barcode reading with high accuracy", "Compatible with optional hands-free stand", "Plug-and-play USB setup", "Durable casing for daily retail use", "Audible and visual scan feedback"] },
-        { "title": "Specifications", "items": ["Scan Type: 1D Linear", "Interface: USB", "Light Source: LED", "Stand Compatible: Yes (optional)"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "1D barcode reading with high accuracy",
+            "Compatible with optional hands-free stand",
+            "Plug-and-play USB setup",
+            "Durable casing for daily retail use",
+            "Audible and visual scan feedback"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Scan Type: 1D Linear",
+            "Interface: USB",
+            "Light Source: LED",
+            "Stand Compatible: Yes (optional)"
+          ]
+        }
       ]
     },
     {
-      "id": "n150", "model": "HPRT", "name": "N150",
+      "id": "n150",
+      "model": "HPRT",
+      "name": "N150",
       "description": "Durable 2D scanner with improved speed and vibration feedback",
-      "category": "scanners", "image": "", "images": [], "badge": "",
+      "category": "scanners",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Reads 1D and 2D barcodes including QR codes", "Vibration feedback for silent environments", "Improved scan speed over predecessor models", "Durable design for high-frequency scanning", "Supports PDF417, Data Matrix, and more"] },
-        { "title": "Specifications", "items": ["Scan Type: 1D & 2D", "Interface: USB", "Light Source: LED", "Feedback: Vibration + Beep + LED"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Reads 1D and 2D barcodes including QR codes",
+            "Vibration feedback for silent environments",
+            "Improved scan speed over predecessor models",
+            "Durable design for high-frequency scanning",
+            "Supports PDF417, Data Matrix, and more"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Scan Type: 1D & 2D",
+            "Interface: USB",
+            "Light Source: LED",
+            "Feedback: Vibration + Beep + LED"
+          ]
+        }
       ]
     },
     {
-      "id": "n150bt", "model": "HPRT", "name": "N150BT",
+      "id": "n150bt",
+      "model": "HPRT",
+      "name": "N150BT",
       "description": "Wireless Bluetooth scanner with long range and tenacious performance",
-      "category": "scanners", "image": "", "images": [], "badge": "",
+      "category": "scanners",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Wireless Bluetooth connectivity up to 100m range", "Reads 1D and 2D barcodes including QR codes", "Rechargeable 2600mAh battery", "USB charging and wired fallback mode", "Ideal for warehouse and retail floor use"] },
-        { "title": "Specifications", "items": ["Scan Type: 1D & 2D", "Interface: Bluetooth + USB", "Wireless Range: Up to 100m", "Battery: 2600mAh rechargeable"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Wireless Bluetooth connectivity up to 100m range",
+            "Reads 1D and 2D barcodes including QR codes",
+            "Rechargeable 2600mAh battery",
+            "USB charging and wired fallback mode",
+            "Ideal for warehouse and retail floor use"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Scan Type: 1D & 2D",
+            "Interface: Bluetooth + USB",
+            "Wireless Range: Up to 100m",
+            "Battery: 2600mAh rechargeable"
+          ]
+        }
       ]
     },
     {
-      "id": "p400", "model": "HPRT", "name": "P400",
+      "id": "p400",
+      "model": "HPRT",
+      "name": "P400",
       "description": "Omnidirectional desktop scanner, hands-free reading from any angle",
-      "category": "scanners", "image": "", "images": [], "badge": "",
+      "category": "scanners",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Omnidirectional scanning — reads from any angle", "Hands-free desktop presentation mode", "Supports 1D, 2D, and QR codes", "High scan rate for fast checkout lines", "Ideal for supermarkets and busy retail counters"] },
-        { "title": "Specifications", "items": ["Scan Type: Omnidirectional 1D & 2D", "Interface: USB", "Mount: Desktop presentation", "Scan Rate: Multi-line high-speed"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Omnidirectional scanning \u2014 reads from any angle",
+            "Hands-free desktop presentation mode",
+            "Supports 1D, 2D, and QR codes",
+            "High scan rate for fast checkout lines",
+            "Ideal for supermarkets and busy retail counters"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Scan Type: Omnidirectional 1D & 2D",
+            "Interface: USB",
+            "Mount: Desktop presentation",
+            "Scan Rate: Multi-line high-speed"
+          ]
+        }
       ]
     },
     {
-      "id": "n43bt", "model": "HPRT", "name": "N43BT",
+      "id": "n43bt",
+      "model": "HPRT",
+      "name": "N43BT",
       "description": "High-speed wireless label printer with Bluetooth for seamless labeling",
-      "category": "label-printers", "image": "", "images": [], "badge": "",
+      "category": "label-printers",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Wireless Bluetooth printing for mobile convenience", "High-speed thermal printing", "Compatible with iOS and Android apps", "Compact desktop-friendly design", "Ideal for e-commerce shipping labels"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Interface: Bluetooth + USB", "Label Width: Up to 58mm"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Wireless Bluetooth printing for mobile convenience",
+            "High-speed thermal printing",
+            "Compatible with iOS and Android apps",
+            "Compact desktop-friendly design",
+            "Ideal for e-commerce shipping labels"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Interface: Bluetooth + USB",
+            "Label Width: Up to 58mm"
+          ]
+        }
       ]
     },
     {
-      "id": "d25", "model": "HPRT", "name": "D25",
+      "id": "d25",
+      "model": "HPRT",
+      "name": "D25",
       "description": "Compact dual-mode printer for labels and receipts in one device",
-      "category": "label-printers", "image": "", "images": [], "badge": "",
+      "category": "label-printers",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Dual-mode: prints both labels and receipts", "Single compact unit replaces two devices", "USB connectivity for easy setup", "Easy media switching between modes", "Great for small shops and market stalls"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Resolution: 203 DPI", "Interface: USB", "Modes: Label + Receipt"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Dual-mode: prints both labels and receipts",
+            "Single compact unit replaces two devices",
+            "USB connectivity for easy setup",
+            "Easy media switching between modes",
+            "Great for small shops and market stalls"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Interface: USB",
+            "Modes: Label + Receipt"
+          ]
+        }
       ]
     },
     {
-      "id": "one-touch-hdd", "model": "Seagate", "name": "One Touch HDD",
+      "id": "one-touch-hdd",
+      "model": "Seagate",
+      "name": "One Touch HDD",
       "description": "Durable storage with fast USB 3.0 and secure backup",
-      "category": "hard-drives", "image": "", "images": [], "badge": "",
+      "category": "hard-drives",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["USB 3.0 for fast data transfer", "Compact and portable 2.5\" form factor", "Drop-resistant casing for field use", "Includes automatic backup software", "Compatible with Windows and Mac"] },
-        { "title": "Specifications", "items": ["Interface: USB 3.0", "Form Factor: 2.5\" portable", "Compatibility: Windows & Mac", "Includes: Seagate backup software"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "USB 3.0 for fast data transfer",
+            "Compact and portable 2.5\" form factor",
+            "Drop-resistant casing for field use",
+            "Includes automatic backup software",
+            "Compatible with Windows and Mac"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Interface: USB 3.0",
+            "Form Factor: 2.5\" portable",
+            "Compatibility: Windows & Mac",
+            "Includes: Seagate backup software"
+          ]
+        }
       ]
     },
     {
-      "id": "zq200-single", "model": "HPRT", "name": "ZQ200 · SINGLE",
+      "id": "zq200-single",
+      "model": "HPRT",
+      "name": "ZQ200 \u00b7 SINGLE",
       "description": "Clear single display monitor for retail, restaurants and business environments",
-      "category": "pos-terminal", "image": "", "images": [], "badge": "",
+      "category": "pos-terminal",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Clear single-screen display for cashier use", "Slim bezel for a clean counter setup", "Adjustable tilt stand", "Compatible with most POS software systems", "Ideal for retail shops and restaurant counters"] },
-        { "title": "Specifications", "items": ["Display: Single screen", "Connectivity: VGA / HDMI", "Stand: Adjustable tilt", "Orientation: Landscape"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Clear single-screen display for cashier use",
+            "Slim bezel for a clean counter setup",
+            "Adjustable tilt stand",
+            "Compatible with most POS software systems",
+            "Ideal for retail shops and restaurant counters"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Display: Single screen",
+            "Connectivity: VGA / HDMI",
+            "Stand: Adjustable tilt",
+            "Orientation: Landscape"
+          ]
+        }
       ]
     },
     {
-      "id": "zq200-dual", "model": "HPRT", "name": "ZQ200 · DUAL",
+      "id": "zq200-dual",
+      "model": "HPRT",
+      "name": "ZQ200 \u00b7 DUAL",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
-      "category": "pos-terminal", "image": "", "images": [], "badge": "",
+      "category": "pos-terminal",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Dual-screen for cashier and customer simultaneously", "Independent display control for each screen", "Slim bezel professional design", "Adjustable mounting for flexible positioning", "Improves customer trust and transaction transparency"] },
-        { "title": "Specifications", "items": ["Display: Dual screen", "Connectivity: VGA / HDMI", "Stand: Adjustable", "Use Case: Cashier-facing + Customer-facing"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Dual-screen for cashier and customer simultaneously",
+            "Independent display control for each screen",
+            "Slim bezel professional design",
+            "Adjustable mounting for flexible positioning",
+            "Improves customer trust and transaction transparency"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Display: Dual screen",
+            "Connectivity: VGA / HDMI",
+            "Stand: Adjustable",
+            "Use Case: Cashier-facing + Customer-facing"
+          ]
+        }
       ]
     },
     {
-      "id": "aio-eftpos", "model": "HPRT", "name": "AIO",
+      "id": "aio-eftpos",
+      "model": "HPRT",
+      "name": "AIO",
       "description": "Android EFTPOS terminal for retail and restaurant environments",
-      "category": "eftpos", "image": "", "images": [], "badge": "",
+      "category": "eftpos",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Android-based all-in-one payment terminal", "Built-in receipt printer", "Accepts NFC, chip, and magnetic swipe payments", "Touchscreen display for intuitive operation", "WiFi + 4G connectivity for flexibility"] },
-        { "title": "Specifications", "items": ["OS: Android", "Connectivity: WiFi + 4G", "Payment Methods: NFC, Chip, Magnetic Swipe", "Display: Touchscreen", "Built-in: Receipt printer"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Android-based all-in-one payment terminal",
+            "Built-in receipt printer",
+            "Accepts NFC, chip, and magnetic swipe payments",
+            "Touchscreen display for intuitive operation",
+            "WiFi + 4G connectivity for flexibility"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "OS: Android",
+            "Connectivity: WiFi + 4G",
+            "Payment Methods: NFC, Chip, Magnetic Swipe",
+            "Display: Touchscreen",
+            "Built-in: Receipt printer"
+          ]
+        }
       ]
     },
     {
-      "id": "hm-a300e", "model": "HPRT", "name": "HM-A300E",
+      "id": "hm-a300e",
+      "model": "HPRT",
+      "name": "HM-A300E",
       "description": "Portable mobile label printer for field and warehouse use",
-      "category": "mobile-label", "image": "", "images": [], "badge": "",
+      "category": "mobile-label",
+      "image": "",
+      "images": [],
+      "badge": "",
       "sections": [
-        { "title": "Key Features", "items": ["Battery-powered for true on-the-go printing", "Bluetooth + WiFi dual wireless connectivity", "Rugged design built for field and warehouse use", "Supports multiple label sizes and formats", "Compatible with iOS, Android, and Windows"] },
-        { "title": "Specifications", "items": ["Print Method: Direct Thermal", "Interface: Bluetooth + WiFi", "Battery: Rechargeable Li-ion", "Form Factor: Portable handheld", "Compatibility: iOS, Android, Windows"] }
+        {
+          "title": "Key Features",
+          "items": [
+            "Battery-powered for true on-the-go printing",
+            "Bluetooth + WiFi dual wireless connectivity",
+            "Rugged design built for field and warehouse use",
+            "Supports multiple label sizes and formats",
+            "Compatible with iOS, Android, and Windows"
+          ]
+        },
+        {
+          "title": "Specifications",
+          "items": [
+            "Print Method: Direct Thermal",
+            "Interface: Bluetooth + WiFi",
+            "Battery: Rechargeable Li-ion",
+            "Form Factor: Portable handheld",
+            "Compatibility: iOS, Android, Windows"
+          ]
+        }
       ]
     }
   ]

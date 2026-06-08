@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Who We Serve — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="settings-loader.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -406,6 +407,21 @@
     });
     window.addEventListener('scroll', () => {
       document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+
+  <script>
+    document.addEventListener('settingsLoaded', function(e) {
+      const images = e.detail.industryImages || {};
+      Object.entries(images).forEach(([id, src]) => {
+        if (!src) return;
+        const row = document.getElementById(id);
+        if (!row) return;
+        const imgDiv = row.querySelector('.industry-img');
+        if (imgDiv) {
+          imgDiv.innerHTML = '<img src="' + src + '" alt="' + id + '" onerror="this.style.display='none'">';
+        }
+      });
     });
   </script>
 </body>
