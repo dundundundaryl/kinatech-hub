@@ -756,7 +756,7 @@
 
       let data;
       try {
-        const res = await fetch('products.json');
+        const res = await fetch('products.json?v=' + Date.now());
         if (!res.ok) throw new Error(res.statusText);
         data = await res.json();
       } catch (err) {

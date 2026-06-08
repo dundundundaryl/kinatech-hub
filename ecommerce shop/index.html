@@ -56,15 +56,23 @@
 
     .hero-text {
       max-width: 540px;
+      /* Translucent frosted panel keeps the text legible over any background image */
+      background: rgba(247, 243, 238, 0.82);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      padding: 30px 32px;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     }
     .hero-text h1 {
       font-size: 2.6rem;
       font-weight: 800;
       line-height: 1.15;
       margin-bottom: 16px;
+      color: #141210;
     }
     .hero-text p {
-      color: var(--text-muted);
+      color: #4a443c;
       font-size: 0.95rem;
       margin-bottom: 28px;
       max-width: 380px;
@@ -79,26 +87,43 @@
     }
 
     .cat-card {
-      /* Light at top → dark at bottom, matching reference screenshot */
-      background: linear-gradient(to bottom, #e6e2dc 0%, #2e2b27 60%, #141210 100%);
+      /* White card with a thin black outline; dark gradient only on the bottom */
+      background: #ffffff;
+      border: 1px solid #1a1a1a;
       border-radius: 14px;
-      padding: 18px 16px 14px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      min-height: 270px;
+      min-height: 340px;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
-      overflow: visible;
+      overflow: hidden;
       position: relative;
       text-decoration: none;
     }
 
-    .cat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    /* Dark gradient confined to the bottom portion of the card */
+    .cat-card::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 42%;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 38%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+      z-index: 1;
     }
 
-    /* Top text: dark on light background → readable */
+    .cat-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+    }
+
+    /* Top text: dark on white background → readable */
+    .cat-card-top {
+      position: relative;
+      z-index: 2;
+      padding: 18px 16px 4px;
+    }
     .cat-card-top h3 {
       font-size: 0.8rem;
       font-weight: 800;
@@ -114,21 +139,23 @@
       line-height: 1.4;
     }
 
-    /* Image sits in the middle where the gradient transitions */
+    /* Image sits in the middle on the white area */
     .cat-card-img {
+      position: relative;
+      z-index: 2;
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 8px 16px;
     }
 
-    /* Placeholder: semi-transparent on the mid-gradient area */
+    /* Placeholder on white background */
     .cat-card-img .img-placeholder {
-      background: rgba(255,255,255,0.08);
-      border: 1px dashed rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.03);
+      border: 1px dashed rgba(0,0,0,0.18);
       border-radius: 10px;
-      color: rgba(255,255,255,0.5);
+      color: rgba(0,0,0,0.4);
       font-size: 0.68rem;
       height: 130px;
     }
@@ -140,31 +167,33 @@
        <img src="images/pos-printer.png" class="cat-product-img" alt="POS Printer">
     ── */
     .cat-product-img {
-      max-height: 155px;
+      max-height: 165px;
       object-fit: contain;
-      /* Drop shadow creates the "floating" 3D look */
-      filter: drop-shadow(0 16px 24px rgba(0,0,0,0.55));
+      /* Softer drop shadow suits the white card */
+      filter: drop-shadow(0 14px 20px rgba(0,0,0,0.28));
       /* Subtle perspective tilt toward viewer */
       transform: perspective(700px) rotateX(5deg) translateY(-6px);
       transition: transform 0.3s, filter 0.3s;
     }
 
     .cat-card:hover .cat-product-img {
-      filter: drop-shadow(0 20px 28px rgba(0,0,0,0.65));
+      filter: drop-shadow(0 20px 26px rgba(0,0,0,0.38));
       transform: perspective(700px) rotateX(2deg) translateY(-14px);
     }
 
-    /* Bottom "View X" label — white text on dark gradient area */
+    /* Bottom "View X" label — white text over the bottom gradient */
     .cat-card-bottom {
-      border-top: 1px solid rgba(255,255,255,0.12);
-      padding-top: 10px;
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,0.22);
+      padding: 12px 16px 16px;
       margin-top: 4px;
     }
 
     .cat-link {
       font-size: 0.78rem;
       font-weight: 600;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.85);
     }
 
     .cat-card:hover .cat-link { color: #fff; }
@@ -182,6 +211,25 @@
       overflow: hidden;
       height: 220px;
       cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .wws-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.22);
+    }
+
+    /* Uploaded photo fills the card and zooms slightly on hover */
+    .wws-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .wws-card:hover .wws-photo {
+      transform: scale(1.06);
     }
 
     .wws-img-placeholder {
@@ -196,6 +244,11 @@
       font-size: 0.78rem;
       text-align: center;
       gap: 6px;
+      transition: background 0.3s;
+    }
+
+    .wws-card:hover .wws-img-placeholder {
+      background: #ddd5c8;
     }
 
     .wws-label {
@@ -219,7 +272,7 @@
       .hero-inner { padding: 100px 20px 48px; }
       .wws-grid { grid-template-columns: 1fr; }
       .categories-grid { grid-template-columns: repeat(2, 1fr); }
-      .cat-card { min-height: 240px; }
+      .cat-card { min-height: 300px; }
     }
   </style>
 </head>
@@ -427,7 +480,7 @@
     <a href="who-we-serve.html" class="section-link">Explore industries and use cases →</a>
 
     <div class="wws-grid">
-      <a href="who-we-serve.html#ecommerce" class="wws-card">
+      <a href="who-we-serve.html#ecommerce" class="wws-card" data-ind="ecommerce">
         <!-- IMAGE: Woman packing boxes with scanner, warehouse setting, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -436,7 +489,7 @@
         <div class="wws-label">E-Commerce &amp; Fulfillment</div>
       </a>
 
-      <a href="who-we-serve.html#retail" class="wws-card">
+      <a href="who-we-serve.html#retail" class="wws-card" data-ind="retail">
         <!-- IMAGE: Scanner near clothing rack in retail store, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -445,7 +498,7 @@
         <div class="wws-label">Retail Stores</div>
       </a>
 
-      <a href="who-we-serve.html#fnb" class="wws-card">
+      <a href="who-we-serve.html#fnb" class="wws-card" data-ind="fnb">
         <!-- IMAGE: Label printer next to bubble tea on counter, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -454,7 +507,7 @@
         <div class="wws-label">Food &amp; Beverage</div>
       </a>
 
-      <a href="who-we-serve.html#warehouse" class="wws-card">
+      <a href="who-we-serve.html#warehouse" class="wws-card" data-ind="warehouse">
         <!-- IMAGE: Scanner + laptop in warehouse, boxes visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -463,7 +516,7 @@
         <div class="wws-label">Warehousing &amp; Logistics</div>
       </a>
 
-      <a href="who-we-serve.html#office" class="wws-card">
+      <a href="who-we-serve.html#office" class="wws-card" data-ind="office">
         <!-- IMAGE: Laptop + slim HDD on office desk, reports visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -472,7 +525,7 @@
         <div class="wws-label">Office &amp; Professional Services</div>
       </a>
 
-      <a href="who-we-serve.html#hospitality" class="wws-card">
+      <a href="who-we-serve.html#hospitality" class="wws-card" data-ind="hospitality">
         <!-- IMAGE: POS terminal at hotel reception, "RECEPTION" sign visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -565,7 +618,7 @@
       })
       .catch(() => {});
 
-    // Apply hero image from site settings
+    // Apply hero image + home "Who We Serve" card images from site settings
     document.addEventListener('settingsLoaded', function(e) {
       const s = e.detail;
       if (s.hero && s.hero.image) {
@@ -573,6 +626,22 @@
         const ph = document.querySelector('.hero-bg-placeholder');
         if (ph) ph.style.display = 'none';
       }
+      // Home page "Who We Serve" cards (separate from the full Who We Serve page)
+      const homeImgs = s.homeIndustryImages || {};
+      document.querySelectorAll('.wws-card').forEach(function(card) {
+        const id = card.getAttribute('data-ind');
+        const src = homeImgs[id];
+        if (!src) return;
+        const ph = card.querySelector('.wws-img-placeholder');
+        if (ph) {
+          const img = document.createElement('img');
+          img.className = 'wws-photo';
+          img.src = src;
+          img.alt = '';
+          img.onerror = function () { this.style.display = 'none'; };
+          ph.replaceWith(img);
+        }
+      });
     });
   </script>
 </body>

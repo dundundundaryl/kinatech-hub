@@ -226,6 +226,9 @@
       </button>
 
       <div class="sidebar-label">Site</div>
+      <button class="sidebar-btn" id="sideHomeIndustries" onclick="showPanel('home-industries')">
+        🏠 Home Cards
+      </button>
       <button class="sidebar-btn" id="sideSiteSettings" onclick="showPanel('site-settings')">
         🖼 Site Settings
       </button>
@@ -269,6 +272,15 @@
         </div>
         <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px;max-width:560px;">Upload images for each industry section on the "Who We Serve" page. Recommended: 500×300px JPG.</p>
         <div id="industryImagesList"></div>
+      </div>
+
+      <!-- HOME INDUSTRY CARDS PANEL -->
+      <div id="panelHomeIndustries" style="display:none;">
+        <div class="main-header">
+          <h2>Home Page — "Who We Serve" Cards</h2>
+        </div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px;max-width:560px;">Upload images for the "Who We Serve" preview cards on the <strong>home page</strong>. These are separate from the full Who We Serve page images. Recommended: 500×280px JPG. Saves &amp; publishes instantly.</p>
+        <div id="homeIndustryImagesList"></div>
       </div>
 
       <!-- SITE SETTINGS PANEL -->
@@ -678,6 +690,7 @@ async function loadSiteSettings() {
   if (!siteSettings.hero) siteSettings.hero = { image: '' };
   if (!siteSettings.colors) siteSettings.colors = { tan:'#c9b89a', tanDark:'#a89070', tanLight:'#e8ddd0', tanFooter:'#c4b398', bgAlt:'#f7f3ee', cardBg:'#ede4d8' };
   if (!siteSettings.industryImages) siteSettings.industryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
+  if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
   if (!siteSettings.contact) siteSettings.contact = { formspreeEndpoint: '' };
   updateHeroPreview();
 }
@@ -701,10 +714,10 @@ function buildSidebar() {
 function showPanel(view) {
   currentView = view;
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  const sideMap = { all:'sideAll', categories:'sideCats', industries:'sideIndustries', 'site-settings':'sideSiteSettings' };
+  const sideMap = { all:'sideAll', categories:'sideCats', industries:'sideIndustries', 'home-industries':'sideHomeIndustries', 'site-settings':'sideSiteSettings' };
   const sideId = sideMap[view] || `side-${view}`;
   document.getElementById(sideId)?.classList.add('active');
-  ['panelProducts','panelCategories','panelIndustries','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
+  ['panelProducts','panelCategories','panelIndustries','panelHomeIndustries','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   if (view === 'publish') {
@@ -722,6 +735,7 @@ function showPanel(view) {
   if (view === 'settings')      { document.getElementById('panelSettings').style.display = 'block'; return; }
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
   if (view === 'industries')    { document.getElementById('panelIndustries').style.display = 'block'; renderIndustryImages(); return; }
+  if (view === 'home-industries') { document.getElementById('panelHomeIndustries').style.display = 'block'; renderHomeIndustryImages(); return; }
   if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); return; }
   document.getElementById('panelProducts').style.display = 'block';
   renderProductPanel(view);
@@ -866,7 +880,7 @@ async function uploadFileToGitHub(file, folder) {
   const base64 = await readFileAsBase64(file);
   let sha = null;
   try {
-    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}&_=${Date.now()}`, { cache: 'no-store', headers: { 'Authorization': `token ${token}` } });
     if (r.ok) sha = (await r.json()).sha;
   } catch(e) {}
   const body = { message: `Upload image: ${safeName}`, content: base64, branch };
@@ -1082,26 +1096,38 @@ async function testGitHubConnection() {
 }
 
 /* ══ PUBLISH ══ */
-async function commitFileToGitHub(path, content, message, _retries = 3) {
+// Serialize all GitHub writes so concurrent saves (e.g. uploading two industry
+// images quickly) can never race on the same file's SHA and trigger a 409.
+let _ghWriteQueue = Promise.resolve();
+function commitFileToGitHub(path, content, message) {
+  const task = () => _commitFileToGitHub(path, content, message);
+  const result = _ghWriteQueue.then(task, task); // run regardless of prior result
+  _ghWriteQueue = result.catch(() => {});         // never break the chain on error
+  return result;
+}
+
+async function _commitFileToGitHub(path, content, message, _retries = 5) {
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
   const prefix = localStorage.getItem('kt_prefix') || '';
   const repoPath = prefix ? `${prefix}/${path}` : path;
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}`;
-  // Always fetch a fresh SHA right before committing to avoid 409 conflicts
+  // Always fetch a fresh SHA right before committing to avoid 409 conflicts.
+  // cache:'no-store' + a cache-buster defeats stale reads from GitHub's CDN.
   let sha = null;
   try {
-    const r = await fetch(`${apiUrl}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+    const r = await fetch(`${apiUrl}?ref=${branch}&_=${Date.now()}`, { cache: 'no-store', headers: { 'Authorization': `token ${token}` } });
     if (r.ok) sha = (await r.json()).sha;
   } catch(e) {}
   const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch };
   if (sha) body.sha = sha;
   const res = await fetch(apiUrl, { method:'PUT', headers:{ 'Authorization':`token ${token}`, 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-  if (res.status === 409 && _retries > 0) {
-    // SHA conflict — another commit just landed; wait briefly and retry with a fresh SHA
-    await new Promise(r => setTimeout(r, 600));
-    return commitFileToGitHub(path, content, message, _retries - 1);
+  // 409 = SHA conflict, 422 = sometimes returned for the same. GitHub is eventually
+  // consistent, so back off with increasing delays and retry with a fresh SHA.
+  if ((res.status === 409 || res.status === 422) && _retries > 0) {
+    await new Promise(r => setTimeout(r, 500 * Math.pow(2, 5 - _retries))); // 500ms, 1s, 2s, 4s, 8s
+    return _commitFileToGitHub(path, content, message, _retries - 1);
   }
-  if (!res.ok) { const err = await res.json(); throw new Error(`GitHub API error (${res.status}): ${err.message || JSON.stringify(err)}`); }
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(`GitHub API error (${res.status}): ${err.message || JSON.stringify(err)}`); }
   return await res.json();
 }
 
@@ -1266,6 +1292,72 @@ async function clearIndustryImage(id) {
   try {
     await publishSiteSettings();
     renderIndustryImages();
+    showToast('Image removed.', '');
+  } catch(e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+/* ══ HOME PAGE "WHO WE SERVE" CARD IMAGES ══ */
+const HOME_INDUSTRY_LABELS = {
+  ecommerce:   'E-Commerce & Fulfillment',
+  retail:      'Retail Stores',
+  fnb:         'Food & Beverage',
+  warehouse:   'Warehousing & Logistics',
+  office:      'Office & Professional Services',
+  hospitality: 'Hospitality'
+};
+
+function renderHomeIndustryImages() {
+  const el = document.getElementById('homeIndustryImagesList');
+  const imgs = siteSettings.homeIndustryImages || {};
+  el.innerHTML = `<div class="industry-img-grid">${
+    Object.entries(HOME_INDUSTRY_LABELS).map(([id, label]) => {
+      const src = imgs[id] || '';
+      return `<div class="industry-img-card">
+        <h4>${label}</h4>
+        <div class="industry-img-preview" id="home-ind-prev-${id}">
+          ${src
+            ? `<img src="${src}" alt="${label}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
+            : `<div class="no-prev">No image set</div>`}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-tan btn-sm" onclick="document.getElementById('home-ind-file-${id}').click()">📁 Upload</button>
+          <input type="file" id="home-ind-file-${id}" accept="image/*" onchange="handleHomeIndustryImageUpload('${id}', this)" />
+          ${src ? `<button class="btn btn-outline btn-sm" onclick="clearHomeIndustryImage('${id}')">Remove</button>` : ''}
+        </div>
+        <p class="upload-progress" id="home-ind-prog-${id}"></p>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+async function handleHomeIndustryImageUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const prog = document.getElementById(`home-ind-prog-${id}`);
+  prog.textContent = '⏳ Uploading…'; prog.className = 'upload-progress uploading';
+  try {
+    const path = await uploadFileToGitHub(file, 'images');
+    if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = {};
+    siteSettings.homeIndustryImages[id] = path;
+    await publishSiteSettings();
+    renderHomeIndustryImages();
+    prog.textContent = `✅ Uploaded!`; prog.className = 'upload-progress done';
+    showToast(`${HOME_INDUSTRY_LABELS[id]} card image updated!`, 'success');
+  } catch(e) {
+    prog.textContent = `❌ ${e.message}`; prog.className = 'upload-progress err';
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+  input.value = '';
+}
+
+async function clearHomeIndustryImage(id) {
+  if (!confirm('Remove this home card image?')) return;
+  if (siteSettings.homeIndustryImages) siteSettings.homeIndustryImages[id] = '';
+  try {
+    await publishSiteSettings();
+    renderHomeIndustryImages();
     showToast('Image removed.', '');
   } catch(e) {
     showToast('Failed: ' + e.message, 'error');
