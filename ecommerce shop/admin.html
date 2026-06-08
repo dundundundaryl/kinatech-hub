@@ -623,11 +623,23 @@ async function bootAdmin() {
 }
 
 async function loadProductsData() {
+  const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
+  const prefix = localStorage.getItem('kt_prefix') || '';
+  // When prefix is set, always load from GitHub (canonical source of truth)
+  if (prefix && owner && repo && token) {
+    try {
+      const repoPath = `${prefix}/products.json`;
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`;
+      const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+      if (res.ok) { const file = await res.json(); const d = JSON.parse(atob(file.content.replace(/\n/g,''))); categories = d.categories || FALLBACK_CATS; products = d.products || []; return; }
+    } catch(e) {}
+  }
+  // Fallback: try local file
   try {
     const res = await fetch('products.json?nocache=' + Date.now());
     if (res.ok) { const d = await res.json(); categories = d.categories || FALLBACK_CATS; products = d.products || []; return; }
   } catch(e) {}
-  const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
+  // Last resort: GitHub without prefix
   if (owner && repo && token) {
     try {
       const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/products.json?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
@@ -638,16 +650,28 @@ async function loadProductsData() {
 }
 
 async function loadSiteSettings() {
-  try {
-    const res = await fetch('site-settings.json?nocache=' + Date.now());
-    if (res.ok) { siteSettings = await res.json(); }
-  } catch(e) {}
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
-  if (owner && repo && token && (!siteSettings || !siteSettings.hero)) {
+  const prefix = localStorage.getItem('kt_prefix') || '';
+  // When a repo prefix is configured, the local file is a stale default — always load from GitHub
+  // When no prefix, try local first and only fall back to GitHub if local lacks real data
+  if (prefix && owner && repo && token) {
     try {
-      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/site-settings.json?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+      const repoPath = `${prefix}/site-settings.json`;
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`;
+      const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
       if (res.ok) { const file = await res.json(); siteSettings = JSON.parse(atob(file.content.replace(/\n/g,''))); }
     } catch(e) {}
+  } else {
+    try {
+      const res = await fetch('site-settings.json?nocache=' + Date.now());
+      if (res.ok) { siteSettings = await res.json(); }
+    } catch(e) {}
+    if (owner && repo && token && (!siteSettings?.hero?.image)) {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/site-settings.json?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+        if (res.ok) { const file = await res.json(); siteSettings = JSON.parse(atob(file.content.replace(/\n/g,''))); }
+      } catch(e) {}
+    }
   }
   // Ensure full structure with defaults
   if (!siteSettings) siteSettings = {};
