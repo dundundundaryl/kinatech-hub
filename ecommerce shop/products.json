@@ -4,13 +4,13 @@
       "id": "pos-printers",
       "label": "POS Printers",
       "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--7-.png"
     },
     {
       "id": "scanners",
       "label": "Barcode Scanners",
       "description": "Fast, accurate scanning solutions for inventory management and checkout operations",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--7-.png"
     },
     {
       "id": "label-printers",
@@ -340,7 +340,7 @@
         {
           "title": "Key Features",
           "items": [
-            "Omnidirectional scanning ÃÂ¢ÃÂÃÂ reads from any angle",
+            "Omnidirectional scanning ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ reads from any angle",
             "Hands-free desktop presentation mode",
             "Supports 1D, 2D, and QR codes",
             "High scan rate for fast checkout lines",
@@ -454,7 +454,7 @@
     {
       "id": "zq200-single",
       "model": "HPRT",
-      "name": "ZQ200 ÃÂÃÂ· SINGLE",
+      "name": "ZQ200 ÃÂÃÂÃÂÃÂ· SINGLE",
       "description": "Clear single display monitor for retail, restaurants and business environments",
       "category": "pos-terminal",
       "image": "",
@@ -485,7 +485,7 @@
     {
       "id": "zq200-dual",
       "model": "HPRT",
-      "name": "ZQ200 ÃÂÃÂ· DUAL",
+      "name": "ZQ200 ÃÂÃÂÃÂÃÂ· DUAL",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
       "category": "pos-terminal",
       "image": "",
