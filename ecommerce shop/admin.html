@@ -304,6 +304,22 @@
         </div>
 
         <div class="settings-card">
+          <h3>🔷 Kinatech Hub Logo</h3>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
+            Replaces the logo in the navigation bar across the whole site. Recommended: transparent PNG, about 170×44px.
+          </p>
+          <div class="hero-preview" id="logoPreview" style="height:90px;background:#fff;">
+            <div class="no-prev">No logo set yet</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn-tan" onclick="document.getElementById('logoFileInput').click()">📁 Choose Logo</button>
+            <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(this)" />
+            <button class="btn btn-outline" onclick="clearLogoImage()" id="clearLogoBtn" style="display:none;">Remove Logo</button>
+          </div>
+          <p class="upload-progress" id="logoUploadProgress"></p>
+        </div>
+
+        <div class="settings-card">
           <h3>🎨 Site Colors</h3>
           <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Changes apply across the whole site instantly after publishing.</p>
           <div class="color-grid">
@@ -692,7 +708,9 @@ async function loadSiteSettings() {
   if (!siteSettings.industryImages) siteSettings.industryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
   if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
   if (!siteSettings.contact) siteSettings.contact = { formspreeEndpoint: '' };
+  if (typeof siteSettings.logo !== 'string') siteSettings.logo = '';
   updateHeroPreview();
+  updateLogoPreview();
 }
 
 /* ══ SIDEBAR ══ */
@@ -736,7 +754,7 @@ function showPanel(view) {
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
   if (view === 'industries')    { document.getElementById('panelIndustries').style.display = 'block'; renderIndustryImages(); return; }
   if (view === 'home-industries') { document.getElementById('panelHomeIndustries').style.display = 'block'; renderHomeIndustryImages(); return; }
-  if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); return; }
+  if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); updateLogoPreview(); return; }
   document.getElementById('panelProducts').style.display = 'block';
   renderProductPanel(view);
 }
@@ -950,6 +968,43 @@ function updateHeroPreview() {
   if (!el) return;
   el.innerHTML = img ? `<img src="${img}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">` : '<div class="no-prev">No hero image set yet</div>';
   document.getElementById('clearHeroBtn').style.display = img ? 'inline-flex' : 'none';
+}
+
+async function handleLogoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const progress = document.getElementById('logoUploadProgress');
+  progress.textContent = '⏳ Uploading logo…'; progress.className = 'upload-progress uploading';
+  try {
+    const path = await uploadFileToGitHub(file, 'images');
+    siteSettings.logo = path;
+    await publishSiteSettings();
+    updateLogoPreview();
+    progress.textContent = `✅ Logo updated: ${path}`; progress.className = 'upload-progress done';
+    showToast('Logo published!', 'success');
+    markDirty();
+  } catch(e) {
+    progress.textContent = `❌ ${e.message}`; progress.className = 'upload-progress err';
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+  input.value = '';
+}
+
+function clearLogoImage() {
+  if (!confirm('Remove the custom logo and revert to the default?')) return;
+  siteSettings.logo = '';
+  updateLogoPreview();
+  markDirty();
+  showToast('Logo removed. Publish to apply.', '');
+}
+
+function updateLogoPreview() {
+  const img = siteSettings?.logo;
+  const el = document.getElementById('logoPreview');
+  if (!el) return;
+  el.innerHTML = img ? `<img src="${img}" style="object-fit:contain" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">` : '<div class="no-prev">No logo set yet</div>';
+  const btn = document.getElementById('clearLogoBtn');
+  if (btn) btn.style.display = img ? 'inline-flex' : 'none';
 }
 
 /* ══ CATEGORY CRUD ══ */

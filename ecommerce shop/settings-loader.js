@@ -13,10 +13,26 @@
     if (c.cardBg)    r.style.setProperty('--card-bg', c.cardBg);
   }
 
-  // Apply cached colors immediately (no flash on repeat visits)
+  function applyLogo(logo) {
+    if (!logo) return;
+    document.querySelectorAll('a.logo').forEach(function (a) {
+      if (a.dataset.logoApplied === logo) return;
+      a.dataset.logoApplied = logo;
+      a.innerHTML =
+        '<img src="' + logo + '" alt="Kinatech Hub" class="logo-img" ' +
+        'style="height:44px;width:auto;max-width:170px;object-fit:contain;display:block">';
+    });
+  }
+
+  // Apply cached colors + logo immediately (no flash on repeat visits)
   try {
     const cached = sessionStorage.getItem('kt_settings');
-    if (cached) applyColors(JSON.parse(cached).colors);
+    if (cached) {
+      const c = JSON.parse(cached);
+      applyColors(c.colors);
+      if (document.readyState !== 'loading') applyLogo(c.logo);
+      else document.addEventListener('DOMContentLoaded', function () { applyLogo(c.logo); });
+    }
   } catch (e) {}
 
   // Fetch fresh settings
@@ -24,6 +40,7 @@
     .then(r => r.json())
     .then(s => {
       applyColors(s.colors);
+      applyLogo(s.logo);
       window.__siteSettings = s;
       try { sessionStorage.setItem('kt_settings', JSON.stringify(s)); } catch (e) {}
       document.dispatchEvent(new CustomEvent('settingsLoaded', { detail: s }));

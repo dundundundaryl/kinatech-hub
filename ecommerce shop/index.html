@@ -56,13 +56,6 @@
 
     .hero-text {
       max-width: 540px;
-      /* Translucent frosted panel keeps the text legible over any background image */
-      background: rgba(247, 243, 238, 0.82);
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
-      padding: 30px 32px;
-      border-radius: 18px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     }
     .hero-text h1 {
       font-size: 2.6rem;
@@ -77,6 +70,20 @@
       margin-bottom: 28px;
       max-width: 380px;
     }
+
+    /* Blur layer over the hero background image — sharp on desktop,
+       softened on smaller tablets/mobile so the text stays legible.
+       The text (.hero-inner, z-index:1) sits above this and stays sharp. */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-backdrop-filter: blur(0);
+      backdrop-filter: blur(0);
+      transition: backdrop-filter 0.3s, -webkit-backdrop-filter 0.3s;
+    }
     .hero-cta { display: flex; gap: 12px; }
 
     /* ── GRADIENT CATEGORY CARDS ─────────── */
@@ -87,9 +94,9 @@
     }
 
     .cat-card {
-      /* White card with a thin black outline; dark gradient only on the bottom */
+      /* White card with a soft thin outline; dark gradient only on the bottom */
       background: #ffffff;
-      border: 1px solid #1a1a1a;
+      border: 1px solid rgba(0, 0, 0, 0.22);
       border-radius: 14px;
       padding: 0;
       display: flex;
@@ -265,6 +272,12 @@
       .hero-inner { grid-template-columns: 1fr; }
       .hero-img { height: 260px; }
       .categories-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Soften the hero image on smaller screens for text legibility */
+      .hero::before {
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        background: rgba(247, 243, 238, 0.18);
+      }
     }
 
     @media (max-width: 600px) {

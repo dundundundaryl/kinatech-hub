@@ -112,6 +112,7 @@
       flex-direction: column;
       gap: 5px;
       overflow: visible;
+      min-width: 0;            /* prevent grid blowout — keep cards equal width */
       position: relative;
       margin-top: 28px;       /* space for image overflow */
       transition: transform 0.22s, box-shadow 0.22s;
@@ -243,9 +244,15 @@
     @media (max-width: 900px) {
       .product-grid { grid-template-columns: repeat(3, 1fr); }
       .cat-section { padding: 0 20px 40px; }
-      .page-header { padding: 0 20px 0; }
+      .page-header { padding: calc(72px + 16px) 20px 0; }
       .section-sep { margin: 0 20px 40px; padding: 0; }
     }
+
+    /* Sticky footer — eliminate white gap below footer when content is short */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    #productsMain { flex: 1 0 auto; }
+    footer { flex-shrink: 0; }
+    nav, #mobileNav { flex: none; }
 
     @media (max-width: 600px) {
       .product-grid { grid-template-columns: repeat(2, 1fr); }
