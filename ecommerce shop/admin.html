@@ -362,7 +362,8 @@
         <div class="main-header"><h2>Publish Changes</h2></div>
         <div class="publish-panel">
           <h4>GitHub + Vercel Deployment</h4>
-          <p>Publishing commits your changes to GitHub. Vercel auto-redeploys — usually live within 30 seconds.</p>
+          <p>Publishing commits your changes to GitHub. Vercel auto-redeploys — usually live within 30–60 seconds.</p>
+          <p id="publishPathNote" style="font-size:0.8rem;color:var(--muted);margin-top:6px;"></p>
           <div class="publish-actions">
             <button class="btn btn-primary" onclick="publishToGitHub()">📤 Publish to GitHub</button>
             <button class="btn btn-outline" onclick="downloadJSON()">⬇️ Download products.json</button>
@@ -395,10 +396,19 @@
             <p class="form-hint">Usually "main" or "master"</p>
           </div>
           <div class="form-group">
+            <label>Repo subdirectory <span style="font-weight:400;color:var(--muted)">(leave blank if repo root = site root)</span></label>
+            <input type="text" id="ghPrefix" placeholder="ecommerce shop" />
+            <p class="form-hint">If your site files are in a subfolder of the repo (e.g. <code>ecommerce shop/</code>), enter that folder name here. Check your Vercel "Root Directory" setting — it should match.</p>
+          </div>
+          <div class="form-group">
             <label>Commit message template</label>
             <input type="text" id="ghCommitMsg" placeholder="Update products via admin panel" />
           </div>
-          <button class="btn btn-tan" onclick="saveSettings()">Save Settings</button>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-tan" onclick="saveSettings()">Save Settings</button>
+            <button class="btn btn-outline" onclick="testGitHubConnection()">🔍 Test Connection</button>
+          </div>
+          <p id="connectionTestResult" style="margin-top:10px;font-size:0.82rem;"></p>
         </div>
       </div>
 
@@ -452,6 +462,7 @@
         <input type="text" id="fImage" placeholder="images/product.png" style="flex:1;font-size:0.82rem;" oninput="updateModalImgPreview()" />
         <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile1').click()">📁</button>
         <input type="file" id="productImgFile1" accept="image/*" onchange="handleProductImageUpload(this, 'fImage', 'productImgProgress')" />
+        <button type="button" title="Clear" onclick="document.getElementById('fImage').value='';updateModalImgPreview();" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:1.1rem;padding:0 2px;flex-shrink:0;">×</button>
         <div class="img-preview" id="modalImgPreview" style="width:48px;height:38px;flex-shrink:0"><div class="no-prev">–</div></div>
       </div>
       <p class="upload-progress" id="productImgProgress"></p>
@@ -463,7 +474,7 @@
           <input type="text" id="fImage2" placeholder="Optional extra image" style="flex:1;font-size:0.82rem;" />
           <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile2').click()">📁</button>
           <input type="file" id="productImgFile2" accept="image/*" onchange="handleProductImageUpload(this,'fImage2','imgProg2')" />
-          <div style="width:48px;flex-shrink:0"></div>
+          <button type="button" title="Clear" onclick="document.getElementById('fImage2').value='';" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:1.1rem;padding:0 2px;flex-shrink:0;">×</button>
         </div>
         <p class="upload-progress" id="imgProg2"></p>
 
@@ -472,7 +483,7 @@
           <input type="text" id="fImage3" placeholder="Optional extra image" style="flex:1;font-size:0.82rem;" />
           <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile3').click()">📁</button>
           <input type="file" id="productImgFile3" accept="image/*" onchange="handleProductImageUpload(this,'fImage3','imgProg3')" />
-          <div style="width:48px;flex-shrink:0"></div>
+          <button type="button" title="Clear" onclick="document.getElementById('fImage3').value='';" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:1.1rem;padding:0 2px;flex-shrink:0;">×</button>
         </div>
         <p class="upload-progress" id="imgProg3"></p>
 
@@ -481,7 +492,7 @@
           <input type="text" id="fImage4" placeholder="Optional extra image" style="flex:1;font-size:0.82rem;" />
           <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile4').click()">📁</button>
           <input type="file" id="productImgFile4" accept="image/*" onchange="handleProductImageUpload(this,'fImage4','imgProg4')" />
-          <div style="width:48px;flex-shrink:0"></div>
+          <button type="button" title="Clear" onclick="document.getElementById('fImage4').value='';" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:1.1rem;padding:0 2px;flex-shrink:0;">×</button>
         </div>
         <p class="upload-progress" id="imgProg4"></p>
 
@@ -490,7 +501,7 @@
           <input type="text" id="fImage5" placeholder="Optional extra image" style="flex:1;font-size:0.82rem;" />
           <button type="button" class="btn btn-tan btn-sm" onclick="document.getElementById('productImgFile5').click()">📁</button>
           <input type="file" id="productImgFile5" accept="image/*" onchange="handleProductImageUpload(this,'fImage5','imgProg5')" />
-          <div style="width:48px;flex-shrink:0"></div>
+          <button type="button" title="Clear" onclick="document.getElementById('fImage5').value='';" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:1.1rem;padding:0 2px;flex-shrink:0;">×</button>
         </div>
         <p class="upload-progress" id="imgProg5"></p>
       </div>
@@ -672,7 +683,18 @@ function showPanel(view) {
   ['panelProducts','panelCategories','panelIndustries','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
-  if (view === 'publish')       { document.getElementById('panelPublish').style.display = 'block'; return; }
+  if (view === 'publish') {
+    document.getElementById('panelPublish').style.display = 'block';
+    const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), prefix = localStorage.getItem('kt_prefix') || '';
+    const note = document.getElementById('publishPathNote');
+    if (owner && repo) {
+      const fp = prefix ? `${prefix}/products.json` : 'products.json';
+      note.innerHTML = `Will commit to: <code style="background:#f0ece6;padding:2px 6px;border-radius:4px">${owner}/${repo} → ${fp}</code> — <a href="#" onclick="showPanel('settings');return false;" style="color:var(--tan-dark)">change in Settings</a>`;
+    } else {
+      note.innerHTML = `⚠️ GitHub not configured — <a href="#" onclick="showPanel('settings');return false;" style="color:var(--tan-dark)">go to Settings</a>`;
+    }
+    return;
+  }
   if (view === 'settings')      { document.getElementById('panelSettings').style.display = 'block'; return; }
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
   if (view === 'industries')    { document.getElementById('panelIndustries').style.display = 'block'; renderIndustryImages(); return; }
@@ -812,24 +834,26 @@ function readFileAsBase64(file) {
 
 async function uploadFileToGitHub(file, folder) {
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
+  const prefix = localStorage.getItem('kt_prefix') || '';
   if (!owner || !repo) { showToast('Set your GitHub settings first.', 'error'); showPanel('settings'); throw new Error('No repo configured'); }
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
-  const path = `${folder}/${safeName}`;
+  const relativePath = `${folder}/${safeName}`; // path used in products.json (relative URL for live site)
+  const repoPath = prefix ? `${prefix}/${relativePath}` : relativePath; // full path in GitHub repo
   const base64 = await readFileAsBase64(file);
   let sha = null;
   try {
-    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
     if (r.ok) sha = (await r.json()).sha;
   } catch(e) {}
   const body = { message: `Upload image: ${safeName}`, content: base64, branch };
   if (sha) body.sha = sha;
-  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}`, {
     method: 'PUT',
     headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
-  if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Upload failed'); }
-  return path;
+  if (!res.ok) { const err = await res.json(); throw new Error(`Upload failed (${res.status}): ${err.message || JSON.stringify(err)}`); }
+  return relativePath; // ← always return the relative path, not the repo path
 }
 
 async function handleProductImageUpload(input, targetFieldId, progressId) {
@@ -990,22 +1014,55 @@ function loadSettings() {
   document.getElementById('ghOwner').value     = localStorage.getItem('kt_owner')  || '';
   document.getElementById('ghRepo').value      = localStorage.getItem('kt_repo')   || '';
   document.getElementById('ghBranch').value    = localStorage.getItem('kt_branch') || 'main';
+  document.getElementById('ghPrefix').value    = localStorage.getItem('kt_prefix') || '';
   document.getElementById('ghCommitMsg').value = localStorage.getItem('kt_msg')    || 'Update products via admin panel';
 }
 function saveSettings() {
   localStorage.setItem('kt_owner',  document.getElementById('ghOwner').value.trim());
   localStorage.setItem('kt_repo',   document.getElementById('ghRepo').value.trim());
   localStorage.setItem('kt_branch', document.getElementById('ghBranch').value.trim() || 'main');
+  localStorage.setItem('kt_prefix', document.getElementById('ghPrefix').value.trim().replace(/\/+$/, ''));
   localStorage.setItem('kt_msg',    document.getElementById('ghCommitMsg').value.trim() || 'Update products via admin panel');
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo');
   document.getElementById('repoLabel').textContent = owner && repo ? `${owner}/${repo}` : '';
+  document.getElementById('connectionTestResult').textContent = '';
   showToast('Settings saved!', 'success');
+}
+
+async function testGitHubConnection() {
+  const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
+  const prefix = localStorage.getItem('kt_prefix') || '';
+  const result = document.getElementById('connectionTestResult');
+  if (!owner || !repo) { result.style.color = '#c0392b'; result.textContent = '❌ Fill in Owner and Repo first.'; return; }
+  result.style.color = '#888'; result.textContent = '⏳ Testing…';
+  const filePath = prefix ? `${prefix}/products.json` : 'products.json';
+  try {
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
+    if (r.ok) {
+      const file = await r.json();
+      const d = JSON.parse(atob(file.content.replace(/\n/g,'')));
+      const pCount = (d.products || []).length;
+      result.style.color = '#1a7a3a';
+      result.textContent = `✅ Connected! Found products.json at "${filePath}" with ${pCount} product${pCount !== 1 ? 's' : ''}. This is the file Publish will update.`;
+    } else if (r.status === 404) {
+      result.style.color = '#c0392b';
+      result.textContent = `❌ products.json not found at "${filePath}". Try a different subdirectory, or leave it blank if your repo root contains products.json directly.`;
+    } else {
+      result.style.color = '#c0392b';
+      result.textContent = `❌ GitHub returned ${r.status}. Check your token and repo name.`;
+    }
+  } catch(e) {
+    result.style.color = '#c0392b';
+    result.textContent = `❌ Error: ${e.message}`;
+  }
 }
 
 /* ══ PUBLISH ══ */
 async function commitFileToGitHub(path, content, message) {
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  const prefix = localStorage.getItem('kt_prefix') || '';
+  const repoPath = prefix ? `${prefix}/${path}` : path;
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}`;
   let sha = null;
   try {
     const r = await fetch(`${apiUrl}?ref=${branch}`, { headers: { 'Authorization': `token ${token}` } });
@@ -1014,7 +1071,8 @@ async function commitFileToGitHub(path, content, message) {
   const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch };
   if (sha) body.sha = sha;
   const res = await fetch(apiUrl, { method:'PUT', headers:{ 'Authorization':`token ${token}`, 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-  if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'GitHub API error'); }
+  if (!res.ok) { const err = await res.json(); throw new Error(`GitHub API error (${res.status}): ${err.message || JSON.stringify(err)}`); }
+  return await res.json(); // returns commit info including SHA and HTML URL
 }
 
 async function publishSiteSettings() {
@@ -1025,21 +1083,27 @@ async function publishSiteSettings() {
 
 async function publishToGitHub() {
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo');
+  const prefix = localStorage.getItem('kt_prefix') || '';
   if (!owner || !repo) { showToast('Set your GitHub settings first.', 'error'); showPanel('settings'); return; }
   const msg = localStorage.getItem('kt_msg') || 'Update products via admin panel';
   const status = document.getElementById('publishStatus');
   status.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">⏳ Publishing to GitHub…</p>';
   try {
-    await commitFileToGitHub('products.json', JSON.stringify({ categories, products }, null, 2), msg);
+    const result = await commitFileToGitHub('products.json', JSON.stringify({ categories, products }, null, 2), msg);
     await publishSiteSettings();
     markClean();
+    const commitUrl = result?.commit?.html_url || `https://github.com/${owner}/${repo}/commits`;
+    const repoPath = prefix ? `${prefix}/products.json` : 'products.json';
     status.innerHTML = `<div style="background:#f0fff4;border:1px solid #a8e6c0;border-radius:8px;padding:16px;font-size:0.85rem;color:#1a6b3a;margin-top:8px">
-      ✅ <strong>Published!</strong> Changes committed to <strong>${owner}/${repo}</strong>.<br>
-      Vercel will redeploy automatically — usually live in ~30 seconds.</div>`;
+      ✅ <strong>Published!</strong> Committed <code style="background:#e0f5e9;padding:2px 5px;border-radius:4px">${repoPath}</code> to <strong>${owner}/${repo}</strong>.<br>
+      <a href="${commitUrl}" target="_blank" style="color:#1a6b3a;font-weight:600;text-decoration:underline">🔗 View commit on GitHub ↗</a><br>
+      <span style="color:#4a8a5a">Vercel will redeploy automatically — usually live in ~30–60 seconds.</span></div>`;
     showToast('Published to GitHub!', 'success');
   } catch(e) {
+    const prefix = localStorage.getItem('kt_prefix') || '';
     status.innerHTML = `<div style="background:#fff0f0;border:1px solid #f5c0c0;border-radius:8px;padding:16px;font-size:0.85rem;color:#a33;margin-top:8px">
-      ❌ <strong>Publish failed:</strong> ${e.message}<br>Check your token permissions and repo name in Settings.</div>`;
+      ❌ <strong>Publish failed:</strong> ${e.message}<br>
+      <strong>Tip:</strong> Go to Settings → click "Test Connection" to verify the repo subdirectory is correct.</div>`;
     showToast('Publish failed — check settings.', 'error');
   }
 }
