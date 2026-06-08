@@ -45,13 +45,15 @@
   ],
   "products": [
     {
-      "id": "tp80nb-m",
       "model": "HPRT",
       "name": "TP80NB-M",
-      "description": "Most affordable POS printer with USB + Ethernet, 200mm/s printing",
+      "description": "Most affordable POS printer with USB + Ethernet, 100mm/s printing",
       "category": "pos-printers",
-      "image": "",
-      "images": [],
+      "image": "images/Copy-of-Kinatech-Website--9-.png",
+      "images": [
+        "images/Copy-of-Kinatech-Website--9-.png",
+        "images/Copy-of-Kinatech-Website--11-.png"
+      ],
       "badge": "1 Year Warranty",
       "sections": [
         {
@@ -81,7 +83,8 @@
             "Cutter Life: 1 million cuts"
           ]
         }
-      ]
+      ],
+      "id": "tp80nb-m"
     },
     {
       "id": "tp80k-l",
@@ -334,7 +337,7 @@
         {
           "title": "Key Features",
           "items": [
-            "Omnidirectional scanning \u2014 reads from any angle",
+            "Omnidirectional scanning — reads from any angle",
             "Hands-free desktop presentation mode",
             "Supports 1D, 2D, and QR codes",
             "High scan rate for fast checkout lines",
@@ -448,7 +451,7 @@
     {
       "id": "zq200-single",
       "model": "HPRT",
-      "name": "ZQ200 \u00b7 SINGLE",
+      "name": "ZQ200 · SINGLE",
       "description": "Clear single display monitor for retail, restaurants and business environments",
       "category": "pos-terminal",
       "image": "",
@@ -479,7 +482,7 @@
     {
       "id": "zq200-dual",
       "model": "HPRT",
-      "name": "ZQ200 \u00b7 DUAL",
+      "name": "ZQ200 · DUAL",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
       "category": "pos-terminal",
       "image": "",
