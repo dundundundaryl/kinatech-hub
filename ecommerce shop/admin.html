@@ -159,6 +159,9 @@
     .industry-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
     .industry-img-card { background: var(--white); border-radius: var(--radius); border: 1.5px solid var(--border); padding: 16px; }
     .industry-img-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+    .ind-field-label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 10px 0 4px; }
+    .ind-text-field { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.85rem; color: var(--text); background: var(--white); resize: vertical; }
+    .ind-text-field:focus { outline: none; border-color: var(--tan-dark); }
     .industry-img-preview { width: 100%; height: 120px; border-radius: 8px; background: #f0ece6; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
     .industry-img-preview img { width: 100%; height: 100%; object-fit: cover; }
     .industry-img-preview .no-prev { font-size: 0.72rem; color: var(--muted); text-align: center; }
@@ -709,8 +712,50 @@ async function loadSiteSettings() {
   if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
   if (!siteSettings.contact) siteSettings.contact = { formspreeEndpoint: '' };
   if (typeof siteSettings.logo !== 'string') siteSettings.logo = '';
+  // Editable industry text (home card label + Who We Serve page heading/description)
+  if (!siteSettings.industryContent) siteSettings.industryContent = {};
+  Object.keys(INDUSTRY_CONTENT_DEFAULTS).forEach(id => {
+    siteSettings.industryContent[id] = Object.assign(
+      {}, INDUSTRY_CONTENT_DEFAULTS[id], siteSettings.industryContent[id] || {}
+    );
+  });
   updateHeroPreview();
   updateLogoPreview();
+}
+
+/* Default industry text — mirrors the hardcoded copy on index.html + who-we-serve.html.
+   homeLabel = home page card; heading/desc = Who We Serve page row. */
+const INDUSTRY_CONTENT_DEFAULTS = {
+  ecommerce:   { homeLabel: 'E-Commerce & Fulfillment',      heading: 'Ecommerce & Fulfillment',        desc: 'Streamline shipping, packing, and order processing with industry-leading hardware solutions.' },
+  retail:      { homeLabel: 'Retail Stores',                 heading: 'Retail Stores',                  desc: 'Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.' },
+  fnb:         { homeLabel: 'Food & Beverage',               heading: 'Food & Beverage',                desc: 'POS and payment solutions for seamless food service operations.' },
+  warehouse:   { homeLabel: 'Warehousing & Logistics',       heading: 'Warehousing & Logistics',        desc: 'Industrial-grade tracking and labeling solutions for efficient operations at scale.' },
+  office:      { homeLabel: 'Office & Professional Services', heading: 'Office & Professional Services',  desc: 'Printing and storage solutions for efficient office operations.' },
+  hospitality: { homeLabel: 'Hospitality',                   heading: 'Hospitality',                    desc: 'Front-desk and payment systems for seamless guest experiences.' }
+};
+
+/* Escape helpers for injecting saved text into admin markup */
+function escAttr(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escHtml(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* Update one industry text field in memory (publish happens via the Save button) */
+function setIndustryField(id, field, value) {
+  if (!siteSettings.industryContent) siteSettings.industryContent = {};
+  if (!siteSettings.industryContent[id]) siteSettings.industryContent[id] = {};
+  siteSettings.industryContent[id][field] = value;
+  markDirty();
+}
+
+/* Publish all text edits at once, then refresh whichever panel is open */
+async function saveSiteText(rerender) {
+  try {
+    await publishSiteSettings();
+    if (rerender === 'home') renderHomeIndustryImages();
+    else renderIndustryImages();
+    showToast('Text changes published!', 'success');
+  } catch(e) {
+    showToast('Save failed: ' + e.message, 'error');
+  }
 }
 
 /* ══ SIDEBAR ══ */
@@ -1300,9 +1345,16 @@ const INDUSTRY_LABELS = {
 function renderIndustryImages() {
   const el = document.getElementById('industryImagesList');
   const imgs = siteSettings.industryImages || {};
-  el.innerHTML = `<div class="industry-img-grid">${
+  const content = siteSettings.industryContent || {};
+  el.innerHTML = `
+    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-tan" onclick="saveSiteText('industries')">💾 Save Text Changes</button>
+      <span style="font-size:0.82rem;color:var(--muted);">Edit the heading &amp; description for each industry, then save to publish.</span>
+    </div>
+    <div class="industry-img-grid">${
     Object.entries(INDUSTRY_LABELS).map(([id, label]) => {
       const src = imgs[id] || '';
+      const c = content[id] || {};
       return `<div class="industry-img-card">
         <h4>${label}</h4>
         <div class="industry-img-preview" id="ind-prev-${id}">
@@ -1316,6 +1368,10 @@ function renderIndustryImages() {
           ${src ? `<button class="btn btn-outline btn-sm" onclick="clearIndustryImage('${id}')">Remove</button>` : ''}
         </div>
         <p class="upload-progress" id="ind-prog-${id}"></p>
+        <label class="ind-field-label">Heading</label>
+        <input type="text" class="ind-text-field" id="ind-head-${id}" value="${escAttr(c.heading)}" oninput="setIndustryField('${id}','heading',this.value)">
+        <label class="ind-field-label">Description</label>
+        <textarea class="ind-text-field" id="ind-desc-${id}" rows="3" oninput="setIndustryField('${id}','desc',this.value)">${escHtml(c.desc)}</textarea>
       </div>`;
     }).join('')
   }</div>`;
@@ -1366,9 +1422,16 @@ const HOME_INDUSTRY_LABELS = {
 function renderHomeIndustryImages() {
   const el = document.getElementById('homeIndustryImagesList');
   const imgs = siteSettings.homeIndustryImages || {};
-  el.innerHTML = `<div class="industry-img-grid">${
+  const content = siteSettings.industryContent || {};
+  el.innerHTML = `
+    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-tan" onclick="saveSiteText('home')">💾 Save Text Changes</button>
+      <span style="font-size:0.82rem;color:var(--muted);">Edit each card's label, then save to publish. Clicking a card on the home page links to the matching section on the Who We Serve page.</span>
+    </div>
+    <div class="industry-img-grid">${
     Object.entries(HOME_INDUSTRY_LABELS).map(([id, label]) => {
       const src = imgs[id] || '';
+      const c = content[id] || {};
       return `<div class="industry-img-card">
         <h4>${label}</h4>
         <div class="industry-img-preview" id="home-ind-prev-${id}">
@@ -1382,6 +1445,8 @@ function renderHomeIndustryImages() {
           ${src ? `<button class="btn btn-outline btn-sm" onclick="clearHomeIndustryImage('${id}')">Remove</button>` : ''}
         </div>
         <p class="upload-progress" id="home-ind-prog-${id}"></p>
+        <label class="ind-field-label">Card Label</label>
+        <input type="text" class="ind-text-field" id="home-ind-label-${id}" value="${escAttr(c.homeLabel)}" oninput="setIndustryField('${id}','homeLabel',this.value)">
       </div>`;
     }).join('')
   }</div>`;

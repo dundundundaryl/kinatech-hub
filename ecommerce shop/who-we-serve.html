@@ -40,6 +40,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 56px;
       align-items: center;
+      scroll-margin-top: 96px;   /* land below the fixed nav when jumped to via #anchor */
     }
 
     /* Flipped row: move image to the left by reordering */
@@ -423,6 +424,22 @@
         const imgDiv = row.querySelector('.industry-img');
         if (imgDiv) {
           imgDiv.innerHTML = '<img src="' + src + '" alt="' + id + '" onerror="this.style.display=\'none\'">';
+        }
+      });
+
+      // Editable heading + description per industry (admin → Industries panel)
+      const content = e.detail.industryContent || {};
+      Object.entries(content).forEach(([id, c]) => {
+        if (!c) return;
+        const row = document.getElementById(id);
+        if (!row) return;
+        if (c.heading) {
+          const h = row.querySelector('.industry-text h2');
+          if (h) h.textContent = c.heading;
+        }
+        if (c.desc) {
+          const p = row.querySelector('.industry-text > p');
+          if (p) p.textContent = c.desc;
         }
       });
     });

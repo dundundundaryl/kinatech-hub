@@ -272,6 +272,8 @@
       .hero-inner { grid-template-columns: 1fr; }
       .hero-img { height: 260px; }
       .categories-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Show the left (blank) portion of the hero image so text stays readable */
+      .hero { background-position: left center; }
       /* Soften the hero image on smaller screens for text legibility */
       .hero::before {
         -webkit-backdrop-filter: blur(5px);
@@ -641,8 +643,15 @@
       }
       // Home page "Who We Serve" cards (separate from the full Who We Serve page)
       const homeImgs = s.homeIndustryImages || {};
+      const content = s.industryContent || {};
       document.querySelectorAll('.wws-card').forEach(function(card) {
         const id = card.getAttribute('data-ind');
+        // Editable card label (admin → Home Cards panel)
+        const c = content[id];
+        if (c && c.homeLabel) {
+          const lbl = card.querySelector('.wws-label');
+          if (lbl) lbl.textContent = c.homeLabel;
+        }
         const src = homeImgs[id];
         if (!src) return;
         const ph = card.querySelector('.wws-img-placeholder');
