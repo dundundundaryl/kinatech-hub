@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Kinatech Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── PRODUCT LAYOUT ─────────────────────── */
+    .product-detail {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── IMAGE GALLERY ──────────────────────── */
+    .gallery {
+      position: sticky;
+      top: 100px;
+    }
+
+    .main-img {
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 360px;
+      margin-bottom: 12px;
+      background: var(--card-bg);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 24px;
+    }
+
+    .main-img .img-placeholder {
+      height: 100%;
+      border-radius: 0;
+      font-size: 0.82rem;
+    }
+
+    .gallery-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .gallery-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gallery-nav button {
+      background: transparent;
+      border: 1.5px solid #ccc;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+
+    .gallery-nav button:hover { border-color: var(--text); }
+
+    .gallery-counter {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .gallery-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .gallery-dot {
+      width: 28px;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .gallery-dot.active { background: var(--text); }
+
+    .gallery-thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .gallery-thumb {
+      width: 64px;
+      height: 52px;
+      border-radius: 8px;
+      background: var(--card-bg);
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      text-align: center;
+      transition: border-color 0.2s;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .gallery-thumb.active,
+    .gallery-thumb:hover { border-color: var(--tan-dark); }
+
+    /* ── PRODUCT INFO ────────────────────────── */
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .product-category {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .product-info h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .product-tagline {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── BADGE ───────────────────────────────── */
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ── SPECS BLOCK ─────────────────────────── */
+    .specs-block h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .specs-block ul {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .specs-block ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .specs-block ul li::before {
+      content: '•';
+      color: var(--tan-dark);
+      font-size: 1.1rem;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    /* ── DIVIDER ─────────────────────────────── */
+    .info-divider {
+      border: none;
+      border-top: 1px solid var(--tan-light);
+    }
+
+    /* ── CTA AREA ────────────────────────────── */
+    .cta-area {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-quote {
+      padding: 16px 32px;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+    }
+
+    .bulk-note {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── BREADCRUMB ──────────────────────────── */
+    .breadcrumb {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 48px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ── LOADING / ERROR ─────────────────────── */
+    .detail-loading, .detail-error {
+      max-width: 1100px;
+      margin: 80px auto;
+      padding: 48px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .detail-error {
+      background: #fff3f3;
+      border: 1.5px solid #f5c0c0;
+      border-radius: var(--radius);
+      color: #a33;
+      text-align: left;
+    }
+
+    @media (max-width: 900px) {
+      .product-detail {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 32px 20px;
+      }
+      .gallery { position: static; }
+      .breadcrumb { padding: 16px 20px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ───────────────────────────────── -->
+  <nav id="mainNav" class="nav-solid">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="6" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>KINATECH<br>HUB</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="products.html" class="active">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <a href="index.html">Home</a>
+      <a href="products.html" class="active">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ── PAGE CONTENT (injected by JS) ──────── -->
+  <div id="pageContent">
+    <div class="detail-loading"><p>Loading product…</p></div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-products">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html#pos-printers">POS Printers</a></li>
+          <li><a href="products.html#scanners">Scanners</a></li>
+          <li><a href="products.html#label-printers">Label &amp; Waybill Printers</a></li>
+          <li><a href="products.html#hard-drives">Hard Drives</a></li>
+        </ul>
+        <ul>
+          <li><a href="products.html#pos-terminal">POS Terminal</a></li>
+          <li><a href="products.html#eftpos">EFTPOS Terminal</a></li>
+          <li><a href="products.html#mobile-label">Mobile Label Printers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home Page</a></li>
+          <li><a href="who-we-serve.html">Who We Serve</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <ul>
+          <li>contact.kinatech@gmail.com</li>
+          <li>(0917) 814 5828</li>
+          <li>(0917) 327 0505</li>
+        </ul>
+        <a href="#" class="footer-social" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Hamburger ─────────────────────────── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileNav.addEventListener('click', e => {
+      if (e.target === mobileNav) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+
+    /* ── Gallery state ─────────────────────── */
+    let slides = [];
+    let current = 0;
+
+    const placeholderIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+
+    function updateGallery() {
+      const slide = slides[current];
+      const mainImg = document.getElementById('mainImg');
+      if (!mainImg) return;
+
+      if (slide.src) {
+        mainImg.innerHTML = `<img src="${slide.src}" alt="${slide.label}">`;
+      } else {
+        mainImg.innerHTML = `
+          <div class="img-placeholder" style="height:100%">
+            ${placeholderIcon}
+            <strong>${slide.label}</strong>
+            ${slide.desc}
+          </div>`;
+      }
+
+      const counter = document.getElementById('slideCounter');
+      if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
+
+      document.querySelectorAll('.gallery-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
+        t.classList.toggle('active', i === current);
+      });
+    }
+
+    function changeSlide(dir) {
+      current = (current + dir + slides.length) % slides.length;
+      updateGallery();
+    }
+
+    function setSlide(idx) {
+      current = idx;
+      updateGallery();
+    }
+
+    /* ── Gallery HTML builder ──────────────── */
+    function buildGallery(product) {
+      const hasImages = product.images && product.images.length > 0;
+
+      // Build slides array
+      if (hasImages) {
+        slides = product.images.map((src, i) => ({
+          src,
+          label: `Image ${i + 1}`,
+          desc: `${product.model} ${product.name}`
+        }));
+      } else {
+        // Single placeholder when no images uploaded yet
+        slides = [{
+          src: '',
+          label: `${product.model} ${product.name}`,
+          desc: 'Add product images via the admin panel — transparent PNG recommended'
+        }];
+      }
+
+      const showNav = slides.length > 1;
+
+      const dotsHtml = showNav
+        ? slides.map((_, i) => `<div class="gallery-dot${i === 0 ? ' active' : ''}"></div>`).join('')
+        : '';
+
+      const thumbsHtml = showNav
+        ? slides.map((s, i) => `
+            <div class="gallery-thumb${i === 0 ? ' active' : ''}" onclick="setSlide(${i})">
+              ${s.src
+                ? `<img src="${s.src}" alt="Thumbnail ${i + 1}">`
+                : placeholderIcon.replace('width="40" height="40"', 'width="20" height="20"')}
+            </div>`).join('')
+        : '';
+
+      const navHtml = showNav ? `
+        <div class="gallery-controls">
+          <div class="gallery-nav">
+            <button onclick="changeSlide(-1)" aria-label="Previous">&#8249;</button>
+            <span class="gallery-counter" id="slideCounter">1 / ${slides.length}</span>
+            <button onclick="changeSlide(1)" aria-label="Next">&#8250;</button>
+          </div>
+          <div class="gallery-dots" id="galleryDots">${dotsHtml}</div>
+        </div>
+        <div class="gallery-thumbs">${thumbsHtml}</div>` : '';
+
+      // Initial main image
+      const initSlide = slides[0];
+      const mainImgInner = initSlide.src
+        ? `<img src="${initSlide.src}" alt="${initSlide.label}">`
+        : `<div class="img-placeholder" style="height:100%">
+            ${placeholderIcon}
+            <strong>${initSlide.label}</strong>
+            ${initSlide.desc}
+           </div>`;
+
+      return `
+        <div class="gallery">
+          <div class="main-img" id="mainImg">${mainImgInner}</div>
+          ${navHtml}
+        </div>`;
+    }
+
+    /* ── Render full page ──────────────────── */
+    function renderPage(product, category) {
+      document.title = `${product.model} ${product.name} — Kinatech Hub`;
+
+      const badgeHtml = product.badge
+        ? `<div class="badges">
+            <div class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              ${product.badge}
+            </div>
+           </div>
+           <hr class="info-divider" />`
+        : '';
+
+      const sectionsHtml = (product.sections || []).map(sec => `
+        <div class="specs-block">
+          <h3>${sec.title}</h3>
+          <ul>${sec.items.map(item => `<li>${item}</li>`).join('')}</ul>
+        </div>
+        <hr class="info-divider" />`).join('');
+
+      const catLabel = category ? category.label : 'Product';
+
+      document.getElementById('pageContent').innerHTML = `
+        <div class="breadcrumb">
+          <a href="products.html">Products</a>
+          <span>›</span>
+          <a href="products.html#${product.category}">${catLabel}</a>
+          <span>›</span>
+          <span>${product.name}</span>
+        </div>
+
+        <div class="product-detail">
+          ${buildGallery(product)}
+
+          <div class="product-info">
+            <div>
+              <p class="product-category">${catLabel}</p>
+              <h1>${product.name}</h1>
+              <p class="product-tagline">${product.description}</p>
+            </div>
+
+            ${badgeHtml}
+            ${sectionsHtml}
+
+            <div class="cta-area">
+              <a href="contact.html" class="btn btn-primary btn-quote">GET A QUOTE</a>
+              <p class="bulk-note"><em>Bulk discounts available for multiple units</em></p>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ── Main ──────────────────────────────── */
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!id) {
+        document.getElementById('pageContent').innerHTML = `
+          <div class="detail-error">
+            <strong>No product specified.</strong><br>
+            <a href="products.html">← Back to all products</a>
+          </div>`;
+        return;
+      }
+
+      let data;
+      try {
+        const res = await fetch('products.json');
+        if (!res.ok) throw new Error(res.statusText);
+        data = await res.json();
+      } catch (err) {
+        document.getElementById('pageContent').innerHTML = `
+          <div class="detail-error">
+            <strong>Could not load products.json</strong><br>
+            If opening this file directly (file://), use a local server:<br>
+            <code>npx serve .</code> or VS Code Live Server extension.
+          </div>`;
+        return;
+      }
+
+      const product = data.products.find(p => p.id === id);
+
+      if (!product) {
+        document.getElementById('pageContent').innerHTML = `
+          <div class="detail-error">
+            <strong>Product not found: "${id}"</strong><br>
+            <a href="products.html">← Back to all products</a>
+          </div>`;
+        return;
+      }
+
+      const category = data.categories.find(c => c.id === product.category);
+      renderPage(product, category);
+    }
+
+    init();
+  </script>
+</body>
+</html>

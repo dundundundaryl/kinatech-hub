@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who We Serve — Kinatech Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── PAGE HEADER ───────────────────────── */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 48px 48px;
+    }
+    .page-header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 560px;
+    }
+
+    /* ── INDUSTRY ROW ──────────────────────── */
+    /* Each row: 2-column grid. Default = text left, image right.
+       .flip = image left, text right (via CSS order) */
+    .industry-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 64px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    /* Flipped row: move image to the left by reordering */
+    .industry-row.flip .industry-img  { order: -1; }
+    .industry-row.flip .industry-text { order: 1; }
+
+    /* IMAGE NEEDED — lifestyle shots per industry (~500×300px each) */
+    .industry-img {
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 300px;
+    }
+
+    .industry-img-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-align: center;
+      gap: 8px;
+      padding: 16px;
+    }
+
+    /* Real image style + hover zoom */
+    .industry-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+
+    /* Placeholder hover */
+    .industry-img-placeholder {
+      transition: background 0.3s;
+    }
+
+    /* Row hover effects */
+    .industry-row {
+      transition: transform 0.25s ease;
+    }
+
+    .industry-row:hover {
+      transform: translateY(-3px);
+    }
+
+    .industry-row:hover .industry-img img {
+      transform: scale(1.06);
+    }
+
+    .industry-row:hover .industry-img-placeholder {
+      background: #ddd5c8;
+    }
+
+    /* Button brightens on row hover */
+    .industry-row:hover .btn-tan {
+      background: var(--tan-dark);
+      color: #fff;
+    }
+
+    /* Heading underline on hover */
+    .industry-row:hover .industry-text h2 {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 2px;
+    }
+
+    .industry-text h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .industry-text > p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .industry-text h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+    .industry-text ul {
+      list-style: disc;
+      padding-left: 18px;
+      margin-bottom: 24px;
+    }
+    .industry-text ul li {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    /* ── DIVIDER ───────────────────────────── */
+    .row-divider {
+      border: none;
+      border-top: 1px solid var(--tan-light);
+      max-width: 1100px;
+      margin: 0 auto 64px;
+      padding: 0 48px;
+    }
+
+    @media (max-width: 860px) {
+      .industry-row,
+      .industry-row.flip {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 0 20px 48px;
+      }
+      /* On mobile, always put image first */
+      .industry-row .industry-img  { order: -1 !important; }
+      .industry-row .industry-text { order: 1  !important; }
+      .industry-img { height: 220px; }
+      .page-header  { padding: 32px 20px 32px; }
+      .row-divider  { margin: 0 20px 48px; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────── -->
+  <nav id="mainNav" class="nav-solid">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="6" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>KINATECH<br>HUB</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html" class="active">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html" class="active">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ── PAGE HEADER ─────────────────────── -->
+  <div class="page-header">
+    <h1>Who We Serve</h1>
+    <p>We understand the unique challenges each sector faces and provide tailored hardware solutions to support growth and efficiency.</p>
+  </div>
+
+  <!-- ROW 1 — E-Commerce (text left, image right) ── -->
+  <div class="industry-row" id="ecommerce">
+    <div class="industry-text">
+      <h2>Ecommerce &amp; Fulfillment</h2>
+      <p>Streamline shipping, packing, and order processing with industry-leading hardware solutions.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>Label &amp; Waybill Printers</li>
+        <li>Mobile Label Printer</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: Woman smiling, packing/scanning boxes in warehouse, warm lighting, ~500×300px
+           REPLACE placeholder with: <img src="images/ecommerce.jpg" alt="E-Commerce & Fulfillment"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Ecommerce & Fulfillment</strong>
+        Woman packing boxes with scanner<br>Warehouse setting, warm light, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <hr class="row-divider" />
+
+  <!-- ROW 2 — Retail (image left, text right) ── -->
+  <div class="industry-row flip" id="retail">
+    <div class="industry-text">
+      <h2>Retail Stores</h2>
+      <p>Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>POS Terminal</li>
+        <li>EFTPOS Terminal</li>
+        <li>POS Printers</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: Person holding barcode scanner near clothing rack, retail store setting, ~500×300px
+           REPLACE with: <img src="images/retail.jpg" alt="Retail Stores"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Retail Stores</strong>
+        Scanner near clothing rack<br>Retail store environment, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <hr class="row-divider" />
+
+  <!-- ROW 3 — Food & Beverage (text left, image right) ── -->
+  <div class="industry-row" id="fnb">
+    <div class="industry-text">
+      <h2>Food &amp; Beverage</h2>
+      <p>POS and payment solutions for seamless food service operations.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>POS Terminal</li>
+        <li>EFTPOS Terminal</li>
+        <li>POS Printers</li>
+        <li>Label &amp; Waybill Printers (for take-out beverages)</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: Label printer beside bubble tea cups on counter, café/milk tea setting, ~500×300px
+           REPLACE with: <img src="images/fnb.jpg" alt="Food & Beverage"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Food & Beverage</strong>
+        Label printer next to bubble tea<br>Café/F&B counter, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <hr class="row-divider" />
+
+  <!-- ROW 4 — Warehousing (image left, text right) ── -->
+  <div class="industry-row flip" id="warehouse">
+    <div class="industry-text">
+      <h2>Warehousing &amp; Logistics</h2>
+      <p>Industrial-grade tracking and labeling solutions for efficient operations at scale.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>Scanners</li>
+        <li>Label &amp; Waybill Printers</li>
+        <li>Mobile Label Printer</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: Barcode scanner + laptop on shelf in large warehouse, cardboard boxes background, ~500×300px
+           REPLACE with: <img src="images/warehouse.jpg" alt="Warehousing & Logistics"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Warehousing & Logistics</strong>
+        Scanner + laptop on warehouse shelf<br>Large warehouse with boxes, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <hr class="row-divider" />
+
+  <!-- ROW 5 — Office (text left, image right) ── -->
+  <div class="industry-row" id="office">
+    <div class="industry-text">
+      <h2>Office &amp; Professional Services</h2>
+      <p>Printing and storage solutions for efficient office operations.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>POS Printers</li>
+        <li>Scanners</li>
+        <li>Hard Drives</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: Slim portable HDD next to open laptop on clean office desk, reports visible, ~500×300px
+           REPLACE with: <img src="images/office.jpg" alt="Office & Professional Services"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Office & Professional Services</strong>
+        Laptop + HDD on office desk<br>Monthly reports visible, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <hr class="row-divider" />
+
+  <!-- ROW 6 — Hospitality (image left, text right) ── -->
+  <div class="industry-row flip" id="hospitality">
+    <div class="industry-text">
+      <h2>Hospitality</h2>
+      <p>Front-desk and payment systems for seamless guest experiences.</p>
+      <h4>Recommended Products</h4>
+      <ul>
+        <li>POS Terminal</li>
+        <li>EFTPOS Terminal</li>
+        <li>POS Printers</li>
+      </ul>
+      <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+    </div>
+    <div class="industry-img">
+      <!-- IMAGE: POS terminal at hotel reception/front desk, "RECEPTION" sign in background, ~500×300px
+           REPLACE with: <img src="images/hospitality.jpg" alt="Hospitality"> -->
+      <div class="industry-img-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Hospitality</strong>
+        POS terminal at hotel reception<br>"RECEPTION" sign visible, ~500×300px
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ───────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-products">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html#pos-printers">POS Printers</a></li>
+          <li><a href="products.html#scanners">Scanners</a></li>
+          <li><a href="products.html#label-printers">Label &amp; Waybill Printers</a></li>
+          <li><a href="products.html#hard-drives">Hard Drives</a></li>
+        </ul>
+        <ul>
+          <li><a href="products.html#pos-terminal">POS Terminal</a></li>
+          <li><a href="products.html#eftpos">EFTPOS Terminal</a></li>
+          <li><a href="products.html#mobile-label">Mobile Label Printers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home Page</a></li>
+          <li><a href="who-we-serve.html">Who We Serve</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <ul>
+          <li>contact.kinatech@gmail.com</li>
+          <li>(0917) 814 5828</li>
+          <li>(0917) 327 0505</li>
+        </ul>
+        <a href="#" class="footer-social" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileNav.addEventListener('click', (e) => {
+      if (e.target === mobileNav) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Kinatech Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── CONTACT LAYOUT ─────────────────────── */
+    .contact-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── LEFT COLUMN ─────────────────────────── */
+    .contact-left h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .contact-left .tagline {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 40px;
+    }
+
+    .contact-detail {
+      margin-bottom: 28px;
+    }
+
+    .contact-detail h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .contact-detail p {
+      font-size: 0.95rem;
+    }
+
+    .contact-detail a:hover { text-decoration: underline; }
+
+    /* Quick Links as social icons */
+    .quick-links {
+      margin-top: 32px;
+    }
+
+    .quick-links h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* ── CONTACT FORM ────────────────────────── */
+    .contact-form-wrap {
+      background: var(--bg-alt);
+      border-radius: 16px;
+      padding: 36px;
+    }
+
+    .contact-form-wrap h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #e0d8cc;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--tan-dark);
+    }
+
+    .form-group textarea {
+      height: 120px;
+      resize: vertical;
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: var(--tan-dark);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .form-submit:hover { opacity: 0.88; }
+
+    .form-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    /* ── SUCCESS MESSAGE ─────────────────────── */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      color: #3a7a3a;
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .contact-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 32px 20px;
+      }
+
+      .contact-left h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ───────────────────────────────── -->
+  <nav id="mainNav" class="nav-solid">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="6" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>KINATECH<br>HUB</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html" class="active">Contact Us</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html" class="active">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ── CONTACT SECTION ───────────────────── -->
+  <div class="contact-section">
+
+    <!-- LEFT: Info -->
+    <div class="contact-left">
+      <h1>Get in Touch</h1>
+      <p class="tagline">Let's discuss your hardware needs and find the perfect solution for your business</p>
+
+      <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:24px;">Contact Us</h2>
+
+      <div class="contact-detail">
+        <h4>Email</h4>
+        <p><a href="mailto:contact.kinatech@gmail.com">contact.kinatech@gmail.com</a></p>
+      </div>
+
+      <div class="contact-detail">
+        <h4>Phone</h4>
+        <p><a href="tel:+639178145828">(0917) 814 5828</a></p>
+        <p><a href="tel:+639173270505">(0917) 327 0505</a></p>
+      </div>
+
+      <div class="quick-links">
+        <h4>Quick Links</h4>
+        <a href="#" class="footer-social" aria-label="Facebook" style="margin-top:0;">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white" width="20" height="20">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="contact-form-wrap">
+      <h2>Contact Form</h2>
+      <form id="contactForm" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="" required />
+        </div>
+        <div class="form-group">
+          <label for="message">Leave a message</label>
+          <textarea id="message" name="message" placeholder=""></textarea>
+        </div>
+        <button type="submit" class="form-submit">Submit</button>
+        <p class="form-note">Your Canva profile name won't be shared. Never submit passwords.</p>
+      </form>
+      <div class="form-success" id="formSuccess">
+        ✓ Thanks! We'll be in touch shortly.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-products">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html#pos-printers">POS Printers</a></li>
+          <li><a href="products.html#scanners">Scanners</a></li>
+          <li><a href="products.html#label-printers">Label &amp; Waybill Printers</a></li>
+          <li><a href="products.html#hard-drives">Hard Drives</a></li>
+        </ul>
+        <ul>
+          <li><a href="products.html#pos-terminal">POS Terminal</a></li>
+          <li><a href="products.html#eftpos">EFTPOS Terminal</a></li>
+          <li><a href="products.html#mobile-label">Mobile Label Printers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home Page</a></li>
+          <li><a href="who-we-serve.html">Who We Serve</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <ul>
+          <li>contact.kinatech@gmail.com</li>
+          <li>(0917) 814 5828</li>
+          <li>(0917) 327 0505</li>
+        </ul>
+        <a href="#" class="footer-social" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    }
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileNav.addEventListener('click', (e) => {
+      if (e.target === mobileNav) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+</body>
+</html>

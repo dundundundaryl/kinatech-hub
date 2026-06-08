@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinatech Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --tan: #c9b89a;
+      --tan-dark: #a89070;
+      --bg: #f5f3f0;
+      --white: #ffffff;
+      --text: #1a1a1a;
+      --muted: #666;
+      --border: #e0d8cc;
+      --red: #c0392b;
+      --green: #27ae60;
+      --radius: 10px;
+      --nav-h: 60px;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+    a { text-decoration: none; color: inherit; }
+    input, textarea, select { font-family: inherit; }
+
+    /* ── TOP BAR ──────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: #1a1a1a;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 200;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+      color: #fff; font-weight: 700; font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+    .topbar-brand svg { width: 32px; height: 32px; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+    /* ── AUTH GATE ────────────────────────── */
+    #authGate {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .auth-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .auth-card h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    .auth-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+
+    /* ── MAIN LAYOUT ──────────────────────── */
+    #adminUI {
+      padding-top: var(--nav-h);
+      display: none;
+    }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: calc(100vh - var(--nav-h));
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky;
+      top: var(--nav-h);
+      height: calc(100vh - var(--nav-h));
+      overflow-y: auto;
+    }
+
+    .sidebar-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 8px;
+      margin-top: 20px;
+    }
+    .sidebar-label:first-child { margin-top: 0; }
+
+    .sidebar-btn {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 9px 12px;
+      border-radius: 8px; border: none;
+      background: none; cursor: pointer;
+      font-size: 0.88rem; font-weight: 500;
+      text-align: left; color: var(--text);
+      transition: background 0.15s;
+    }
+    .sidebar-btn:hover { background: var(--bg); }
+    .sidebar-btn.active { background: #ede4d8; font-weight: 600; }
+    .sidebar-btn .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--tan); flex-shrink: 0;
+    }
+
+    /* Main content */
+    .main-content { padding: 32px; }
+
+    .main-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .main-header h2 { font-size: 1.4rem; font-weight: 700; }
+
+    /* ── SETTINGS PANEL ───────────────────── */
+    #settingsPanel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px;
+      max-width: 560px;
+    }
+    #settingsPanel h3 { margin-bottom: 20px; font-size: 1.1rem; }
+
+    .settings-note {
+      background: #f0f7ff;
+      border: 1px solid #cce0ff;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      color: #2255aa;
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    /* ── PRODUCT LIST ─────────────────────── */
+    .product-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .product-admin-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: box-shadow 0.2s;
+    }
+    .product-admin-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+    .pac-img {
+      height: 100px;
+      border-radius: 8px;
+      background: #f0ece6;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .pac-img img { max-height: 90px; object-fit: contain; }
+    .pac-img .no-img {
+      font-size: 0.7rem; color: var(--muted); text-align: center; padding: 8px;
+    }
+
+    .pac-model { font-size: 0.68rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .pac-name  { font-size: 0.95rem; font-weight: 700; }
+    .pac-desc  { font-size: 0.78rem; color: var(--muted); flex: 1; }
+
+    .pac-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    /* ── BUTTONS ──────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: opacity 0.18s, transform 0.15s;
+    }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-primary  { background: #1a1a1a; color: #fff; }
+    .btn-tan      { background: var(--tan); color: var(--text); }
+    .btn-outline  { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+    .btn-danger   { background: #fff0f0; color: var(--red); border: 1.5px solid #f5c0c0; }
+    .btn-success  { background: var(--green); color: #fff; }
+    .btn-sm       { padding: 6px 12px; font-size: 0.78rem; }
+    .btn-full     { width: 100%; justify-content: center; }
+
+    /* ── FORM FIELDS ──────────────────────── */
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.84rem; font-weight: 600; margin-bottom: 5px;
+    }
+    .form-group label .req { color: var(--red); margin-left: 2px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 0.88rem; outline: none;
+      transition: border-color 0.18s;
+      background: var(--white);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--tan-dark); }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── MODAL ────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.4rem; color: var(--muted); line-height: 1;
+      padding: 4px 8px; border-radius: 6px;
+    }
+    .modal-close:hover { background: var(--bg); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+    /* ── TOAST ────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #1a1a1a; color: #fff;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 0.875rem; font-weight: 500;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 500; pointer-events: none;
+      max-width: 340px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { background: var(--green); }
+    #toast.error   { background: var(--red); }
+
+    /* ── STATUS BAR ───────────────────────── */
+    .status-bar {
+      background: #fff8ee;
+      border: 1px solid #f0d98a;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: #7a5800;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .status-bar.clean { background: #f0fff4; border-color: #a8e6c0; color: #1a6b3a; }
+
+    /* ── EMPTY STATE ──────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+    }
+    .empty-state p { margin-bottom: 16px; }
+
+    /* ── PUBLISH PANEL ────────────────────── */
+    .publish-panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--border);
+    }
+    .publish-panel h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .publish-panel p  { font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+    .publish-actions  { display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+<!-- ── AUTH GATE ─────────────────────────── -->
+<div id="authGate">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="8" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div>
+        <h1>Kinatech Admin</h1>
+        <p style="margin:0;font-size:0.8rem;color:#999;">Product management panel</p>
+      </div>
+    </div>
+    <p>Enter your <strong>GitHub Personal Access Token</strong> to sign in. Your token is used to publish product changes to your repository — it stays in your browser and is never sent anywhere else.</p>
+
+    <div class="form-group">
+      <label>GitHub Token</label>
+      <input type="password" id="authToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+      <p class="form-hint">Need one? <a href="https://github.com/settings/tokens/new?scopes=repo&description=Kinatech%20Admin" target="_blank" style="color:#0066cc">Create token on GitHub ↗</a> (needs <code>repo</code> scope)</p>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="authenticate()" id="authBtn">Sign In</button>
+    <p id="authError" style="color:#c0392b;font-size:0.82rem;margin-top:10px;display:none;"></p>
+  </div>
+</div>
+
+<!-- ── TOP BAR ──────────────────────────── -->
+<div class="topbar" id="topBar" style="display:none;">
+  <div class="topbar-brand">
+    <svg viewBox="0 0 44 44" fill="none">
+      <rect width="44" height="44" rx="6" fill="#333"/>
+      <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    KINATECH ADMIN
+  </div>
+  <div class="topbar-actions">
+    <span id="repoLabel" style="color:#aaa;font-size:0.82rem;"></span>
+    <a href="products.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:#555;color:#ccc;">View Site ↗</a>
+    <button class="btn btn-sm" style="background:#333;color:#ccc;" onclick="signOut()">Sign Out</button>
+  </div>
+</div>
+
+<!-- ── MAIN ADMIN UI ─────────────────────── -->
+<div id="adminUI">
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-label">Content</div>
+      <button class="sidebar-btn active" id="sideAll" onclick="showPanel('all')">
+        <span class="dot"></span> All Products
+      </button>
+      <div id="sidebarCats"></div>
+
+      <div class="sidebar-label">Admin</div>
+      <button class="sidebar-btn" onclick="showPanel('publish')">
+        📤 Publish
+      </button>
+      <button class="sidebar-btn" onclick="showPanel('settings')">
+        ⚙️ Settings
+      </button>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+
+      <!-- Unsaved indicator -->
+      <div class="status-bar" id="statusBar" style="display:none;">
+        ⚠️ You have unsaved changes. Use "Publish to GitHub" or "Download JSON" to save.
+      </div>
+
+      <!-- Publish panel -->
+      <div id="panelPublish" style="display:none;">
+        <div class="main-header">
+          <h2>Publish Changes</h2>
+        </div>
+        <div class="publish-panel">
+          <h4>GitHub + Vercel Deployment</h4>
+          <p>Publishing commits <code>products.json</code> to your GitHub repository. Vercel detects the commit and auto-redeploys your site — usually live within 30 seconds.</p>
+          <div class="publish-actions">
+            <button class="btn btn-primary" onclick="publishToGitHub()">📤 Publish to GitHub</button>
+            <button class="btn btn-outline" onclick="downloadJSON()">⬇️ Download products.json</button>
+          </div>
+        </div>
+        <div id="publishStatus"></div>
+      </div>
+
+      <!-- Settings panel -->
+      <div id="panelSettings" style="display:none;">
+        <div class="main-header"><h2>Settings</h2></div>
+        <div id="settingsPanel">
+          <h3>GitHub Repository</h3>
+          <div class="settings-note">
+            <strong>How it works:</strong> When you click "Publish to GitHub", the admin panel commits <code>products.json</code> to your repo using the GitHub API. Vercel then automatically redeploys your site.<br><br>
+            Make sure <code>products.json</code> is already in your repo root. If not, the first publish will create it.
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>GitHub Username <span class="req">*</span></label>
+              <input type="text" id="ghOwner" placeholder="your-username" />
+            </div>
+            <div class="form-group">
+              <label>Repository Name <span class="req">*</span></label>
+              <input type="text" id="ghRepo" placeholder="kinatech-hub" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Branch</label>
+            <input type="text" id="ghBranch" placeholder="main" />
+            <p class="form-hint">Usually "main" or "master"</p>
+          </div>
+          <div class="form-group">
+            <label>Commit message template</label>
+            <input type="text" id="ghCommitMsg" placeholder="Update products via admin panel" />
+          </div>
+          <button class="btn btn-tan" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+
+      <!-- Products panels (one per category + "all") -->
+      <div id="panelProducts">
+        <div class="main-header" id="panelTitle">
+          <h2 id="panelHeading">All Products</h2>
+          <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
+        </div>
+        <div class="product-list-grid" id="productListGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <p>No products in this category yet.</p>
+          <button class="btn btn-tan" onclick="openAddModal()">+ Add First Product</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── ADD / EDIT MODAL ──────────────────── -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add Product</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <input type="hidden" id="editId" />
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Brand / Model prefix <span class="req">*</span></label>
+        <input type="text" id="fModel" placeholder="HPRT" />
+      </div>
+      <div class="form-group">
+        <label>Product Name <span class="req">*</span></label>
+        <input type="text" id="fName" placeholder="TP80NB-M" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Short Description <span class="req">*</span></label>
+      <textarea id="fDesc" placeholder="Brief description shown on the product card…"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category <span class="req">*</span></label>
+        <select id="fCategory"></select>
+      </div>
+      <div class="form-group">
+        <label>Badge (optional)</label>
+        <input type="text" id="fBadge" placeholder="1 Year Warranty" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Image path</label>
+      <input type="text" id="fImage" placeholder="images/tp80nb-m.png" />
+      <p class="form-hint">Relative path from the site root. Use transparent-bg PNG for the 3D effect.</p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let token       = '';
+let products    = [];
+let categories  = [];
+let isDirty     = false;
+let currentView = 'all';  // 'all' | category id | 'publish' | 'settings'
+
+const FALLBACK_CATEGORIES = [
+  { id: 'pos-printers',  label: 'POS Printers',            description: 'Reliable thermal and line printers designed for high-volume point-of-sale environments' },
+  { id: 'scanners',      label: 'Barcode Scanners',         description: 'Fast, accurate scanning solutions for inventory management and checkout operations' },
+  { id: 'label-printers',label: 'Label & Waybill Printers', description: 'Professional labeling and shipping solutions for e-commerce and logistics operations' },
+  { id: 'hard-drives',   label: 'Storage Solutions',        description: 'High-capacity drives and storage systems for data backup' },
+  { id: 'pos-terminal',  label: 'POS Terminal',             description: 'Reliable and responsive POS monitors for transactions' },
+  { id: 'eftpos',        label: 'EFTPOS Terminals',         description: 'All-in-one payment systems for restaurants and service businesses' },
+  { id: 'mobile-label',  label: 'Mobile Label Printers',    description: 'Portable labeling for on-the-go workflows' }
+];
+
+/* ════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════ */
+async function authenticate() {
+  const input = document.getElementById('authToken').value.trim();
+  if (!input) { showAuthError('Please enter your GitHub token.'); return; }
+
+  const btn = document.getElementById('authBtn');
+  btn.textContent = 'Verifying…'; btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.github.com/user', {
+      headers: { 'Authorization': `token ${input}` }
+    });
+    if (!res.ok) throw new Error('Invalid token');
+    const user = await res.json();
+
+    token = input;
+    localStorage.setItem('kt_token', input);
+    await bootAdmin();
+  } catch (e) {
+    showAuthError('Invalid token. Make sure it has "repo" scope.');
+    btn.textContent = 'Sign In'; btn.disabled = false;
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function signOut() {
+  localStorage.removeItem('kt_token');
+  location.reload();
+}
+
+/* ════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════ */
+async function bootAdmin() {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('topBar').style.display = 'flex';
+  document.getElementById('adminUI').style.display = 'block';
+
+  loadSettings();
+  await loadProductsData();
+  buildSidebar();
+  renderProductPanel('all');
+}
+
+async function loadProductsData() {
+  // Try to fetch products.json from same origin
+  try {
+    const res = await fetch('products.json?nocache=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      categories = data.categories || FALLBACK_CATEGORIES;
+      products   = data.products   || [];
+      return;
+    }
+  } catch(e) {}
+
+  // Try GitHub
+  const owner = localStorage.getItem('kt_owner');
+  const repo  = localStorage.getItem('kt_repo');
+  const branch= localStorage.getItem('kt_branch') || 'main';
+  if (owner && repo && token) {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/products.json?ref=${branch}`,
+        { headers: { 'Authorization': `token ${token}` } }
+      );
+      if (res.ok) {
+        const file = await res.json();
+        const data = JSON.parse(atob(file.content.replace(/\n/g,'')));
+        categories = data.categories || FALLBACK_CATEGORIES;
+        products   = data.products   || [];
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Fallback: empty slate
+  categories = FALLBACK_CATEGORIES;
+  products   = [];
+  showToast('No products.json found — starting fresh. Add products and publish to create it.', 'error');
+}
+
+/* ════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════ */
+function buildSidebar() {
+  const owner = localStorage.getItem('kt_owner');
+  const repo  = localStorage.getItem('kt_repo');
+  if (owner && repo) {
+    document.getElementById('repoLabel').textContent = `${owner}/${repo}`;
+  }
+
+  const el = document.getElementById('sidebarCats');
+  el.innerHTML = categories.map(cat => {
+    const count = products.filter(p => p.category === cat.id).length;
+    return `
+      <button class="sidebar-btn" id="side-${cat.id}" onclick="showPanel('${cat.id}')">
+        <span class="dot"></span>
+        <span style="flex:1">${cat.label}</span>
+        <span style="font-size:0.75rem;color:var(--muted);font-weight:400">${count}</span>
+      </button>`;
+  }).join('');
+
+  // Populate category select in modal
+  const sel = document.getElementById('fCategory');
+  sel.innerHTML = categories.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+}
+
+/* ════════════════════════════════════════════
+   PANELS
+════════════════════════════════════════════ */
+function showPanel(view) {
+  currentView = view;
+
+  // Reset sidebar active
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  const sideId = view === 'all' ? 'sideAll' : `side-${view}`;
+  document.getElementById(sideId)?.classList.add('active');
+
+  // Hide all panels
+  document.getElementById('panelPublish').style.display  = 'none';
+  document.getElementById('panelSettings').style.display = 'none';
+  document.getElementById('panelProducts').style.display = 'none';
+
+  if (view === 'publish')  { document.getElementById('panelPublish').style.display  = 'block'; return; }
+  if (view === 'settings') { document.getElementById('panelSettings').style.display = 'block'; return; }
+
+  // Products
+  document.getElementById('panelProducts').style.display = 'block';
+  renderProductPanel(view);
+}
+
+function renderProductPanel(view) {
+  const filtered = view === 'all'
+    ? products
+    : products.filter(p => p.category === view);
+
+  const cat = categories.find(c => c.id === view);
+  document.getElementById('panelHeading').textContent = cat ? cat.label : 'All Products';
+
+  const grid  = document.getElementById('productListGrid');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-admin-card">
+      <div class="pac-img">
+        ${p.image
+          ? `<img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=no-img>Image not found</div>'">`
+          : `<div class="no-img">No image set<br><span style="font-size:0.65rem">${p.model} ${p.name}</span></div>`}
+      </div>
+      <div class="pac-model">${p.model}</div>
+      <div class="pac-name">${p.name}</div>
+      <div class="pac-desc">${p.description}</div>
+      ${p.badge ? `<div style="font-size:0.72rem;color:var(--tan-dark);font-weight:600">✓ ${p.badge}</div>` : ''}
+      <div class="pac-actions">
+        <button class="btn btn-outline btn-sm" onclick="openEditModal('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ════════════════════════════════════════════
+   ADD / EDIT / DELETE
+════════════════════════════════════════════ */
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = 'Add Product';
+  document.getElementById('editId').value = '';
+  document.getElementById('fModel').value    = '';
+  document.getElementById('fName').value     = '';
+  document.getElementById('fDesc').value     = '';
+  document.getElementById('fBadge').value    = '';
+  document.getElementById('fImage').value    = '';
+  // Default to current view's category
+  const sel = document.getElementById('fCategory');
+  if (currentView !== 'all' && currentView !== 'publish' && currentView !== 'settings') {
+    sel.value = currentView;
+  }
+  document.getElementById('productModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalTitle').textContent = 'Edit Product';
+  document.getElementById('editId').value    = p.id;
+  document.getElementById('fModel').value   = p.model;
+  document.getElementById('fName').value    = p.name;
+  document.getElementById('fDesc').value    = p.description;
+  document.getElementById('fCategory').value= p.category;
+  document.getElementById('fBadge').value   = p.badge || '';
+  document.getElementById('fImage').value   = p.image || '';
+  document.getElementById('productModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('open');
+}
+
+function saveProduct() {
+  const model    = document.getElementById('fModel').value.trim();
+  const name     = document.getElementById('fName').value.trim();
+  const desc     = document.getElementById('fDesc').value.trim();
+  const category = document.getElementById('fCategory').value;
+  const badge    = document.getElementById('fBadge').value.trim();
+  const image    = document.getElementById('fImage').value.trim();
+  const editId   = document.getElementById('editId').value;
+
+  if (!model || !name || !desc || !category) {
+    showToast('Please fill in all required fields.', 'error'); return;
+  }
+
+  if (editId) {
+    // Update existing
+    const idx = products.findIndex(p => p.id === editId);
+    if (idx !== -1) {
+      products[idx] = { id: editId, model, name, description: desc, category, image, badge };
+    }
+  } else {
+    // Add new
+    const id = slugify(model + '-' + name);
+    products.push({ id, model, name, description: desc, category, image, badge });
+  }
+
+  markDirty();
+  buildSidebar();
+  renderProductPanel(currentView);
+  closeModal();
+  showToast(editId ? 'Product updated!' : 'Product added!', 'success');
+}
+
+function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  products = products.filter(p => p.id !== id);
+  markDirty();
+  buildSidebar();
+  renderProductPanel(currentView);
+  showToast('Product deleted.', '');
+}
+
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'');
+}
+
+/* ════════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════════ */
+function loadSettings() {
+  document.getElementById('ghOwner').value     = localStorage.getItem('kt_owner')  || '';
+  document.getElementById('ghRepo').value      = localStorage.getItem('kt_repo')   || '';
+  document.getElementById('ghBranch').value    = localStorage.getItem('kt_branch') || 'main';
+  document.getElementById('ghCommitMsg').value = localStorage.getItem('kt_msg')    || 'Update products via admin panel';
+}
+
+function saveSettings() {
+  localStorage.setItem('kt_owner',  document.getElementById('ghOwner').value.trim());
+  localStorage.setItem('kt_repo',   document.getElementById('ghRepo').value.trim());
+  localStorage.setItem('kt_branch', document.getElementById('ghBranch').value.trim() || 'main');
+  localStorage.setItem('kt_msg',    document.getElementById('ghCommitMsg').value.trim() || 'Update products via admin panel');
+  const owner = localStorage.getItem('kt_owner');
+  const repo  = localStorage.getItem('kt_repo');
+  document.getElementById('repoLabel').textContent = owner && repo ? `${owner}/${repo}` : '';
+  showToast('Settings saved!', 'success');
+}
+
+/* ════════════════════════════════════════════
+   PUBLISH
+════════════════════════════════════════════ */
+function getJSONContent() {
+  return JSON.stringify({ categories, products }, null, 2);
+}
+
+async function publishToGitHub() {
+  const owner  = localStorage.getItem('kt_owner');
+  const repo   = localStorage.getItem('kt_repo');
+  const branch = localStorage.getItem('kt_branch') || 'main';
+  const msg    = localStorage.getItem('kt_msg')    || 'Update products via admin panel';
+
+  if (!owner || !repo) {
+    showToast('Set your GitHub owner and repo name in Settings first.', 'error');
+    showPanel('settings'); return;
+  }
+
+  const status = document.getElementById('publishStatus');
+  status.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">⏳ Connecting to GitHub…</p>';
+
+  const content = btoa(unescape(encodeURIComponent(getJSONContent())));
+  const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents/products.json`;
+
+  // Get existing SHA (needed for update)
+  let sha = null;
+  try {
+    const res = await fetch(`${apiBase}?ref=${branch}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if (res.ok) {
+      const existing = await res.json();
+      sha = existing.sha;
+    }
+  } catch(e) {}
+
+  const body = { message: msg, content, branch };
+  if (sha) body.sha = sha;
+
+  try {
+    const res = await fetch(apiBase, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      markClean();
+      status.innerHTML = `
+        <div style="background:#f0fff4;border:1px solid #a8e6c0;border-radius:8px;padding:16px;font-size:0.85rem;color:#1a6b3a;margin-top:8px">
+          ✅ <strong>Published!</strong> <code>products.json</code> committed to <strong>${owner}/${repo}</strong>.<br>
+          Vercel will redeploy automatically — usually live in ~30 seconds.
+        </div>`;
+      showToast('Published to GitHub!', 'success');
+    } else {
+      const err = await res.json();
+      throw new Error(err.message || 'GitHub API error');
+    }
+  } catch(e) {
+    status.innerHTML = `
+      <div style="background:#fff0f0;border:1px solid #f5c0c0;border-radius:8px;padding:16px;font-size:0.85rem;color:#a33;margin-top:8px">
+        ❌ <strong>Publish failed:</strong> ${e.message}<br>
+        Check your token permissions and repo name in Settings.
+      </div>`;
+    showToast('Publish failed — check settings.', 'error');
+  }
+}
+
+function downloadJSON() {
+  const blob = new Blob([getJSONContent()], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'products.json'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('products.json downloaded!', 'success');
+}
+
+/* ════════════════════════════════════════════
+   DIRTY STATE
+════════════════════════════════════════════ */
+function markDirty() {
+  isDirty = true;
+  document.getElementById('statusBar').style.display = 'flex';
+  document.getElementById('statusBar').className = 'status-bar';
+}
+
+function markClean() {
+  isDirty = false;
+  document.getElementById('statusBar').style.display = 'none';
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('kt_token');
+  if (saved) {
+    token = saved;
+    // Quick validate
+    fetch('https://api.github.com/user', {
+      headers: { 'Authorization': `token ${saved}` }
+    }).then(r => {
+      if (r.ok) bootAdmin();
+      else { localStorage.removeItem('kt_token'); }
+    }).catch(() => {});
+  }
+
+  // Close modal on overlay click
+  document.getElementById('productModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('productModal')) closeModal();
+  });
+
+  // Warn on unload if dirty
+  window.addEventListener('beforeunload', e => {
+    if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+});
+</script>
+</body>
+</html>

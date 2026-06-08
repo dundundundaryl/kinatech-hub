@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — Kinatech Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── PAGE HEADER ───────────────────────── */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 0;
+    }
+    .page-header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .page-header .sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    /* ── FILTER TABS ──────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+
+    .filter-tab {
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--tan);
+      background: transparent;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+      user-select: none;
+    }
+
+    .filter-tab:hover {
+      background: var(--tan-light);
+    }
+
+    /* Active = filled tan */
+    .filter-tab.active {
+      background: var(--tan);
+      border-color: var(--tan);
+    }
+
+    /* "All" active = dark fill to stand out */
+    .filter-tab[data-filter="all"].active {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+
+    /* ── CATEGORY SECTION ─────────────────── */
+    .cat-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 56px;
+    }
+
+    .cat-section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .cat-section .cat-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .section-sep {
+      border: none;
+      border-top: 1px solid var(--tan-light);
+      max-width: 1100px;
+      margin: 0 auto 48px;
+      padding: 0 48px;
+    }
+
+    /* ── PRODUCT GRID — uniform 4-col ──────── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* ── PRODUCT CARD ─────────────────────── */
+    .product-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 0 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow: visible;
+      position: relative;
+      margin-top: 28px;       /* space for image overflow */
+      transition: transform 0.22s, box-shadow 0.22s;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.11);
+    }
+
+    /* Image floats above card */
+    .product-img-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 150px;
+      margin-top: -28px;
+      margin-bottom: 10px;
+    }
+
+    /* Real transparent-bg PNG: add class="product-3d-img" */
+    .product-3d-img {
+      max-height: 150px;
+      max-width: 90%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.22));
+      transition: filter 0.3s, transform 0.3s;
+    }
+
+    .product-card:hover .product-3d-img {
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,0.3));
+      transform: translateY(-4px);
+    }
+
+    .product-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgba(100,90,80,0.45);
+      font-size: 0.66rem;
+      text-align: center;
+      gap: 4px;
+      background: rgba(0,0,0,0.04);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .product-card .model {
+      font-size: 0.67rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+
+    .product-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .product-card .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .learn-more {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: underline;
+      margin-top: 6px;
+    }
+
+    .product-card:hover .learn-more {
+      color: var(--text);
+    }
+
+    /* ── LOADING / ERROR STATES ───────────── */
+    .loading-state {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 48px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .error-state {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px;
+      background: #fff3f3;
+      border: 1.5px solid #f5c0c0;
+      border-radius: var(--radius);
+      color: #a33;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+      .cat-section { padding: 0 20px 40px; }
+      .page-header { padding: 0 20px 0; }
+      .section-sep { margin: 0 20px 40px; padding: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────── -->
+  <nav id="mainNav" class="nav-solid">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="6" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>KINATECH<br>HUB</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="products.html" class="active">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <a href="index.html">Home</a>
+      <a href="products.html" class="active">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ── PAGE HEADER ─────────────────────── -->
+  <div class="page-header" id="pageHeader">
+    <h1>Products</h1>
+    <p class="sub">Discover the hardware solutions that power successful retail and e-commerce operations</p>
+    <!-- Filter tabs injected here by JS -->
+    <div class="filter-bar" id="filterBar" role="group" aria-label="Filter by category"></div>
+  </div>
+
+  <!-- ── PRODUCTS MAIN ───────────────────── -->
+  <div id="productsMain">
+    <div class="loading-state" id="loadingState">
+      <p>Loading products…</p>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ───────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-products">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#pos-printers">POS Printers</a></li>
+          <li><a href="#scanners">Scanners</a></li>
+          <li><a href="#label-printers">Label &amp; Waybill Printers</a></li>
+          <li><a href="#hard-drives">Hard Drives</a></li>
+        </ul>
+        <ul>
+          <li><a href="#pos-terminal">POS Terminal</a></li>
+          <li><a href="#eftpos">EFTPOS Terminal</a></li>
+          <li><a href="#mobile-label">Mobile Label Printers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home Page</a></li>
+          <li><a href="who-we-serve.html">Who We Serve</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <ul>
+          <li>contact.kinatech@gmail.com</li>
+          <li>(0917) 814 5828</li>
+          <li>(0917) 327 0505</li>
+        </ul>
+        <a href="#" class="footer-social" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Hamburger ─────────────────────────── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileNav.addEventListener('click', e => {
+      if (e.target === mobileNav) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+
+    /* ── Filter state ──────────────────────── */
+    let activeFilters = new Set(['all']);
+
+    /* ── Render helpers ────────────────────── */
+    function imgPlaceholder(model, name) {
+      return `
+        <div class="product-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          ${model} ${name}<br>transparent bg PNG
+        </div>`;
+    }
+
+    function renderCard(p) {
+      const imgHtml = p.image
+        ? `<img src="${p.image}" class="product-3d-img" alt="${p.model} ${p.name}">`
+        : imgPlaceholder(p.model, p.name);
+
+      return `
+        <a href="product-detail.html?id=${p.id}" class="product-card">
+          <div class="product-img-wrap">${imgHtml}</div>
+          <span class="model">${p.model}</span>
+          <h3>${p.name}</h3>
+          <p class="card-desc">${p.description}</p>
+          <span class="learn-more">Learn More &rsaquo;</span>
+        </a>`;
+    }
+
+    function renderSection(cat, products, isFirst) {
+      const divider = isFirst ? '' : '<hr class="section-sep" />';
+      return `
+        ${divider}
+        <section class="cat-section" id="${cat.id}" data-cat="${cat.id}">
+          <h2>${cat.label}</h2>
+          <p class="cat-desc">${cat.description}</p>
+          <div class="product-grid">
+            ${products.map(renderCard).join('')}
+          </div>
+        </section>`;
+    }
+
+    /* ── Filter logic ──────────────────────── */
+    function applyFilters() {
+      const showAll = activeFilters.has('all');
+      document.querySelectorAll('[data-cat]').forEach(section => {
+        section.hidden = !showAll && !activeFilters.has(section.dataset.cat);
+      });
+      // Hide dividers before hidden sections
+      document.querySelectorAll('.section-sep').forEach(hr => {
+        const next = hr.nextElementSibling;
+        hr.hidden = next && next.hidden;
+      });
+      // Update tab states
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        const f = tab.dataset.filter;
+        tab.classList.toggle('active', activeFilters.has(f));
+      });
+    }
+
+    function buildFilterBar(categories) {
+      const bar = document.getElementById('filterBar');
+
+      // ALL tab
+      const allBtn = document.createElement('button');
+      allBtn.className = 'filter-tab active';
+      allBtn.dataset.filter = 'all';
+      allBtn.textContent = 'ALL';
+      allBtn.addEventListener('click', () => {
+        activeFilters = new Set(['all']);
+        applyFilters();
+      });
+      bar.appendChild(allBtn);
+
+      // Category tabs
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-tab';
+        btn.dataset.filter = cat.id;
+        btn.textContent = cat.label.toUpperCase();
+        btn.addEventListener('click', () => {
+          if (activeFilters.has('all')) activeFilters.delete('all');
+
+          if (activeFilters.has(cat.id)) {
+            activeFilters.delete(cat.id);
+            // If nothing left, revert to All
+            if (activeFilters.size === 0) activeFilters.add('all');
+          } else {
+            activeFilters.add(cat.id);
+          }
+          applyFilters();
+        });
+        bar.appendChild(btn);
+      });
+    }
+
+    /* ── Main: fetch + render ──────────────── */
+    async function init() {
+      const main = document.getElementById('productsMain');
+
+      let data;
+      try {
+        const res = await fetch('products.json');
+        if (!res.ok) throw new Error(res.statusText);
+        data = await res.json();
+      } catch (err) {
+        main.innerHTML = `
+          <div class="error-state">
+            <strong>Could not load products.json</strong><br>
+            If opening this file directly (file://), use a local server instead:<br>
+            <code>npx serve .</code> or VS Code Live Server extension.
+          </div>`;
+        document.getElementById('loadingState')?.remove();
+        return;
+      }
+
+      const { categories, products } = data;
+
+      // Build filter bar
+      buildFilterBar(categories);
+
+      // Render product sections
+      let html = '';
+      categories.forEach((cat, i) => {
+        const catProducts = products.filter(p => p.category === cat.id);
+        if (catProducts.length === 0) return;
+        html += renderSection(cat, catProducts, i === 0);
+      });
+
+      main.innerHTML = html || '<p style="padding:48px;color:var(--text-muted)">No products found.</p>';
+    }
+
+    init();
+  </script>
+</body>
+</html>

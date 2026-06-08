@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinatech Hub — Reliable Hardware for Business</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── HERO ─────────────────────────────── */
+    /* The full hero section IS the background image.
+       Drop a JPG on the section and the text overlays it. */
+    .hero {
+      position: relative;
+      /* ↓ SWAP THIS for your image when ready:
+         background-image: url('images/hero-bg.jpg'); */
+      background-color: var(--bg-alt);
+      background-size: cover;
+      background-position: center;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Full-bleed placeholder — shows the image slot.
+       DELETE this div once you set background-image on .hero */
+    .hero-bg-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 2px dashed rgba(0,0,0,0.18);
+      color: rgba(0,0,0,0.28);
+      pointer-events: none;
+      z-index: 0;
+      text-align: center;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .hero-bg-placeholder svg { width: 36px; height: 36px; opacity: 0.4; }
+
+    /* Content sits above the placeholder */
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 120px 48px 72px;
+    }
+
+    .hero-text {
+      max-width: 540px;
+    }
+    .hero-text h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      max-width: 380px;
+    }
+    .hero-cta { display: flex; gap: 12px; }
+
+    /* ── GRADIENT CATEGORY CARDS ─────────── */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .cat-card {
+      /* Light at top → dark at bottom, matching reference screenshot */
+      background: linear-gradient(to bottom, #e6e2dc 0%, #2e2b27 60%, #141210 100%);
+      border-radius: 14px;
+      padding: 18px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 270px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: visible;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    }
+
+    /* Top text: dark on light background → readable */
+    .cat-card-top h3 {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .cat-card-top p {
+      font-size: 0.76rem;
+      color: rgba(20,18,16,0.6);
+      line-height: 1.4;
+    }
+
+    /* Image sits in the middle where the gradient transitions */
+    .cat-card-img {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    /* Placeholder: semi-transparent on the mid-gradient area */
+    .cat-card-img .img-placeholder {
+      background: rgba(255,255,255,0.08);
+      border: 1px dashed rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.68rem;
+      height: 130px;
+    }
+
+    .cat-card-img .img-placeholder svg { opacity: 0.45; }
+
+    /* ── Real image — paste transparent-bg PNG ────
+       Add class="cat-product-img" to your <img> tag:
+       <img src="images/pos-printer.png" class="cat-product-img" alt="POS Printer">
+    ── */
+    .cat-product-img {
+      max-height: 155px;
+      object-fit: contain;
+      /* Drop shadow creates the "floating" 3D look */
+      filter: drop-shadow(0 16px 24px rgba(0,0,0,0.55));
+      /* Subtle perspective tilt toward viewer */
+      transform: perspective(700px) rotateX(5deg) translateY(-6px);
+      transition: transform 0.3s, filter 0.3s;
+    }
+
+    .cat-card:hover .cat-product-img {
+      filter: drop-shadow(0 20px 28px rgba(0,0,0,0.65));
+      transform: perspective(700px) rotateX(2deg) translateY(-14px);
+    }
+
+    /* Bottom "View X" label — white text on dark gradient area */
+    .cat-card-bottom {
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+
+    .cat-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .cat-card:hover .cat-link { color: #fff; }
+
+    /* ── WHO WE SERVE ─────────────────────── */
+    .wws-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .wws-card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 220px;
+      cursor: pointer;
+    }
+
+    .wws-img-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-align: center;
+      gap: 6px;
+    }
+
+    .wws-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+      padding: 24px 16px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-img { height: 260px; }
+      .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .hero-text h1 { font-size: 1.9rem; }
+      .hero { padding: 40px 20px; }
+      .wws-grid { grid-template-columns: 1fr; }
+      .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────── -->
+  <nav id="mainNav">
+    <a href="index.html" class="logo">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="44" height="44" rx="6" fill="#1a1a1a"/>
+        <path d="M10 10 L20 22 L10 34" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 10 L32 22 L22 34" stroke="#c9b89a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>KINATECH<br>HUB</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav overlay -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-inner">
+      <a href="index.html" class="active">Home</a>
+      <a href="products.html">Products</a>
+      <a href="who-we-serve.html">Who We Serve</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ── HERO ─────────────────────────────── -->
+  <!--
+    HERO BACKGROUND IMAGE:
+    1. Save your image as  images/hero-bg.jpg  (recommended: 1440 × 560px)
+    2. On the <section> below, add: style="background-image: url('images/hero-bg.jpg')"
+    3. Delete the .hero-bg-placeholder div
+  -->
+  <section class="hero" id="heroSection">
+
+    <!-- PLACEHOLDER — shows the full image slot. Remove once you add your bg image. -->
+    <div class="hero-bg-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+      <strong>HERO BACKGROUND IMAGE</strong>
+      Full-width editorial JPG of HPRT products on pedestals<br>
+      Recommended: 1440 × 560px · set background-image on .hero
+    </div>
+
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Reliable hardware for smoother business operations.</h1>
+        <p>POS printers, barcode scanners, label and waybill printers, and storage solutions for retail, e-commerce, and growing businesses.</p>
+        <div class="hero-cta">
+          <a href="products.html" class="btn btn-outline">VIEW PRODUCTS</a>
+          <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SHOP BY CATEGORY ─────────────────── -->
+  <section class="section">
+    <h2 class="section-title">Shop by Category</h2>
+    <p class="section-sub">Browse our comprehensive range of business hardware solutions</p>
+    <a href="products.html" class="section-link">View All Products →</a>
+
+    <div class="categories-grid">
+
+      <a href="products.html#pos-printers" class="cat-card">
+        <div class="cat-card-top">
+          <h3>POS Printers</h3>
+          <p>Receipt printing for daily transactions</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- REPLACE with: <img src="images/pos-printer.png" class="cat-product-img" alt="POS Printer"> -->
+          <!-- IMAGE: HPRT TP80NB-M, transparent background PNG, facing 3/4 angle, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT TP80NB-M<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Printers</span>
+        </div>
+      </a>
+
+      <a href="products.html#scanners" class="cat-card">
+        <div class="cat-card-top">
+          <h3>Scanners</h3>
+          <p>Faster checkout and stock handling</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: HPRT N150 handheld scanner, transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT N150 scanner<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Scanners</span>
+        </div>
+      </a>
+
+      <a href="products.html#label-printers" class="cat-card">
+        <div class="cat-card-top">
+          <h3>Label &amp; Waybill Printers</h3>
+          <p>Shipping labels and order fulfillment</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: HPRT N43BT white label printer, transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT N43BT label printer<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Printers</span>
+        </div>
+      </a>
+
+      <a href="products.html#hard-drives" class="cat-card">
+        <div class="cat-card-top">
+          <h3>Hard Drives</h3>
+          <p>Portable storage and file backup</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: Seagate One Touch HDD, slim black, transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Seagate One Touch HDD<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Hard Drives</span>
+        </div>
+      </a>
+
+      <a href="products.html#pos-terminal" class="cat-card">
+        <div class="cat-card-top">
+          <h3>POS Terminals</h3>
+          <p>Customer-facing and cashier displays</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: HPRT ZQ200 dual-screen POS terminal, transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT ZQ200 dual terminal<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Monitors</span>
+        </div>
+      </a>
+
+      <a href="products.html#eftpos" class="cat-card">
+        <div class="cat-card-top">
+          <h3>EFTPOS Terminals</h3>
+          <p>All-in-one POS systems for restaurants</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: HPRT Android EFTPOS handheld terminal, transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT EFTPOS terminal<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Terminals</span>
+        </div>
+      </a>
+
+      <a href="products.html#mobile-label" class="cat-card">
+        <div class="cat-card-top">
+          <h3>Mobile Label Printer</h3>
+          <p>Portable labeling</p>
+        </div>
+        <div class="cat-card-img">
+          <!-- IMAGE: HPRT HM-A300E mobile label printer (orange+black), transparent bg PNG, ~300×200px -->
+          <div class="img-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            HPRT HM-A300E<br>transparent bg PNG
+          </div>
+        </div>
+        <div class="cat-card-bottom">
+          <span class="cat-link">View Printers</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── WHO WE SERVE ─────────────────────── -->
+  <section class="section" style="padding-top:0;">
+    <h2 class="section-title">Who We Serve</h2>
+    <p class="section-sub">One hardware partner for every stage of business growth</p>
+    <a href="who-we-serve.html" class="section-link">Explore industries and use cases →</a>
+
+    <div class="wws-grid">
+      <a href="who-we-serve.html#ecommerce" class="wws-card">
+        <!-- IMAGE: Woman packing boxes with scanner, warehouse setting, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          E-Commerce & Fulfillment<br><small>Woman packing boxes, ~500×280px</small>
+        </div>
+        <div class="wws-label">E-Commerce &amp; Fulfillment</div>
+      </a>
+
+      <a href="who-we-serve.html#retail" class="wws-card">
+        <!-- IMAGE: Scanner near clothing rack in retail store, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Retail Stores<br><small>Scanner near clothing rack, ~500×280px</small>
+        </div>
+        <div class="wws-label">Retail Stores</div>
+      </a>
+
+      <a href="who-we-serve.html#fnb" class="wws-card">
+        <!-- IMAGE: Label printer next to bubble tea on counter, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Food & Beverage<br><small>Label printer near bubble tea, ~500×280px</small>
+        </div>
+        <div class="wws-label">Food &amp; Beverage</div>
+      </a>
+
+      <a href="who-we-serve.html#warehouse" class="wws-card">
+        <!-- IMAGE: Scanner + laptop in warehouse, boxes visible, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Warehousing & Logistics<br><small>Scanner + laptop in warehouse, ~500×280px</small>
+        </div>
+        <div class="wws-label">Warehousing &amp; Logistics</div>
+      </a>
+
+      <a href="who-we-serve.html#office" class="wws-card">
+        <!-- IMAGE: Laptop + slim HDD on office desk, reports visible, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Office & Professional Services<br><small>Laptop + HDD on desk, ~500×280px</small>
+        </div>
+        <div class="wws-label">Office &amp; Professional Services</div>
+      </a>
+
+      <a href="who-we-serve.html#hospitality" class="wws-card">
+        <!-- IMAGE: POS terminal at hotel reception, "RECEPTION" sign visible, ~500×280px -->
+        <div class="wws-img-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Hospitality<br><small>POS at hotel reception, ~500×280px</small>
+        </div>
+        <div class="wws-label">Hospitality</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ───────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-products">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html#pos-printers">POS Printers</a></li>
+          <li><a href="products.html#scanners">Scanners</a></li>
+          <li><a href="products.html#label-printers">Label &amp; Waybill Printers</a></li>
+          <li><a href="products.html#hard-drives">Hard Drives</a></li>
+        </ul>
+        <ul>
+          <li><a href="products.html#pos-terminal">POS Terminal</a></li>
+          <li><a href="products.html#eftpos">EFTPOS Terminal</a></li>
+          <li><a href="products.html#mobile-label">Mobile Label Printers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home Page</a></li>
+          <li><a href="who-we-serve.html">Who We Serve</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <ul>
+          <li>contact.kinatech@gmail.com</li>
+          <li>(0917) 814 5828</li>
+          <li>(0917) 327 0505</li>
+        </ul>
+        <a href="#" class="footer-social" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+      document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+    });
+    mobileNav.addEventListener('click', (e) => {
+      if (e.target === mobileNav) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+    // Transparent nav → solid once we scroll past the hero
+    const heroSection = document.querySelector('.hero');
+    function updateNav() {
+      const threshold = heroSection ? heroSection.offsetHeight - 60 : 100;
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > threshold);
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav(); // run once on load in case of anchor/scroll restore
+  </script>
+</body>
+</html>
