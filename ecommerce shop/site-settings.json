@@ -1,5 +1,7 @@
 {
-  "hero": { "image": "" },
+  "hero": {
+    "image": ""
+  },
   "colors": {
     "tan": "#c9b89a",
     "tanDark": "#a89070",
