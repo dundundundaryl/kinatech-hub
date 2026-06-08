@@ -215,9 +215,10 @@
 
     @media (max-width: 600px) {
       .hero-text h1 { font-size: 1.9rem; }
-      .hero { padding: 40px 20px; }
+      .hero-inner { padding: 100px 20px 48px; }
       .wws-grid { grid-template-columns: 1fr; }
       .categories-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-card { min-height: 240px; }
     }
   </style>
 </head>
@@ -544,6 +545,21 @@
     }
     window.addEventListener('scroll', updateNav, { passive: true });
     updateNav(); // run once on load in case of anchor/scroll restore
+  </script>
+
+  <script>
+    // Load hero image from site-settings.json (managed via admin panel)
+    fetch('site-settings.json?nocache=' + Date.now())
+      .then(r => r.json())
+      .then(s => {
+        if (s.hero && s.hero.image) {
+          const hero = document.getElementById('heroSection');
+          hero.style.backgroundImage = "url('" + s.hero.image + "')";
+          const placeholder = document.querySelector('.hero-bg-placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+        }
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>

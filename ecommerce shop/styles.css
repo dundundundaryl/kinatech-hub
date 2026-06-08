@@ -362,6 +362,26 @@ footer {
   .section { padding: 40px 20px; }
   footer { padding: 32px 20px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  /* Non-hero pages: reduce nav offset on mobile */
+  .page-header,
+  .product-detail,
+  .contact-section {
+    padding-top: calc(72px + 16px);
+  }
+}
+
+@media (max-width: 600px) {
+  /* Hero CTA buttons: stack vertically on small screens */
+  .hero-cta {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .hero-cta .btn {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+  }
 }
 
 @media (max-width: 480px) {
