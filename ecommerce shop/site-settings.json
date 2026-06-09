@@ -29,5 +29,37 @@
     "office": "",
     "hospitality": ""
   },
-  "logo": ""
+  "logo": "",
+  "industryContent": {
+    "ecommerce": {
+      "homeLabel": "E-Commerce & Fulfillment",
+      "heading": "Ecommerce & Fulfillment",
+      "desc": "Streamline shipping, packing, and order processing with industry-leading hardware solutions."
+    },
+    "retail": {
+      "homeLabel": "Retail Stores",
+      "heading": "Retail Stores",
+      "desc": "Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware."
+    },
+    "fnb": {
+      "homeLabel": "Food & Beverage",
+      "heading": "Food & Beverage",
+      "desc": "POS and payment solutions for seamless food service operations."
+    },
+    "warehouse": {
+      "homeLabel": "Warehousing & Logistics",
+      "heading": "Warehousing & Logistics",
+      "desc": "Industrial-grade tracking and labeling solutions for efficient operations at scale."
+    },
+    "office": {
+      "homeLabel": "Office & Professional Services",
+      "heading": "Office & Professional Services",
+      "desc": "Printing and storage solutions for efficient office operations."
+    },
+    "hospitality": {
+      "homeLabel": "Hospitality",
+      "heading": "Hospitality",
+      "desc": "Front-desk and payment systems for seamless guest experiences."
+    }
+  }
 }
