@@ -340,7 +340,7 @@
         {
           "title": "Key Features",
           "items": [
-            "Omnidirectional scanning ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ reads from any angle",
+            "Omnidirectional scanning ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ reads from any angle",
             "Hands-free desktop presentation mode",
             "Supports 1D, 2D, and QR codes",
             "High scan rate for fast checkout lines",
@@ -452,9 +452,8 @@
       ]
     },
     {
-      "id": "zq200-single",
       "model": "HPRT",
-      "name": "ZQ200 ÃÂÃÂÃÂÃÂ· SINGLE",
+      "name": "ZQ200",
       "description": "Clear single display monitor for retail, restaurants and business environments",
       "category": "pos-terminal",
       "image": "",
@@ -480,12 +479,12 @@
             "Orientation: Landscape"
           ]
         }
-      ]
+      ],
+      "id": "zq200-single"
     },
     {
-      "id": "zq200-dual",
       "model": "HPRT",
-      "name": "ZQ200 ÃÂÃÂÃÂÃÂ· DUAL",
+      "name": "ZQ200",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
       "category": "pos-terminal",
       "image": "",
@@ -511,7 +510,8 @@
             "Use Case: Cashier-facing + Customer-facing"
           ]
         }
-      ]
+      ],
+      "id": "zq200-dual"
     },
     {
       "id": "aio-eftpos",
