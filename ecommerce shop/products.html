@@ -264,6 +264,23 @@
     @media (max-width: 600px) {
       .product-grid { grid-template-columns: repeat(2, 1fr); }
     }
+
+    /* ── Scroll reveal (reversible blur / unblur) ── */
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        filter: blur(9px);
+        transform: translateY(26px);
+        transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
+        will-change: opacity, filter, transform;
+      }
+      .reveal.in-view {
+        opacity: 1;
+        filter: blur(0);
+        transform: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -513,6 +530,20 @@
       main.innerHTML = html || '<p style="padding:48px;color:var(--text-muted)">No products found.</p>';
       // Update inquiry button states (in case items already in list)
       window.Shortlist?.refreshWidget?.();
+      // Reversible scroll-reveal on the rendered sections
+      setupReveal();
+    }
+
+    /* ── Reversible scroll-reveal ──────────── */
+    function setupReveal() {
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion || !('IntersectionObserver' in window)) return;
+      const els = document.querySelectorAll('#pageHeader, .cat-section');
+      els.forEach(el => el.classList.add('reveal'));
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => entry.target.classList.toggle('in-view', entry.isIntersecting));
+      }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(el => io.observe(el));
     }
 
     init();

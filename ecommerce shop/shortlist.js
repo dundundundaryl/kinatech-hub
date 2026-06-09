@@ -25,17 +25,45 @@
   function clearList() { saveList([]); refreshWidget(); }
   function isInList(id) { return getList().some(x => x.id === id); }
 
+  /* ── Quantity helpers ── */
+  function normQty(v) {
+    let q = parseInt(v, 10);
+    if (isNaN(q) || q < 1) q = 1;
+    if (q > 9999) q = 9999;
+    return q;
+  }
+  function setQty(id, qty) {
+    const q = normQty(qty);
+    const list = getList();
+    const it = list.find(x => x.id === id);
+    if (it) { it.qty = q; saveList(list); refreshWidget(); }
+  }
+  function changeQty(id, delta) {
+    const it = getList().find(x => x.id === id);
+    const cur = it && it.qty ? it.qty : 1;
+    setQty(id, cur + delta);
+  }
+
   /* ── Toggle from a button (uses data attributes to avoid escaping issues) ── */
   function slToggle(btn) {
     const id = btn.dataset.slId;
     if (isInList(id)) {
       removeItem(id);
     } else {
+      // Pull quantity from a linked input (e.g. product page) if specified.
+      let qty = 1;
+      if (btn.dataset.slQtyInput) {
+        const qi = document.getElementById(btn.dataset.slQtyInput);
+        if (qi) qty = qi.value;
+      } else if (btn.dataset.slQty) {
+        qty = btn.dataset.slQty;
+      }
       addItem({
         id,
         model:         btn.dataset.slModel || '',
         name:          btn.dataset.slName  || '',
-        categoryLabel: btn.dataset.slCat   || ''
+        categoryLabel: btn.dataset.slCat   || '',
+        qty:           normQty(qty)
       });
     }
   }
@@ -74,6 +102,15 @@
               <div class="sl-model">${item.model}</div>
               <div class="sl-name">${item.name}</div>
               <div class="sl-cat">${item.categoryLabel || ''}</div>
+              <div class="sl-qty">
+                <button class="sl-qty-btn" onclick="event.stopPropagation();window.Shortlist.changeQty('${item.id}',-1)" aria-label="Decrease quantity">−</button>
+                <input class="sl-qty-input" type="number" min="1" max="9999" inputmode="numeric"
+                  value="${item.qty || 1}"
+                  onclick="event.stopPropagation()"
+                  onchange="window.Shortlist.setQty('${item.id}', this.value)"
+                  aria-label="Quantity" />
+                <button class="sl-qty-btn" onclick="event.stopPropagation();window.Shortlist.changeQty('${item.id}',1)" aria-label="Increase quantity">+</button>
+              </div>
             </div>
             <button class="sl-remove" onclick="event.stopPropagation();window.Shortlist.removeItem('${item.id}')" title="Remove">×</button>
           </div>`).join('');
@@ -148,6 +185,12 @@
       .sl-model { font-size: 0.65rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: 0.04em; }
       .sl-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sl-cat { font-size: 0.7rem; color: #bbb; }
+      .sl-qty { display: inline-flex; align-items: center; margin-top: 7px; border: 1px solid #e3ddd4; border-radius: 7px; overflow: hidden; width: fit-content; }
+      .sl-qty-btn { width: 26px; height: 26px; border: none; background: #f7f3ee; color: #555; font-size: 1rem; line-height: 1; cursor: pointer; font-family: inherit; padding: 0; transition: background 0.15s, color 0.15s; }
+      .sl-qty-btn:hover { background: #1a1a1a; color: #fff; }
+      .sl-qty-input { width: 36px; height: 26px; border: none; border-left: 1px solid #e3ddd4; border-right: 1px solid #e3ddd4; text-align: center; font-size: 0.78rem; font-weight: 600; font-family: inherit; color: #1a1a1a; background: #fff; -moz-appearance: textfield; }
+      .sl-qty-input::-webkit-outer-spin-button, .sl-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+      .sl-qty-input:focus { outline: none; }
       .sl-remove { background: none; border: none; cursor: pointer; color: #ccc; font-size: 1.15rem; padding: 0 3px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
       .sl-remove:hover { color: #c0392b; }
       #sl-foot { padding: 12px 18px; border-top: 1px solid #f0ece6; flex-shrink: 0; }
@@ -224,7 +267,7 @@
   });
 
   /* ── Expose API ── */
-  window.Shortlist = { getList, addItem, removeItem, clearList, isInList, togglePanel, sendInquiry, refreshWidget };
+  window.Shortlist = { getList, addItem, removeItem, setQty, changeQty, clearList, isInList, togglePanel, sendInquiry, refreshWidget };
 
   /* ── Init on DOM ready ── */
   document.addEventListener('DOMContentLoaded', () => {

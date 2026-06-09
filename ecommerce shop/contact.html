@@ -321,7 +321,7 @@
       const list = window.Shortlist?.getList?.() || [];
       if (list.length > 0) {
         ta.value = 'Hi, I would like to request a quote for the following products:\n\n' +
-          list.map(x => `• ${x.model} ${x.name}${x.categoryLabel ? ' (' + x.categoryLabel + ')' : ''}`).join('\n') +
+          list.map(x => `• ${x.model} ${x.name}${x.categoryLabel ? ' (' + x.categoryLabel + ')' : ''} — Quantity: ${parseInt(x.qty, 10) || 1}`).join('\n') +
           '\n\nPlease provide pricing, availability, and any applicable discounts for bulk orders. Thank you!';
         const notice = document.createElement('div');
         notice.style.cssText = 'background:#f0f7ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#2a5a2a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;';
