@@ -221,16 +221,13 @@
         <span class="dot"></span> All Products
       </button>
       <div id="sidebarCats"></div>
+
+      <div class="sidebar-label">Site</div>
       <button class="sidebar-btn" id="sideCats" onclick="showPanel('categories')">
         🗂 Categories
       </button>
-      <button class="sidebar-btn" id="sideIndustries" onclick="showPanel('industries')">
-        🏢 Industries
-      </button>
-
-      <div class="sidebar-label">Site</div>
-      <button class="sidebar-btn" id="sideHomeIndustries" onclick="showPanel('home-industries')">
-        🏠 Home Cards
+      <button class="sidebar-btn" id="sideWwsCards" onclick="showPanel('wws-cards')">
+        🏢 Who We Serve Cards
       </button>
       <button class="sidebar-btn" id="sideSiteSettings" onclick="showPanel('site-settings')">
         🖼 Site Settings
@@ -268,22 +265,16 @@
         <div class="category-list" id="categoryList"></div>
       </div>
 
-      <!-- INDUSTRIES PANEL -->
-      <div id="panelIndustries" style="display:none;">
+      <!-- WHO WE SERVE CARDS PANEL (combined: WWS page rows + home cards) -->
+      <div id="panelWwsCards" style="display:none;">
         <div class="main-header">
-          <h2>Who We Serve — Images</h2>
+          <h2>Who We Serve Cards</h2>
+          <button class="btn btn-primary" onclick="addWwsCard()">+ Add Card</button>
         </div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px;max-width:560px;">Upload images for each industry section on the "Who We Serve" page. Recommended: 500×300px JPG.</p>
-        <div id="industryImagesList"></div>
-      </div>
-
-      <!-- HOME INDUSTRY CARDS PANEL -->
-      <div id="panelHomeIndustries" style="display:none;">
-        <div class="main-header">
-          <h2>Home Page — "Who We Serve" Cards</h2>
-        </div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:24px;max-width:560px;">Upload images for the "Who We Serve" preview cards on the <strong>home page</strong>. These are separate from the full Who We Serve page images. Recommended: 500×280px JPG. Saves &amp; publishes instantly.</p>
-        <div id="homeIndustryImagesList"></div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;max-width:640px;">
+          Manage the industry sections on the <strong>Who We Serve</strong> page and the matching preview cards on the <strong>home page</strong>. Each card has a Who-We-Serve image (≈500×300px) and a home-card image (≈500×280px). Add new industries or remove existing ones. Edits publish to GitHub.
+        </p>
+        <div id="wwsCardsList"></div>
       </div>
 
       <!-- SITE SETTINGS PANEL -->
@@ -719,12 +710,21 @@ async function loadSiteSettings() {
       {}, INDUSTRY_CONTENT_DEFAULTS[id], siteSettings.industryContent[id] || {}
     );
   });
+  // Display/ordering list for industries (defaults + any custom-added cards)
+  if (!Array.isArray(siteSettings.industryOrder) || !siteSettings.industryOrder.length) {
+    siteSettings.industryOrder = DEFAULT_INDUSTRY_IDS.slice();
+  } else {
+    DEFAULT_INDUSTRY_IDS.forEach(id => {
+      if (siteSettings.industryOrder.indexOf(id) === -1) siteSettings.industryOrder.push(id);
+    });
+  }
   updateHeroPreview();
   updateLogoPreview();
 }
 
 /* Default industry text — mirrors the hardcoded copy on index.html + who-we-serve.html.
    homeLabel = home page card; heading/desc = Who We Serve page row. */
+const DEFAULT_INDUSTRY_IDS = ['ecommerce','retail','fnb','warehouse','office','hospitality'];
 const INDUSTRY_CONTENT_DEFAULTS = {
   ecommerce:   { homeLabel: 'E-Commerce & Fulfillment',      heading: 'Ecommerce & Fulfillment',        desc: 'Streamline shipping, packing, and order processing with industry-leading hardware solutions.' },
   retail:      { homeLabel: 'Retail Stores',                 heading: 'Retail Stores',                  desc: 'Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.' },
@@ -746,16 +746,21 @@ function setIndustryField(id, field, value) {
   markDirty();
 }
 
-/* Publish all text edits at once, then refresh whichever panel is open */
+/* Publish all text edits at once, then refresh the combined cards panel */
 async function saveSiteText(rerender) {
   try {
     await publishSiteSettings();
-    if (rerender === 'home') renderHomeIndustryImages();
-    else renderIndustryImages();
+    renderWwsCards();
     showToast('Text changes published!', 'success');
   } catch(e) {
     showToast('Save failed: ' + e.message, 'error');
   }
+}
+
+/* Friendly label for an industry id (default or custom) */
+function industryLabel(id) {
+  const c = (siteSettings.industryContent && siteSettings.industryContent[id]) || {};
+  return c.homeLabel || c.heading || INDUSTRY_CONTENT_DEFAULTS[id]?.homeLabel || id;
 }
 
 /* ══ SIDEBAR ══ */
@@ -777,10 +782,10 @@ function buildSidebar() {
 function showPanel(view) {
   currentView = view;
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  const sideMap = { all:'sideAll', categories:'sideCats', industries:'sideIndustries', 'home-industries':'sideHomeIndustries', 'site-settings':'sideSiteSettings' };
+  const sideMap = { all:'sideAll', categories:'sideCats', 'wws-cards':'sideWwsCards', 'site-settings':'sideSiteSettings' };
   const sideId = sideMap[view] || `side-${view}`;
   document.getElementById(sideId)?.classList.add('active');
-  ['panelProducts','panelCategories','panelIndustries','panelHomeIndustries','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
+  ['panelProducts','panelCategories','panelWwsCards','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   if (view === 'publish') {
@@ -797,8 +802,7 @@ function showPanel(view) {
   }
   if (view === 'settings')      { document.getElementById('panelSettings').style.display = 'block'; return; }
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
-  if (view === 'industries')    { document.getElementById('panelIndustries').style.display = 'block'; renderIndustryImages(); return; }
-  if (view === 'home-industries') { document.getElementById('panelHomeIndustries').style.display = 'block'; renderHomeIndustryImages(); return; }
+  if (view === 'wws-cards')     { document.getElementById('panelWwsCards').style.display = 'block'; renderWwsCards(); return; }
   if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); updateLogoPreview(); return; }
   document.getElementById('panelProducts').style.display = 'block';
   renderProductPanel(view);
@@ -1342,24 +1346,40 @@ const INDUSTRY_LABELS = {
   hospitality: 'Hospitality'
 };
 
-function renderIndustryImages() {
-  const el = document.getElementById('industryImagesList');
+/* ══ COMBINED "WHO WE SERVE" CARDS (WWS page rows + home cards) ══ */
+function renderWwsCards() {
+  const el = document.getElementById('wwsCardsList');
   const imgs = siteSettings.industryImages || {};
+  const homeImgs = siteSettings.homeIndustryImages || {};
   const content = siteSettings.industryContent || {};
+  const order = (Array.isArray(siteSettings.industryOrder) && siteSettings.industryOrder.length)
+    ? siteSettings.industryOrder.slice()
+    : DEFAULT_INDUSTRY_IDS.slice();
+
   el.innerHTML = `
-    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-tan" onclick="saveSiteText('industries')">💾 Save Text Changes</button>
-      <span style="font-size:0.82rem;color:var(--muted);">Edit the heading &amp; description for each industry, then save to publish.</span>
+    <div style="margin-bottom:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-tan" onclick="saveSiteText()">💾 Save Text Changes</button>
+      <span style="font-size:0.82rem;color:var(--muted);">Edit labels, headings, descriptions &amp; recommended products, then save to publish. Images publish instantly on upload.</span>
     </div>
     <div class="industry-img-grid">${
-    Object.entries(INDUSTRY_LABELS).map(([id, label]) => {
-      const src = imgs[id] || '';
+    order.map(id => {
+      const isDefault = DEFAULT_INDUSTRY_IDS.indexOf(id) !== -1;
       const c = content[id] || {};
-      return `<div class="industry-img-card">
-        <h4>${label}</h4>
+      const hidden = !!c.hidden;
+      const src = imgs[id] || '';
+      const hsrc = homeImgs[id] || '';
+      const label = industryLabel(id);
+      return `<div class="industry-img-card" style="${hidden ? 'opacity:0.6;' : ''}">
+        <h4 style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          ${escHtml(label)}
+          ${isDefault ? '' : '<span style="font-size:0.62rem;background:var(--tan-light);color:var(--tan-dark);padding:1px 6px;border-radius:8px;font-weight:700;">CUSTOM</span>'}
+          ${hidden ? '<span style="font-size:0.62rem;background:#f5d5d5;color:#a33;padding:1px 6px;border-radius:8px;font-weight:700;">HIDDEN</span>' : ''}
+        </h4>
+
+        <label class="ind-field-label">Who We Serve page image</label>
         <div class="industry-img-preview" id="ind-prev-${id}">
           ${src
-            ? `<img src="${src}" alt="${label}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
+            ? `<img src="${src}" alt="${escAttr(label)}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
             : `<div class="no-prev">No image set</div>`}
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
@@ -1368,13 +1388,93 @@ function renderIndustryImages() {
           ${src ? `<button class="btn btn-outline btn-sm" onclick="clearIndustryImage('${id}')">Remove</button>` : ''}
         </div>
         <p class="upload-progress" id="ind-prog-${id}"></p>
-        <label class="ind-field-label">Heading</label>
+
+        <label class="ind-field-label">Home card image</label>
+        <div class="industry-img-preview" id="home-ind-prev-${id}">
+          ${hsrc
+            ? `<img src="${hsrc}" alt="${escAttr(label)}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
+            : `<div class="no-prev">No image set</div>`}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-tan btn-sm" onclick="document.getElementById('home-ind-file-${id}').click()">📁 Upload</button>
+          <input type="file" id="home-ind-file-${id}" accept="image/*" onchange="handleHomeIndustryImageUpload('${id}', this)" />
+          ${hsrc ? `<button class="btn btn-outline btn-sm" onclick="clearHomeIndustryImage('${id}')">Remove</button>` : ''}
+        </div>
+        <p class="upload-progress" id="home-ind-prog-${id}"></p>
+
+        <label class="ind-field-label">Home Card Label</label>
+        <input type="text" class="ind-text-field" id="home-ind-label-${id}" value="${escAttr(c.homeLabel)}" oninput="setIndustryField('${id}','homeLabel',this.value)">
+        <label class="ind-field-label">Who We Serve Heading</label>
         <input type="text" class="ind-text-field" id="ind-head-${id}" value="${escAttr(c.heading)}" oninput="setIndustryField('${id}','heading',this.value)">
-        <label class="ind-field-label">Description</label>
+        <label class="ind-field-label">Who We Serve Description</label>
         <textarea class="ind-text-field" id="ind-desc-${id}" rows="3" oninput="setIndustryField('${id}','desc',this.value)">${escHtml(c.desc)}</textarea>
+        <label class="ind-field-label">Recommended Products (one per line)</label>
+        <textarea class="ind-text-field" id="ind-rec-${id}" rows="3" placeholder="POS Terminal&#10;EFTPOS Terminal" oninput="setIndustryField('${id}','recommended',this.value)">${escHtml(c.recommended)}</textarea>
+
+        <div style="margin-top:12px;">
+          ${hidden
+            ? `<button class="btn btn-outline btn-sm" onclick="restoreWwsCard('${id}')">↩ Show on site</button>`
+            : `<button class="btn btn-outline btn-sm" onclick="deleteWwsCard('${id}')" style="color:#a33;border-color:#e0b0b0;">${isDefault ? '🚫 Hide from site' : '🗑 Delete card'}</button>`}
+        </div>
       </div>`;
     }).join('')
   }</div>`;
+}
+
+async function addWwsCard() {
+  const name = (prompt('Name for the new Who We Serve card (e.g. "Healthcare"):') || '').trim();
+  if (!name) return;
+  const base = slugify(name) || ('industry-' + Date.now());
+  let id = base, n = 2;
+  while (siteSettings.industryContent && siteSettings.industryContent[id]) { id = base + '-' + n; n++; }
+  if (!siteSettings.industryContent) siteSettings.industryContent = {};
+  if (!siteSettings.industryImages) siteSettings.industryImages = {};
+  if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = {};
+  if (!Array.isArray(siteSettings.industryOrder)) siteSettings.industryOrder = DEFAULT_INDUSTRY_IDS.slice();
+  siteSettings.industryContent[id] = { homeLabel: name, heading: name, desc: '', recommended: '', custom: true, hidden: false };
+  siteSettings.industryImages[id] = '';
+  siteSettings.homeIndustryImages[id] = '';
+  siteSettings.industryOrder.push(id);
+  try {
+    await publishSiteSettings();
+    renderWwsCards();
+    showToast('Card added & published!', 'success');
+  } catch(e) {
+    showToast('Add failed: ' + e.message, 'error');
+  }
+}
+
+async function deleteWwsCard(id) {
+  const isDefault = DEFAULT_INDUSTRY_IDS.indexOf(id) !== -1;
+  if (isDefault) {
+    if (!confirm('Hide "' + industryLabel(id) + '" from the website? You can show it again anytime.')) return;
+    if (!siteSettings.industryContent[id]) siteSettings.industryContent[id] = {};
+    siteSettings.industryContent[id].hidden = true;
+  } else {
+    if (!confirm('Permanently delete the "' + industryLabel(id) + '" card?')) return;
+    if (siteSettings.industryContent) delete siteSettings.industryContent[id];
+    if (siteSettings.industryImages) delete siteSettings.industryImages[id];
+    if (siteSettings.homeIndustryImages) delete siteSettings.homeIndustryImages[id];
+    if (Array.isArray(siteSettings.industryOrder)) siteSettings.industryOrder = siteSettings.industryOrder.filter(x => x !== id);
+  }
+  try {
+    await publishSiteSettings();
+    renderWwsCards();
+    showToast(isDefault ? 'Card hidden & published.' : 'Card deleted & published.', 'success');
+  } catch(e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
+}
+
+async function restoreWwsCard(id) {
+  if (siteSettings.industryContent && siteSettings.industryContent[id]) siteSettings.industryContent[id].hidden = false;
+  try {
+    await publishSiteSettings();
+    renderWwsCards();
+    showToast('Card is visible again & published.', 'success');
+  } catch(e) {
+    showToast('Failed: ' + e.message, 'error');
+  }
 }
 
 async function handleIndustryImageUpload(id, input) {
@@ -1387,9 +1487,9 @@ async function handleIndustryImageUpload(id, input) {
     if (!siteSettings.industryImages) siteSettings.industryImages = {};
     siteSettings.industryImages[id] = path;
     await publishSiteSettings();
-    renderIndustryImages(); // re-render with new image
+    renderWwsCards();
     prog.textContent = `✅ Uploaded!`; prog.className = 'upload-progress done';
-    showToast(`${INDUSTRY_LABELS[id]} image updated!`, 'success');
+    showToast(`${industryLabel(id)} image updated!`, 'success');
   } catch(e) {
     prog.textContent = `❌ ${e.message}`; prog.className = 'upload-progress err';
     showToast('Upload failed: ' + e.message, 'error');
@@ -1398,58 +1498,15 @@ async function handleIndustryImageUpload(id, input) {
 }
 
 async function clearIndustryImage(id) {
-  if (!confirm('Remove this industry image?')) return;
+  if (!confirm('Remove this Who We Serve image?')) return;
   if (siteSettings.industryImages) siteSettings.industryImages[id] = '';
   try {
     await publishSiteSettings();
-    renderIndustryImages();
+    renderWwsCards();
     showToast('Image removed.', '');
   } catch(e) {
     showToast('Failed: ' + e.message, 'error');
   }
-}
-
-/* ══ HOME PAGE "WHO WE SERVE" CARD IMAGES ══ */
-const HOME_INDUSTRY_LABELS = {
-  ecommerce:   'E-Commerce & Fulfillment',
-  retail:      'Retail Stores',
-  fnb:         'Food & Beverage',
-  warehouse:   'Warehousing & Logistics',
-  office:      'Office & Professional Services',
-  hospitality: 'Hospitality'
-};
-
-function renderHomeIndustryImages() {
-  const el = document.getElementById('homeIndustryImagesList');
-  const imgs = siteSettings.homeIndustryImages || {};
-  const content = siteSettings.industryContent || {};
-  el.innerHTML = `
-    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-tan" onclick="saveSiteText('home')">💾 Save Text Changes</button>
-      <span style="font-size:0.82rem;color:var(--muted);">Edit each card's label, then save to publish. Clicking a card on the home page links to the matching section on the Who We Serve page.</span>
-    </div>
-    <div class="industry-img-grid">${
-    Object.entries(HOME_INDUSTRY_LABELS).map(([id, label]) => {
-      const src = imgs[id] || '';
-      const c = content[id] || {};
-      return `<div class="industry-img-card">
-        <h4>${label}</h4>
-        <div class="industry-img-preview" id="home-ind-prev-${id}">
-          ${src
-            ? `<img src="${src}" alt="${label}" onerror="this.parentElement.innerHTML='<div class=no-prev>Image not found</div>'">`
-            : `<div class="no-prev">No image set</div>`}
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn btn-tan btn-sm" onclick="document.getElementById('home-ind-file-${id}').click()">📁 Upload</button>
-          <input type="file" id="home-ind-file-${id}" accept="image/*" onchange="handleHomeIndustryImageUpload('${id}', this)" />
-          ${src ? `<button class="btn btn-outline btn-sm" onclick="clearHomeIndustryImage('${id}')">Remove</button>` : ''}
-        </div>
-        <p class="upload-progress" id="home-ind-prog-${id}"></p>
-        <label class="ind-field-label">Card Label</label>
-        <input type="text" class="ind-text-field" id="home-ind-label-${id}" value="${escAttr(c.homeLabel)}" oninput="setIndustryField('${id}','homeLabel',this.value)">
-      </div>`;
-    }).join('')
-  }</div>`;
 }
 
 async function handleHomeIndustryImageUpload(id, input) {
@@ -1462,9 +1519,9 @@ async function handleHomeIndustryImageUpload(id, input) {
     if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = {};
     siteSettings.homeIndustryImages[id] = path;
     await publishSiteSettings();
-    renderHomeIndustryImages();
+    renderWwsCards();
     prog.textContent = `✅ Uploaded!`; prog.className = 'upload-progress done';
-    showToast(`${HOME_INDUSTRY_LABELS[id]} card image updated!`, 'success');
+    showToast(`${industryLabel(id)} card image updated!`, 'success');
   } catch(e) {
     prog.textContent = `❌ ${e.message}`; prog.className = 'upload-progress err';
     showToast('Upload failed: ' + e.message, 'error');
@@ -1477,7 +1534,7 @@ async function clearHomeIndustryImage(id) {
   if (siteSettings.homeIndustryImages) siteSettings.homeIndustryImages[id] = '';
   try {
     await publishSiteSettings();
-    renderHomeIndustryImages();
+    renderWwsCards();
     showToast('Image removed.', '');
   } catch(e) {
     showToast('Failed: ' + e.message, 'error');

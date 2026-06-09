@@ -377,6 +377,59 @@
       color: var(--text-muted);
     }
 
+    /* ── Quantity stepper ── */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 2px;
+    }
+    .qty-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .qty-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 2px solid var(--text);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .qty-btn:hover { background: #1a1a1a; color: #fff; }
+    .qty-input {
+      width: 52px;
+      height: 40px;
+      border: none;
+      border-left: 2px solid var(--tan-light);
+      border-right: 2px solid var(--tan-light);
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      background: #fff;
+      -moz-appearance: textfield;
+    }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .qty-input:focus { outline: none; }
+
     /* ── LOADING / ERROR ─────────────────────── */
     .detail-loading, .detail-error {
       max-width: 1100px;
@@ -482,7 +535,7 @@
           <li>(0917) 814 5828</li>
           <li>(0917) 327 0505</li>
         </ul>
-        <a href="#" class="footer-social" aria-label="Facebook">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
       </div>
@@ -672,7 +725,48 @@
     }
 
     /* ── Render full page ──────────────────── */
+    /* ── Quantity + single-item quote ── */
+    let currentProduct = null;
+    let currentCatLabel = 'Product';
+
+    function clampQty() {
+      const el = document.getElementById('qtyInput');
+      if (!el) return 1;
+      let n = parseInt(el.value, 10);
+      if (isNaN(n) || n < 1) n = 1;
+      if (n > 9999) n = 9999;
+      // only overwrite if the field isn't mid-edit-empty
+      if (el.value !== '') el.value = n;
+      return n;
+    }
+    function stepQty(delta) {
+      const el = document.getElementById('qtyInput');
+      if (!el) return;
+      let n = parseInt(el.value, 10);
+      if (isNaN(n)) n = 1;
+      n = Math.min(9999, Math.max(1, n + delta));
+      el.value = n;
+    }
+    function requestQuote() {
+      if (!currentProduct) { window.location.href = 'contact.html'; return; }
+      const qty = clampQty();
+      try {
+        localStorage.setItem('kt_quote_single', JSON.stringify({
+          model: currentProduct.model || '',
+          name: currentProduct.name || '',
+          categoryLabel: currentCatLabel || '',
+          qty: qty
+        }));
+      } catch (e) {}
+      window.location.href = 'contact.html';
+    }
+    window.stepQty = stepQty;
+    window.clampQty = clampQty;
+    window.requestQuote = requestQuote;
+
     function renderPage(product, category) {
+      currentProduct = product;
+      currentCatLabel = category ? category.label : 'Product';
       document.title = `${product.model} ${product.name} — Kinatech Hub`;
 
       const badgeHtml = product.badge
@@ -726,7 +820,16 @@
             ${sectionsHtml}
 
             <div class="cta-area">
-              <a href="contact.html" class="btn btn-primary btn-quote">REQUEST A QUOTE</a>
+              <div class="qty-row">
+                <span class="qty-label">Quantity</span>
+                <div class="qty-stepper">
+                  <button type="button" class="qty-btn" aria-label="Decrease quantity" onclick="stepQty(-1)">−</button>
+                  <input type="number" id="qtyInput" class="qty-input" value="1" min="1" max="9999"
+                    inputmode="numeric" aria-label="Quantity" oninput="clampQty()" />
+                  <button type="button" class="qty-btn" aria-label="Increase quantity" onclick="stepQty(1)">+</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary btn-quote" onclick="requestQuote()">REQUEST A QUOTE</button>
               <button class="btn-inquiry"
                 data-sl-id="${product.id}"
                 data-sl-label="+ Add to Inquiry List"

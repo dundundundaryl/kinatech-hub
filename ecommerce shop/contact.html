@@ -216,7 +216,7 @@
 
       <div class="quick-links">
         <h4>Quick Links</h4>
-        <a href="#" class="footer-social" aria-label="Facebook" style="margin-top:0;">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook" style="margin-top:0;">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white" width="20" height="20">
             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
@@ -285,7 +285,7 @@
           <li>(0917) 814 5828</li>
           <li>(0917) 327 0505</li>
         </ul>
-        <a href="#" class="footer-social" aria-label="Facebook">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
       </div>
@@ -293,21 +293,41 @@
   </footer>
 
   <script>
-    // Pre-fill message from inquiry list
+    // Pre-fill message — single-item "Request a Quote" takes priority over inquiry list
     document.addEventListener('DOMContentLoaded', () => {
+      const ta = document.getElementById('message');
+      if (!ta || ta.value) return;
+
+      // 1) Single-product quote (from product page "Request a Quote" + quantity)
+      let single = null;
+      try { single = JSON.parse(localStorage.getItem('kt_quote_single')); } catch (e) {}
+      try { localStorage.removeItem('kt_quote_single'); } catch (e) {}
+
+      if (single && single.name) {
+        const qty = parseInt(single.qty, 10) || 1;
+        const cat = single.categoryLabel ? ' (' + single.categoryLabel + ')' : '';
+        ta.value = 'Hi, I would like to request a quote for the following product:\n\n' +
+          `• ${single.model ? single.model + ' ' : ''}${single.name}${cat} — Quantity: ${qty}` +
+          '\n\nPlease provide pricing, availability, and any applicable discounts for bulk orders. Thank you!';
+        const notice = document.createElement('div');
+        notice.style.cssText = 'background:#f0f7ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#2a5a2a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;';
+        notice.innerHTML = `<span>✓ Your quote request (Qty: ${qty}) has been added to your message.</span>
+          <button onclick="document.getElementById('message').value='';this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#888;font-size:0.75rem;text-decoration:underline;font-family:inherit;">Clear</button>`;
+        ta.parentElement.insertBefore(notice, ta);
+        return;
+      }
+
+      // 2) Fall back to the full inquiry list
       const list = window.Shortlist?.getList?.() || [];
       if (list.length > 0) {
-        const ta = document.getElementById('message');
-        if (ta && !ta.value) {
-          ta.value = 'Hi, I would like to request a quote for the following products:\n\n' +
-            list.map(x => `• ${x.model} ${x.name}${x.categoryLabel ? ' (' + x.categoryLabel + ')' : ''}`).join('\n') +
-            '\n\nPlease provide pricing, availability, and any applicable discounts for bulk orders. Thank you!';
-          const notice = document.createElement('div');
-          notice.style.cssText = 'background:#f0f7ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#2a5a2a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;';
-          notice.innerHTML = `<span>✓ Your inquiry list (${list.length} product${list.length !== 1 ? 's' : ''}) has been added to your message.</span>
-            <button onclick="document.getElementById('message').value='';this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#888;font-size:0.75rem;text-decoration:underline;font-family:inherit;">Clear</button>`;
-          ta.parentElement.insertBefore(notice, ta);
-        }
+        ta.value = 'Hi, I would like to request a quote for the following products:\n\n' +
+          list.map(x => `• ${x.model} ${x.name}${x.categoryLabel ? ' (' + x.categoryLabel + ')' : ''}`).join('\n') +
+          '\n\nPlease provide pricing, availability, and any applicable discounts for bulk orders. Thank you!';
+        const notice = document.createElement('div');
+        notice.style.cssText = 'background:#f0f7ee;border:1px solid #a8d8a8;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#2a5a2a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;';
+        notice.innerHTML = `<span>✓ Your inquiry list (${list.length} product${list.length !== 1 ? 's' : ''}) has been added to your message.</span>
+          <button onclick="document.getElementById('message').value='';window.Shortlist?.clearList?.();this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#888;font-size:0.75rem;text-decoration:underline;font-family:inherit;">Clear</button>`;
+        ta.parentElement.insertBefore(notice, ta);
       }
     });
 

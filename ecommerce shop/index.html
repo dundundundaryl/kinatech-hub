@@ -24,6 +24,15 @@
       align-items: center;
     }
 
+    /* On wide screens, push the hero image toward the right so it
+       sits clear of the left-aligned text instead of behind it. */
+    @media (min-width: 1500px) {
+      .hero { background-position: 78% center; }
+    }
+    @media (min-width: 1900px) {
+      .hero { background-position: 85% center; }
+    }
+
     /* Full-bleed placeholder — shows the image slot.
        DELETE this div once you set background-image on .hero */
     .hero-bg-placeholder {
@@ -288,6 +297,31 @@
       .wws-grid { grid-template-columns: 1fr; }
       .categories-grid { grid-template-columns: repeat(2, 1fr); }
       .cat-card { min-height: 300px; }
+
+      /* Center hero + section headings when the layout stacks on mobile */
+      .hero-text { max-width: 100%; text-align: center; }
+      .hero-text p { margin-left: auto; margin-right: auto; }
+      .hero-cta { justify-content: center; flex-wrap: wrap; }
+      .section-title,
+      .section-sub { text-align: center; }
+      .section-link { display: block; text-align: center; }
+    }
+
+    /* ── Scroll reveal (reversible blur / unblur) ── */
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        filter: blur(9px);
+        transform: translateY(26px);
+        transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
+        will-change: opacity, filter, transform;
+      }
+      .reveal.in-view {
+        opacity: 1;
+        filter: blur(0);
+        transform: none;
+      }
     }
   </style>
 </head>
@@ -583,7 +617,7 @@
           <li>(0917) 814 5828</li>
           <li>(0917) 327 0505</li>
         </ul>
-        <a href="#" class="footer-social" aria-label="Facebook">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
       </div>
@@ -642,17 +676,12 @@
         if (ph) ph.style.display = 'none';
       }
       // Home page "Who We Serve" cards (separate from the full Who We Serve page)
+      const HOME_DEFAULT_IDS = ['ecommerce','retail','fnb','warehouse','office','hospitality'];
       const homeImgs = s.homeIndustryImages || {};
       const content = s.industryContent || {};
-      document.querySelectorAll('.wws-card').forEach(function(card) {
-        const id = card.getAttribute('data-ind');
-        // Editable card label (admin → Home Cards panel)
-        const c = content[id];
-        if (c && c.homeLabel) {
-          const lbl = card.querySelector('.wws-label');
-          if (lbl) lbl.textContent = c.homeLabel;
-        }
-        const src = homeImgs[id];
+      const order = (s.industryOrder && s.industryOrder.length) ? s.industryOrder : HOME_DEFAULT_IDS;
+
+      function setCardImage(card, src) {
         if (!src) return;
         const ph = card.querySelector('.wws-img-placeholder');
         if (ph) {
@@ -663,8 +692,59 @@
           img.onerror = function () { this.style.display = 'none'; };
           ph.replaceWith(img);
         }
+      }
+
+      // Update existing (default) cards: label, image, hide flag
+      document.querySelectorAll('.wws-card').forEach(function(card) {
+        const id = card.getAttribute('data-ind');
+        const c = content[id];
+        if (c && c.hidden) { card.style.display = 'none'; return; }
+        if (c && c.homeLabel) {
+          const lbl = card.querySelector('.wws-label');
+          if (lbl) lbl.textContent = c.homeLabel;
+        }
+        setCardImage(card, homeImgs[id]);
       });
+
+      // Inject custom-added cards (ids in order that aren't default cards)
+      const grid = document.querySelector('.wws-grid');
+      if (grid) {
+        order.forEach(function(id) {
+          if (HOME_DEFAULT_IDS.indexOf(id) !== -1) return;
+          if (grid.querySelector('[data-ind="' + id + '"]')) return;
+          const c = content[id] || {};
+          if (c.hidden) return;
+          const label = c.homeLabel || c.heading || id;
+          const src = homeImgs[id] || '';
+          const a = document.createElement('a');
+          a.href = 'who-we-serve.html#' + id;
+          a.className = 'wws-card';
+          a.setAttribute('data-ind', id);
+          a.innerHTML =
+            (src
+              ? '<img class="wws-photo" src="' + src + '" alt="" onerror="this.style.display=\'none\'">'
+              : '<div class="wws-img-placeholder">' + label + '</div>') +
+            '<div class="wws-label">' + label + '</div>';
+          grid.appendChild(a);
+        });
+      }
     });
+  </script>
+
+  <script>
+    /* Reversible scroll-reveal (blur in on scroll down, blur out on scroll up) */
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) return;
+      var els = document.querySelectorAll('.section-title, .section-sub, .cat-card, .wws-card');
+      els.forEach(function (el) { el.classList.add('reveal'); });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          entry.target.classList.toggle('in-view', entry.isIntersecting);
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
   </script>
 </body>
 </html>

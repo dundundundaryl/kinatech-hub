@@ -75,7 +75,7 @@
               <div class="sl-name">${item.name}</div>
               <div class="sl-cat">${item.categoryLabel || ''}</div>
             </div>
-            <button class="sl-remove" onclick="window.Shortlist.removeItem('${item.id}')" title="Remove">×</button>
+            <button class="sl-remove" onclick="event.stopPropagation();window.Shortlist.removeItem('${item.id}')" title="Remove">×</button>
           </div>`).join('');
       }
     }
@@ -85,7 +85,11 @@
       const inList = isInList(btn.dataset.slId);
       btn.dataset.active = inList ? '1' : '0';
       const label = btn.dataset.slLabel || '+ Add to Inquiry';
-      btn.textContent = inList ? '✓ In Inquiry List' : label;
+      if (inList) {
+        btn.innerHTML = '<span class="sl-lbl-full">✓ In Inquiry List</span><span class="sl-lbl-mini">✓</span>';
+      } else {
+        btn.textContent = label;
+      }
     });
   }
 
@@ -156,9 +160,21 @@
       #sl-send:hover { opacity: 0.82; }
       [data-sl-id] { transition: background 0.18s, color 0.18s, border-color 0.18s; }
       [data-sl-id][data-active="1"] { background: #f0f7ee !important; color: #2a7a2a !important; border-color: #a8d8a8 !important; }
+      .sl-lbl-mini { display: none; }
       @media (max-width: 480px) {
         #sl-panel { width: calc(100vw - 32px); right: 16px; }
         #sl-fab { right: 16px; bottom: 16px; }
+        [data-sl-id][data-active="1"] {
+          min-width: 0 !important; width: auto !important;
+          flex: 0 0 auto !important;
+          padding: 7px 13px !important;
+          align-self: center;
+        }
+        [data-sl-id][data-active="1"] .sl-lbl-full { display: none; }
+        [data-sl-id][data-active="1"] .sl-lbl-mini {
+          display: inline-flex; align-items: center; justify-content: center;
+          font-weight: 700; font-size: 0.95rem; line-height: 1;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -184,12 +200,16 @@
       </div>`;
     document.body.appendChild(panel);
 
-    // Close on outside click
-    document.addEventListener('click', e => {
-      if (panelOpen && !panel.contains(e.target) && e.target !== fab && !fab.contains(e.target)) {
-        panelOpen = false;
-        panel.classList.remove('open');
-      }
+    // Close on outside click.
+    // Use 'mousedown' (not 'click'): clicking the × re-renders the list via
+    // innerHTML, which detaches the clicked button before a 'click' handler
+    // runs — making it look like an outside click and wrongly closing the panel.
+    // mousedown fires before that re-render, so the target is still inside the panel.
+    document.addEventListener('mousedown', e => {
+      if (!panelOpen) return;
+      if (panel.contains(e.target) || e.target === fab || fab.contains(e.target)) return;
+      panelOpen = false;
+      panel.classList.remove('open');
     });
 
     refreshWidget();

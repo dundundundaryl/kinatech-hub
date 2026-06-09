@@ -99,10 +99,14 @@
       background: #ddd5c8;
     }
 
-    /* Button brightens on row hover */
-    .industry-row:hover .btn-tan {
+    /* Inquire Now button only animates when hovered directly (not on row hover) */
+    .industry-row .btn-tan {
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+    .industry-row .btn-tan:hover {
       background: var(--tan-dark);
       color: #fff;
+      transform: translateY(-2px);
     }
 
     /* Heading underline on hover */
@@ -161,6 +165,23 @@
       .industry-img { height: 220px; }
       .page-header  { padding: calc(72px + 16px) 20px 32px; }
       .row-divider  { margin: 0 20px 48px; padding: 0; }
+    }
+
+    /* ── Scroll reveal (reversible blur / unblur) ── */
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        filter: blur(9px);
+        transform: translateY(26px);
+        transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
+        will-change: opacity, filter, transform;
+      }
+      .reveal.in-view {
+        opacity: 1;
+        filter: blur(0);
+        transform: none;
+      }
     }
   </style>
 </head>
@@ -387,7 +408,7 @@
           <li>(0917) 814 5828</li>
           <li>(0917) 327 0505</li>
         </ul>
-        <a href="#" class="footer-social" aria-label="Facebook">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
       </div>
@@ -415,31 +436,124 @@
   </script>
 
   <script>
-    document.addEventListener('settingsLoaded', function(e) {
-      const images = e.detail.industryImages || {};
-      Object.entries(images).forEach(([id, src]) => {
+    /* Smooth scroll to section on cross-page nav + reversible scroll-reveal */
+    (function () {
+      const hashId = location.hash ? location.hash.slice(1) : '';
+      // Stop the browser's instant jump so we can animate the scroll instead
+      if (hashId && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
+      if (hashId) { try { window.scrollTo(0, 0); } catch (e) {} }
+
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        const els = document.querySelectorAll('.page-header, .industry-row');
+        els.forEach(el => el.classList.add('reveal'));
+        const io = new IntersectionObserver(entries => {
+          entries.forEach(entry => entry.target.classList.toggle('in-view', entry.isIntersecting));
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        els.forEach(el => io.observe(el));
+      }
+
+      if (hashId) {
+        window.addEventListener('load', () => {
+          const target = document.getElementById(hashId);
+          if (target) setTimeout(() => {
+            target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          }, 90);
+        });
+      }
+    })();
+  </script>
+
+  <script>
+    var WWS_DEFAULT_IDS = ['ecommerce','retail','fnb','warehouse','office','hospitality'];
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function recommendedListHtml(rec) {
+      var items = String(rec || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (!items.length) return '';
+      return '<h4>Recommended Products</h4><ul>' +
+        items.map(function (t) { return '<li>' + escapeHtml(t) + '</li>'; }).join('') + '</ul>';
+    }
+
+    document.addEventListener('settingsLoaded', function (e) {
+      var images = e.detail.industryImages || {};
+      var content = e.detail.industryContent || {};
+      var order = (e.detail.industryOrder && e.detail.industryOrder.length) ? e.detail.industryOrder : WWS_DEFAULT_IDS;
+
+      // 1) Update images on existing (default) rows
+      Object.keys(images).forEach(function (id) {
+        var src = images[id];
         if (!src) return;
-        const row = document.getElementById(id);
+        var row = document.getElementById(id);
         if (!row) return;
-        const imgDiv = row.querySelector('.industry-img');
-        if (imgDiv) {
-          imgDiv.innerHTML = '<img src="' + src + '" alt="' + id + '" onerror="this.style.display=\'none\'">';
+        var imgDiv = row.querySelector('.industry-img');
+        if (imgDiv) imgDiv.innerHTML = '<img src="' + src + '" alt="' + escapeHtml(id) + '" onerror="this.style.display=\'none\'">';
+      });
+
+      // 2) Apply editable text (heading, description, recommended) + hide flag on default rows
+      Object.keys(content).forEach(function (id) {
+        var c = content[id]; if (!c) return;
+        var row = document.getElementById(id);
+        if (!row) return;
+        if (c.hidden) {
+          row.style.display = 'none';
+          var nxt = row.nextElementSibling;
+          if (nxt && nxt.classList.contains('row-divider')) nxt.style.display = 'none';
+          else { var prv = row.previousElementSibling; if (prv && prv.classList.contains('row-divider')) prv.style.display = 'none'; }
+          return;
+        }
+        if (c.heading) { var h = row.querySelector('.industry-text h2'); if (h) h.textContent = c.heading; }
+        if (c.desc)    { var p = row.querySelector('.industry-text > p'); if (p) p.textContent = c.desc; }
+        if (c.recommended) {
+          var ul = row.querySelector('.industry-text ul');
+          if (ul) {
+            ul.innerHTML = String(c.recommended).split('\n').map(function (s) { return s.trim(); }).filter(Boolean)
+              .map(function (t) { return '<li>' + escapeHtml(t) + '</li>'; }).join('');
+          }
         }
       });
 
-      // Editable heading + description per industry (admin → Industries panel)
-      const content = e.detail.industryContent || {};
-      Object.entries(content).forEach(([id, c]) => {
-        if (!c) return;
-        const row = document.getElementById(id);
-        if (!row) return;
-        if (c.heading) {
-          const h = row.querySelector('.industry-text h2');
-          if (h) h.textContent = c.heading;
-        }
-        if (c.desc) {
-          const p = row.querySelector('.industry-text > p');
-          if (p) p.textContent = c.desc;
+      // 3) Inject custom-added industries (ids in order that aren't default rows)
+      var footer = document.querySelector('footer');
+      var customCount = 0;
+      order.forEach(function (id) {
+        if (WWS_DEFAULT_IDS.indexOf(id) !== -1) return;      // default → already in DOM
+        if (document.getElementById(id)) return;             // already injected
+        var c = content[id] || {};
+        if (c.hidden) return;
+        var src = images[id] || '';
+        var flip = ((WWS_DEFAULT_IDS.length + customCount) % 2 === 1) ? ' flip' : '';
+        customCount++;
+
+        var divider = document.createElement('hr');
+        divider.className = 'row-divider';
+
+        var rowEl = document.createElement('div');
+        rowEl.className = 'industry-row' + flip;
+        rowEl.id = id;
+        rowEl.style.scrollMarginTop = '96px';
+        rowEl.innerHTML =
+          '<div class="industry-text">' +
+            '<h2>' + escapeHtml(c.heading || c.homeLabel || id) + '</h2>' +
+            '<p>' + escapeHtml(c.desc || '') + '</p>' +
+            recommendedListHtml(c.recommended) +
+            '<a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>' +
+          '</div>' +
+          '<div class="industry-img">' +
+            (src
+              ? '<img src="' + src + '" alt="' + escapeHtml(c.heading || id) + '" onerror="this.style.display=\'none\'">'
+              : '<div class="industry-img-placeholder"><strong>' + escapeHtml(c.heading || id) + '</strong></div>') +
+          '</div>';
+
+        if (footer && footer.parentNode) {
+          footer.parentNode.insertBefore(divider, footer);
+          footer.parentNode.insertBefore(rowEl, footer);
         }
       });
     });

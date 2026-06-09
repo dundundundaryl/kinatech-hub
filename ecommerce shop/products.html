@@ -44,16 +44,23 @@
       border-radius: var(--radius-pill);
       border: 1.5px solid var(--tan);
       background: transparent;
+      color: var(--text);
+      font-family: inherit;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 0.03em;
       transition: background 0.18s, color 0.18s, border-color 0.18s;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .filter-tab:hover {
-      background: var(--tan-light);
+    /* Only apply hover on devices with a real pointer, so the tan
+       background doesn't "stick" after a tap on touchscreens. */
+    @media (hover: hover) and (pointer: fine) {
+      .filter-tab:hover {
+        background: var(--tan-light);
+      }
     }
 
     /* Active = filled tan */
@@ -337,7 +344,7 @@
           <li>(0917) 814 5828</li>
           <li>(0917) 327 0505</li>
         </ul>
-        <a href="#" class="footer-social" aria-label="Facebook">
+        <a href="https://www.facebook.com/kinatechhub" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
       </div>
