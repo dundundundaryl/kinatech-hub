@@ -4,13 +4,13 @@
       "id": "pos-printers",
       "label": "POS Printers",
       "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--7-.png"
     },
     {
       "id": "scanners",
       "label": "Barcode Scanners",
       "description": "Fast, accurate scanning solutions for inventory management and checkout operations",
-      "image": ""
+      "image": "images/Copy-of-Kinatech-Website--7-.png"
     },
     {
       "id": "label-printers",
@@ -49,11 +49,11 @@
       "name": "TP80NB-M",
       "description": "Most affordable POS printer with USB + Ethernet, 100mm/s printing",
       "category": "pos-printers",
-      "image": "images/Copy-of-Kinatech-Website--10-.png",
+      "image": "images/Copy-of-Kinatech-Website--9-.png",
       "images": [
-        "images/Copy-of-Kinatech-Website--10-.png",
         "images/Copy-of-Kinatech-Website--9-.png",
-        "images/Copy-of-Kinatech-Website--9-.png"
+        "images/Copy-of-Kinatech-Website--11-.png",
+        "images/Copy-of-Kinatech-Website--7-.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
@@ -88,13 +88,14 @@
       "id": "tp80nb-m"
     },
     {
-      "id": "tp80k-l",
       "model": "HPRT",
       "name": "TP80K-L",
       "description": "Compact thermal printer with fast and reliable everyday checkout use",
       "category": "pos-printers",
-      "image": "",
-      "images": [],
+      "image": "images/Copy-of-Kinatech-Website--7-.png",
+      "images": [
+        "images/Copy-of-Kinatech-Website--7-.png"
+      ],
       "badge": "",
       "sections": [
         {
@@ -123,7 +124,8 @@
             "Cutter Life: 1 million cuts"
           ]
         }
-      ]
+      ],
+      "id": "tp80k-l"
     },
     {
       "id": "tp80rl",
@@ -164,9 +166,8 @@
       ]
     },
     {
-      "id": "tp80bs",
       "model": "HPRT",
-      "name": "TP80BS",
+      "name": "TP808S",
       "description": "Fastest printing with USB, Ethernet, Serial and long-life head",
       "category": "pos-printers",
       "image": "",
@@ -199,7 +200,8 @@
             "Cutter Life: 1.5 million cuts"
           ]
         }
-      ]
+      ],
+      "id": "tp80bs"
     },
     {
       "id": "n90",
@@ -338,7 +340,7 @@
         {
           "title": "Key Features",
           "items": [
-            "Omnidirectional scanning — reads from any angle",
+            "Omnidirectional scanning ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ reads from any angle",
             "Hands-free desktop presentation mode",
             "Supports 1D, 2D, and QR codes",
             "High scan rate for fast checkout lines",
@@ -450,9 +452,8 @@
       ]
     },
     {
-      "id": "zq200-single",
       "model": "HPRT",
-      "name": "ZQ200 · SINGLE",
+      "name": "ZQ200",
       "description": "Clear single display monitor for retail, restaurants and business environments",
       "category": "pos-terminal",
       "image": "",
@@ -478,12 +479,12 @@
             "Orientation: Landscape"
           ]
         }
-      ]
+      ],
+      "id": "zq200-single"
     },
     {
-      "id": "zq200-dual",
       "model": "HPRT",
-      "name": "ZQ200 · DUAL",
+      "name": "ZQ200",
       "description": "Clear dual display monitor for cashier and customer-facing environments",
       "category": "pos-terminal",
       "image": "",
@@ -509,7 +510,8 @@
             "Use Case: Cashier-facing + Customer-facing"
           ]
         }
-      ]
+      ],
+      "id": "zq200-dual"
     },
     {
       "id": "aio-eftpos",
