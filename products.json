@@ -46,14 +46,12 @@
   "products": [
     {
       "model": "HPRT",
-      "name": "TP80NB-M",
+      "name": "TP80NB-M69",
       "description": "Most affordable POS printer with USB + Ethernet, 100mm/s printing",
       "category": "pos-printers",
       "image": "images/POS-PRINTER-TP80NB-M-1.png",
       "images": [
-        "images/POS-PRINTER-TP80NB-M-1.png",
-        "images/Copy-of-Kinatech-Website--11-.png",
-        "images/Copy-of-Kinatech-Website--7-.png"
+        "images/POS-PRINTER-TP80NB-M-1.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
@@ -166,8 +164,9 @@
       ]
     },
     {
+      "id": "tp80bs",
       "model": "HPRT",
-      "name": "TP808S",
+      "name": "TP80BS",
       "description": "Fastest printing with USB, Ethernet, Serial and long-life head",
       "category": "pos-printers",
       "image": "",
@@ -200,8 +199,7 @@
             "Cutter Life: 1.5 million cuts"
           ]
         }
-      ],
-      "id": "tp80bs"
+      ]
     },
     {
       "id": "n90",
