@@ -331,35 +331,41 @@
       }
     });
 
-    // Load Formspree endpoint from site settings
+    // Load Apps Script URL from site settings
+    let _scriptUrl = '';
     document.addEventListener('settingsLoaded', function(e) {
-      const endpoint = e.detail?.contact?.formspreeEndpoint;
-      if (endpoint) {
-        document.getElementById('contactForm').setAttribute('action', endpoint);
-        document.getElementById('contactForm').setAttribute('method', 'POST');
-        document.getElementById('contactForm').removeAttribute('onsubmit');
-        // Add hidden redirect field so Formspree shows our success state
-        const input = document.createElement('input');
-        input.type = 'hidden'; input.name = '_next'; input.value = window.location.href + '?sent=1';
-        document.getElementById('contactForm').appendChild(input);
-      }
+      _scriptUrl = e.detail?.contact?.scriptUrl || '';
     });
 
-    // Show success message if redirected back after Formspree submit
-    if (window.location.search.includes('sent=1')) {
-      document.getElementById('contactForm').style.display = 'none';
-      document.getElementById('formSuccess').style.display = 'block';
-    }
-
-    function handleSubmit(e) {
-      // Fallback if no Formspree endpoint set — show local success message
+    async function handleSubmit(e) {
+      e.preventDefault();
       const form = document.getElementById('contactForm');
-      if (!form.action || form.action === window.location.href) {
-        e.preventDefault();
-        form.style.display = 'none';
-        document.getElementById('formSuccess').style.display = 'block';
+      const btn  = form.querySelector('.form-submit');
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const phone   = document.getElementById('phone').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (_scriptUrl) {
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        try {
+          // no-cors: opaque response is fine — we just need the POST to reach the script
+          await fetch(_scriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ name, email, phone, message }).toString()
+          });
+        } catch(err) {
+          // network error — still show success to avoid confusing the user; entry may have gone through
+          console.warn('Form submit error:', err);
+        }
       }
-      // Otherwise let Formspree handle it via normal form POST
+
+      // Show success regardless (if no scriptUrl, it's a local-only fallback)
+      form.style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
     }
     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobileNav');

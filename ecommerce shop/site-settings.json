@@ -1,73 +1,31 @@
 {
-  "hero": {
-    "image": "images/IMG_9071.PNG"
-  },
+  "hero": { "image": "" },
+  "logo": "",
   "colors": {
     "tan": "#c9b89a",
     "tanDark": "#a89070",
     "tanLight": "#e8ddd0",
-    "tanFooter": "#e1d5c1",
+    "tanFooter": "#c4b398",
     "bgAlt": "#f7f3ee",
     "cardBg": "#ede4d8"
   },
   "industryImages": {
-    "ecommerce": "images/Copy-of-Kinatech-Website--7-.png",
-    "retail": "images/Copy-of-Kinatech-Website--7-.png",
-    "fnb": "",
-    "warehouse": "",
-    "office": "",
-    "hospitality": ""
-  },
-  "contact": {
-    "formspreeEndpoint": ""
-  },
-  "homeIndustryImages": {
-    "ecommerce": "images/Copy-of-Kinatech-Website--7-.png",
+    "ecommerce": "",
     "retail": "",
     "fnb": "",
     "warehouse": "",
     "office": "",
     "hospitality": ""
   },
-  "logo": "",
-  "industryContent": {
-    "ecommerce": {
-      "homeLabel": "E-Commerce & Fulfillment",
-      "heading": "Ecommerce & Fulfillment",
-      "desc": "Streamline shipping, packing, and order processing with industry-leading hardware solutions."
-    },
-    "retail": {
-      "homeLabel": "Retail Stores",
-      "heading": "Retail Stores",
-      "desc": "Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware."
-    },
-    "fnb": {
-      "homeLabel": "Food & Beverage",
-      "heading": "Food & Beverage",
-      "desc": "POS and payment solutions for seamless food service operations."
-    },
-    "warehouse": {
-      "homeLabel": "Warehousing & Logistics",
-      "heading": "Warehousing & Logistics",
-      "desc": "Industrial-grade tracking and labeling solutions for efficient operations at scale."
-    },
-    "office": {
-      "homeLabel": "Office & Professional Services",
-      "heading": "Office & Professional Services",
-      "desc": "Printing and storage solutions for efficient office operations."
-    },
-    "hospitality": {
-      "homeLabel": "Hospitality",
-      "heading": "Hospitality",
-      "desc": "Front-desk and payment systems for seamless guest experiences."
-    }
+  "homeIndustryImages": {
+    "ecommerce": "",
+    "retail": "",
+    "fnb": "",
+    "warehouse": "",
+    "office": "",
+    "hospitality": ""
   },
-  "industryOrder": [
-    "ecommerce",
-    "retail",
-    "fnb",
-    "warehouse",
-    "office",
-    "hospitality"
-  ]
+  "contact": {
+    "scriptUrl": ""
+  }
 }

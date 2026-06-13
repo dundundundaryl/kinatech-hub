@@ -453,18 +453,20 @@
         <div class="settings-card">
           <h3>📬 Contact Form</h3>
           <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
-            Connect your contact form to <strong>Formspree</strong> so submissions are emailed to you.
+            Connect your contact form to <strong>Google Sheets</strong> so submissions are logged automatically.
           </p>
           <div class="settings-note">
-            <strong>How to set up:</strong><br>
-            1. Go to <a href="https://formspree.io" target="_blank" style="color:#0066cc">formspree.io</a> → create a free account<br>
-            2. Click <strong>New Form</strong> → enter your email address<br>
-            3. Copy the endpoint URL (looks like <code>https://formspree.io/f/xxxxxxxx</code>)<br>
-            4. Paste it below → Publish
+            <strong>How to set up (one-time):</strong><br>
+            1. Open <a href="https://sheets.new" target="_blank" style="color:#0066cc">sheets.new</a> — create a blank spreadsheet<br>
+            2. In the menu: <strong>Extensions → Apps Script</strong><br>
+            3. Delete all existing code and paste the script from the instructions<br>
+            4. Click <strong>Deploy → New deployment → Web app</strong><br>
+            &nbsp;&nbsp;&nbsp;• Execute as: <strong>Me</strong> &nbsp;|&nbsp; Who has access: <strong>Anyone</strong><br>
+            5. Copy the Web app URL and paste it below → Save & Publish
           </div>
           <div class="form-group">
-            <label>Formspree Endpoint URL</label>
-            <input type="text" id="formspreeUrl" placeholder="https://formspree.io/f/xxxxxxxx" />
+            <label>Google Apps Script Web App URL</label>
+            <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/…/exec" />
           </div>
           <button class="btn btn-tan" onclick="saveContactSettings()">Save & Publish</button>
         </div>
@@ -807,7 +809,12 @@ async function loadSiteSettings() {
   if (!siteSettings.colors) siteSettings.colors = { tan:'#c9b89a', tanDark:'#a89070', tanLight:'#e8ddd0', tanFooter:'#c4b398', bgAlt:'#f7f3ee', cardBg:'#ede4d8' };
   if (!siteSettings.industryImages) siteSettings.industryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
   if (!siteSettings.homeIndustryImages) siteSettings.homeIndustryImages = { ecommerce:'', retail:'', fnb:'', warehouse:'', office:'', hospitality:'' };
-  if (!siteSettings.contact) siteSettings.contact = { formspreeEndpoint: '' };
+  if (!siteSettings.contact) siteSettings.contact = { scriptUrl: '' };
+  // Migrate old Formspree key if present
+  if (siteSettings.contact.formspreeEndpoint !== undefined && !siteSettings.contact.scriptUrl) {
+    siteSettings.contact.scriptUrl = siteSettings.contact.formspreeEndpoint;
+    delete siteSettings.contact.formspreeEndpoint;
+  }
   if (typeof siteSettings.logo !== 'string') siteSettings.logo = '';
   // Editable industry text (home card label + Who We Serve page heading/description)
   if (!siteSettings.industryContent) siteSettings.industryContent = {};
@@ -1421,7 +1428,7 @@ function populateSettingsUI() {
   document.getElementById('colorTanDark').value = c.tanDark   || '#a89070';
   document.getElementById('colorCardBg').value  = c.cardBg    || '#ede4d8';
   document.getElementById('colorBgAlt').value   = c.bgAlt     || '#f7f3ee';
-  document.getElementById('formspreeUrl').value = siteSettings.contact?.formspreeEndpoint || '';
+  document.getElementById('scriptUrl').value = siteSettings.contact?.scriptUrl || '';
 }
 
 async function saveColors() {
@@ -1457,9 +1464,10 @@ async function resetColors() {
 
 /* ══ CONTACT SETTINGS ══ */
 async function saveContactSettings() {
-  const url = document.getElementById('formspreeUrl').value.trim();
+  const url = document.getElementById('scriptUrl').value.trim();
   if (!siteSettings.contact) siteSettings.contact = {};
-  siteSettings.contact.formspreeEndpoint = url;
+  siteSettings.contact.scriptUrl = url;
+  delete siteSettings.contact.formspreeEndpoint; // remove old key if it existed
   try {
     await publishSiteSettings();
     showToast('Contact settings saved & published!', 'success');
