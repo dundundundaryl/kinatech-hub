@@ -61,5 +61,13 @@
       "heading": "Hospitality",
       "desc": "Front-desk and payment systems for seamless guest experiences."
     }
-  }
+  },
+  "industryOrder": [
+    "ecommerce",
+    "retail",
+    "fnb",
+    "warehouse",
+    "office",
+    "hospitality"
+  ]
 }
