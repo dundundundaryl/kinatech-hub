@@ -262,8 +262,10 @@
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none';
 
+    // Keep fileInput inside wrap so _ktCatBlock (which allows .kt-img-btns clicks)
+    // also allows the programmatic fileInput.click() that the Upload button triggers.
+    wrap.appendChild(fileInput);
     el.appendChild(wrap);
-    el.appendChild(fileInput);
 
     function refreshRemove() {
       removeBtn.style.display = hasExistingImage(el) ? 'flex' : 'none';
