@@ -1,0 +1,28 @@
+{
+  "home": {
+    "heroHeadline": "Reliable hardware for smoother business operations.",
+    "heroSubtitle": "POS printers, barcode scanners, label and waybill printers, and storage solutions for retail, e-commerce, and growing businesses.",
+    "heroCtaPrimary": "VIEW PRODUCTS",
+    "heroCtaSecondary": "INQUIRE NOW",
+    "categoriesTitle": "Shop by Category",
+    "categoriesSub": "Browse our comprehensive range of business hardware solutions",
+    "categoriesLink": "View All Products →",
+    "wwsTitle": "Who We Serve",
+    "wwsSub": "One hardware partner for every stage of business growth",
+    "wwsLink": "Explore industries and use cases →"
+  },
+  "products": {
+    "pageTitle": "Products",
+    "pageSubtitle": "Discover the hardware solutions that power successful retail and e-commerce operations"
+  },
+  "wws": {
+    "pageTitle": "Who We Serve",
+    "pageSubtitle": "We understand the unique challenges each sector faces and provide tailored hardware solutions to support growth and efficiency."
+  },
+  "contact": {
+    "heroHeadline": "Get in Touch",
+    "heroTagline": "Let's discuss your hardware needs and find the perfect solution for your business",
+    "formTitle": "Contact Form",
+    "formNote": "We'll get back to you within 1–2 business days."
+  }
+}

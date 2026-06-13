@@ -182,11 +182,17 @@
     #sidebarBackdrop.open { display: block; }
 
     /* ── RESPONSIVE ──────────────────────────── */
+    /* Sidebar mobile footer — hidden on desktop */
+    .sidebar-mob-footer { display: none; }
+    .sidebar-mob-footer a, .sidebar-mob-footer button { text-decoration: none; }
+
     @media (max-width: 768px) {
-      /* Topbar */
+      .sidebar-mob-footer { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border); }
+      /* Topbar — hide text buttons, keep only hamburger */
       .topbar { padding: 0 14px; }
       #repoLabel { display: none; }
       .mob-menu-btn { display: block; }
+      .topbar-actions .btn { display: none; }
 
       /* Layout: sidebar hidden by default */
       .admin-layout { grid-template-columns: 1fr; }
@@ -209,8 +215,9 @@
       .form-row { grid-template-columns: 1fr; }
       .settings-card { padding: 18px; }
 
-      /* Product grid: 2 columns on mobile */
-      .product-list-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      /* Product grid: 2 equal columns on mobile */
+      .product-list-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+      .product-admin-card { min-width: 0; width: 100%; }
       .pac-img { height: 76px; }
       .pac-name { font-size: 0.85rem; }
       .pac-actions .btn { padding: 5px 10px; font-size: 0.75rem; }
@@ -323,10 +330,19 @@
       <button class="sidebar-btn" id="sideSiteSettings" onclick="showPanel('site-settings')">
         🖼 Site Settings
       </button>
+      <button class="sidebar-btn" id="sideSiteContent" onclick="showPanel('site-content')">
+        📝 Site Content
+      </button>
 
       <div class="sidebar-label">Admin</div>
       <button class="sidebar-btn" onclick="showPanel('publish')">📤 Publish</button>
       <button class="sidebar-btn" onclick="showPanel('settings')">⚙️ Settings</button>
+
+      <!-- Mobile-only: View Site + Sign Out at bottom of sidebar -->
+      <div class="sidebar-mob-footer">
+        <a href="index.html" target="_blank" class="sidebar-btn">🌐 View Site ↗</a>
+        <button class="sidebar-btn" onclick="signOut()" style="color:var(--red);">⎋ Sign Out</button>
+      </div>
     </aside>
 
     <main class="main-content">
@@ -485,6 +501,121 @@
           </div>
         </div>
         <div id="publishStatus"></div>
+      </div>
+
+      <!-- SITE CONTENT PANEL -->
+      <div id="panelSiteContent" style="display:none;">
+        <div class="main-header">
+          <h2>Site Content</h2>
+          <button class="btn btn-success" onclick="savePageContent()">💾 Save &amp; Publish</button>
+        </div>
+        <p style="font-size:0.84rem;color:var(--muted);margin-bottom:20px;">
+          Edit the text shown on each page of your website. Changes publish to <code style="background:#f0ece6;padding:2px 6px;border-radius:4px;">content.json</code> on GitHub.<br>
+          Tip: you can also click <strong>✏️ Edit Text</strong> on any page when signed in to edit inline.
+        </p>
+
+        <div class="settings-card">
+          <h3>🏠 Homepage</h3>
+          <div class="form-group">
+            <label>Hero Headline</label>
+            <input type="text" id="ct-home-heroHeadline" />
+          </div>
+          <div class="form-group">
+            <label>Hero Subtitle</label>
+            <textarea id="ct-home-heroSubtitle" style="min-height:60px;"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Primary CTA Label</label>
+              <input type="text" id="ct-home-heroCtaPrimary" />
+            </div>
+            <div class="form-group">
+              <label>Secondary CTA Label</label>
+              <input type="text" id="ct-home-heroCtaSecondary" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Categories Section Title</label>
+            <input type="text" id="ct-home-categoriesTitle" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categories Subtitle</label>
+              <input type="text" id="ct-home-categoriesSub" />
+            </div>
+            <div class="form-group">
+              <label>Categories Link Text</label>
+              <input type="text" id="ct-home-categoriesLink" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Who We Serve Section Title</label>
+            <input type="text" id="ct-home-wwsTitle" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Who We Serve Subtitle</label>
+              <input type="text" id="ct-home-wwsSub" />
+            </div>
+            <div class="form-group">
+              <label>Who We Serve Link Text</label>
+              <input type="text" id="ct-home-wwsLink" />
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>📦 Products Page</h3>
+          <div class="form-group">
+            <label>Page Title</label>
+            <input type="text" id="ct-products-pageTitle" />
+          </div>
+          <div class="form-group">
+            <label>Page Subtitle</label>
+            <input type="text" id="ct-products-pageSubtitle" />
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>🏢 Who We Serve Page</h3>
+          <p class="form-hint" style="margin-bottom:12px;">Industry section headings and descriptions are editable in the <a href="#" onclick="showPanel('wws-cards');return false;" style="color:var(--tan-dark)">Who We Serve Cards</a> panel.</p>
+          <div class="form-group">
+            <label>Page Title</label>
+            <input type="text" id="ct-wws-pageTitle" />
+          </div>
+          <div class="form-group">
+            <label>Page Subtitle</label>
+            <textarea id="ct-wws-pageSubtitle" style="min-height:60px;"></textarea>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>📬 Contact Page</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Hero Headline</label>
+              <input type="text" id="ct-contact-heroHeadline" />
+            </div>
+            <div class="form-group">
+              <label>Hero Tagline</label>
+              <input type="text" id="ct-contact-heroTagline" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Form Title</label>
+              <input type="text" id="ct-contact-formTitle" />
+            </div>
+            <div class="form-group">
+              <label>Form Note</label>
+              <input type="text" id="ct-contact-formNote" />
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:32px;">
+          <button class="btn btn-success btn-full" onclick="savePageContent()">💾 Save &amp; Publish All Changes</button>
+        </div>
       </div>
 
       <!-- SETTINGS PANEL -->
@@ -747,6 +878,7 @@ async function bootAdmin() {
   loadSettings();
   await loadProductsData();
   await loadSiteSettings();
+  await loadSiteContent();
   populateSettingsUI();
   buildSidebar();
   renderProductPanel('all');
@@ -911,10 +1043,10 @@ function showPanel(view) {
   if (window.innerWidth <= 768) closeMobileMenu();
   currentView = view;
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  const sideMap = { all:'sideAll', categories:'sideCats', 'wws-cards':'sideWwsCards', 'site-settings':'sideSiteSettings' };
+  const sideMap = { all:'sideAll', categories:'sideCats', 'wws-cards':'sideWwsCards', 'site-settings':'sideSiteSettings', 'site-content':'sideSiteContent' };
   const sideId = sideMap[view] || `side-${view}`;
   document.getElementById(sideId)?.classList.add('active');
-  ['panelProducts','panelCategories','panelWwsCards','panelSiteSettings','panelPublish','panelSettings'].forEach(id => {
+  ['panelProducts','panelCategories','panelWwsCards','panelSiteSettings','panelSiteContent','panelPublish','panelSettings'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   if (view === 'publish') {
@@ -933,6 +1065,7 @@ function showPanel(view) {
   if (view === 'categories')    { document.getElementById('panelCategories').style.display = 'block'; renderCategoryList(); return; }
   if (view === 'wws-cards')     { document.getElementById('panelWwsCards').style.display = 'block'; renderWwsCards(); return; }
   if (view === 'site-settings') { document.getElementById('panelSiteSettings').style.display = 'block'; updateHeroPreview(); updateLogoPreview(); return; }
+  if (view === 'site-content')  { document.getElementById('panelSiteContent').style.display = 'block'; loadSiteContentUI(); return; }
   document.getElementById('panelProducts').style.display = 'block';
   renderProductPanel(view);
 }
@@ -1459,6 +1592,77 @@ async function resetColors() {
     showToast('Colors reset & published!', 'success');
   } catch(e) {
     showToast('Reset failed: ' + e.message, 'error');
+  }
+}
+
+/* ══ SITE CONTENT ══ */
+var siteContent = {};
+const CONTENT_FIELD_MAP = {
+  'ct-home-heroHeadline':    'home.heroHeadline',
+  'ct-home-heroSubtitle':    'home.heroSubtitle',
+  'ct-home-heroCtaPrimary':  'home.heroCtaPrimary',
+  'ct-home-heroCtaSecondary':'home.heroCtaSecondary',
+  'ct-home-categoriesTitle': 'home.categoriesTitle',
+  'ct-home-categoriesSub':   'home.categoriesSub',
+  'ct-home-categoriesLink':  'home.categoriesLink',
+  'ct-home-wwsTitle':        'home.wwsTitle',
+  'ct-home-wwsSub':          'home.wwsSub',
+  'ct-home-wwsLink':         'home.wwsLink',
+  'ct-products-pageTitle':   'products.pageTitle',
+  'ct-products-pageSubtitle':'products.pageSubtitle',
+  'ct-wws-pageTitle':        'wws.pageTitle',
+  'ct-wws-pageSubtitle':     'wws.pageSubtitle',
+  'ct-contact-heroHeadline': 'contact.heroHeadline',
+  'ct-contact-heroTagline':  'contact.heroTagline',
+  'ct-contact-formTitle':    'contact.formTitle',
+  'ct-contact-formNote':     'contact.formNote',
+};
+function contentDeepGet(obj, path) {
+  return path.split('.').reduce((o, k) => o && o[k], obj);
+}
+function contentDeepSet(obj, path, val) {
+  const parts = path.split('.');
+  let o = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    if (!o[parts[i]]) o[parts[i]] = {};
+    o = o[parts[i]];
+  }
+  o[parts[parts.length - 1]] = val;
+}
+async function loadSiteContent() {
+  const prefix = localStorage.getItem('kt_prefix') || '';
+  const owner = localStorage.getItem('kt_owner');
+  const repo = localStorage.getItem('kt_repo');
+  const token = localStorage.getItem('kt_token');
+  const branch = localStorage.getItem('kt_branch') || 'main';
+  if (prefix && owner && repo && token) {
+    const repoPath = `${prefix}/content.json`;
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`;
+    const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+    if (res.ok) { const file = await res.json(); siteContent = JSON.parse(atob(file.content.replace(/\n/g,''))); return; }
+  }
+  try { const res = await fetch('content.json?v=' + Date.now()); if (res.ok) siteContent = await res.json(); } catch(e) {}
+}
+function loadSiteContentUI() {
+  Object.entries(CONTENT_FIELD_MAP).forEach(([id, path]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = contentDeepGet(siteContent, path);
+    if (val !== undefined) el.value = val;
+  });
+}
+async function savePageContent() {
+  const updated = JSON.parse(JSON.stringify(siteContent));
+  Object.entries(CONTENT_FIELD_MAP).forEach(([id, path]) => {
+    const el = document.getElementById(id);
+    if (el) contentDeepSet(updated, path, el.value.trim());
+  });
+  try {
+    await commitFileToGitHub('content.json', JSON.stringify(updated, null, 2), 'Update site content via admin');
+    siteContent = updated;
+    showToast('Site content saved & published!', 'success');
+  } catch(e) {
+    showToast('Save failed: ' + e.message, 'error');
   }
 }
 

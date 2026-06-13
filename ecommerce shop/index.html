@@ -6,6 +6,7 @@
   <title>Kinatech Hub — Reliable Hardware for Business</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
+  <script src="content-loader.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -365,7 +366,7 @@
     2. On the <section> below, add: style="background-image: url('images/hero-bg.jpg')"
     3. Delete the .hero-bg-placeholder div
   -->
-  <section class="hero" id="heroSection">
+  <section class="hero" id="heroSection" data-img-key="hero" data-img-label="Hero Background">
 
     <!-- PLACEHOLDER — shows the full image slot. Remove once you add your bg image. -->
     <div class="hero-bg-placeholder">
@@ -381,11 +382,11 @@
 
     <div class="hero-inner">
       <div class="hero-text">
-        <h1>Reliable hardware for smoother business operations.</h1>
-        <p>POS printers, barcode scanners, label and waybill printers, and storage solutions for retail, e-commerce, and growing businesses.</p>
+        <h1 data-content="home.heroHeadline">Reliable hardware for smoother business operations.</h1>
+        <p data-content="home.heroSubtitle">POS printers, barcode scanners, label and waybill printers, and storage solutions for retail, e-commerce, and growing businesses.</p>
         <div class="hero-cta">
-          <a href="products.html" class="btn btn-outline">VIEW PRODUCTS</a>
-          <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
+          <a href="products.html" class="btn btn-outline" data-content="home.heroCtaPrimary">VIEW PRODUCTS</a>
+          <a href="contact.html" class="btn btn-tan" data-content="home.heroCtaSecondary">INQUIRE NOW</a>
         </div>
       </div>
     </div>
@@ -393,9 +394,9 @@
 
   <!-- ── SHOP BY CATEGORY ─────────────────── -->
   <section class="section">
-    <h2 class="section-title">Shop by Category</h2>
-    <p class="section-sub">Browse our comprehensive range of business hardware solutions</p>
-    <a href="products.html" class="section-link">View All Products →</a>
+    <h2 class="section-title" data-content="home.categoriesTitle">Shop by Category</h2>
+    <p class="section-sub" data-content="home.categoriesSub">Browse our comprehensive range of business hardware solutions</p>
+    <a href="products.html" class="section-link" data-content="home.categoriesLink">View All Products →</a>
 
     <div class="categories-grid">
 
@@ -404,7 +405,7 @@
           <h3>POS Printers</h3>
           <p>Receipt printing for daily transactions</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-pos-printers" data-img-label="POS Printers image">
           <!-- REPLACE with: <img src="images/pos-printer.png" class="cat-product-img" alt="POS Printer"> -->
           <!-- IMAGE: HPRT TP80NB-M, transparent background PNG, facing 3/4 angle, ~300×200px -->
           <div class="img-placeholder">
@@ -422,7 +423,7 @@
           <h3>Scanners</h3>
           <p>Faster checkout and stock handling</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-scanners" data-img-label="Scanners image">
           <!-- IMAGE: HPRT N150 handheld scanner, transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -439,7 +440,7 @@
           <h3>Label &amp; Waybill Printers</h3>
           <p>Shipping labels and order fulfillment</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-label-printers" data-img-label="Label Printers image">
           <!-- IMAGE: HPRT N43BT white label printer, transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -456,7 +457,7 @@
           <h3>Hard Drives</h3>
           <p>Portable storage and file backup</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-hard-drives" data-img-label="Hard Drives image">
           <!-- IMAGE: Seagate One Touch HDD, slim black, transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -473,7 +474,7 @@
           <h3>POS Terminals</h3>
           <p>Customer-facing and cashier displays</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-pos-terminal" data-img-label="POS Terminals image">
           <!-- IMAGE: HPRT ZQ200 dual-screen POS terminal, transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -490,7 +491,7 @@
           <h3>EFTPOS Terminals</h3>
           <p>All-in-one POS systems for restaurants</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-eftpos" data-img-label="EFTPOS Terminals image">
           <!-- IMAGE: HPRT Android EFTPOS handheld terminal, transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -507,7 +508,7 @@
           <h3>Mobile Label Printer</h3>
           <p>Portable labeling</p>
         </div>
-        <div class="cat-card-img">
+        <div class="cat-card-img" data-img-key="cat-mobile-label" data-img-label="Mobile Label Printer image">
           <!-- IMAGE: HPRT HM-A300E mobile label printer (orange+black), transparent bg PNG, ~300×200px -->
           <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -524,12 +525,12 @@
 
   <!-- ── WHO WE SERVE ─────────────────────── -->
   <section class="section" style="padding-top:0;">
-    <h2 class="section-title">Who We Serve</h2>
-    <p class="section-sub">One hardware partner for every stage of business growth</p>
-    <a href="who-we-serve.html" class="section-link">Explore industries and use cases →</a>
+    <h2 class="section-title" data-content="home.wwsTitle">Who We Serve</h2>
+    <p class="section-sub" data-content="home.wwsSub">One hardware partner for every stage of business growth</p>
+    <a href="who-we-serve.html" class="section-link" data-content="home.wwsLink">Explore industries and use cases →</a>
 
     <div class="wws-grid">
-      <a href="who-we-serve.html#ecommerce" class="wws-card" data-ind="ecommerce">
+      <a href="who-we-serve.html#ecommerce" class="wws-card" data-ind="ecommerce" data-img-key="home-ind-ecommerce" data-img-label="E-Commerce card image">
         <!-- IMAGE: Woman packing boxes with scanner, warehouse setting, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -538,7 +539,7 @@
         <div class="wws-label">E-Commerce &amp; Fulfillment</div>
       </a>
 
-      <a href="who-we-serve.html#retail" class="wws-card" data-ind="retail">
+      <a href="who-we-serve.html#retail" class="wws-card" data-ind="retail" data-img-key="home-ind-retail" data-img-label="Retail card image">
         <!-- IMAGE: Scanner near clothing rack in retail store, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -547,7 +548,7 @@
         <div class="wws-label">Retail Stores</div>
       </a>
 
-      <a href="who-we-serve.html#fnb" class="wws-card" data-ind="fnb">
+      <a href="who-we-serve.html#fnb" class="wws-card" data-ind="fnb" data-img-key="home-ind-fnb" data-img-label="Food & Beverage card image">
         <!-- IMAGE: Label printer next to bubble tea on counter, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -556,7 +557,7 @@
         <div class="wws-label">Food &amp; Beverage</div>
       </a>
 
-      <a href="who-we-serve.html#warehouse" class="wws-card" data-ind="warehouse">
+      <a href="who-we-serve.html#warehouse" class="wws-card" data-ind="warehouse" data-img-key="home-ind-warehouse" data-img-label="Warehousing card image">
         <!-- IMAGE: Scanner + laptop in warehouse, boxes visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -565,7 +566,7 @@
         <div class="wws-label">Warehousing &amp; Logistics</div>
       </a>
 
-      <a href="who-we-serve.html#office" class="wws-card" data-ind="office">
+      <a href="who-we-serve.html#office" class="wws-card" data-ind="office" data-img-key="home-ind-office" data-img-label="Office card image">
         <!-- IMAGE: Laptop + slim HDD on office desk, reports visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -574,7 +575,7 @@
         <div class="wws-label">Office &amp; Professional Services</div>
       </a>
 
-      <a href="who-we-serve.html#hospitality" class="wws-card" data-ind="hospitality">
+      <a href="who-we-serve.html#hospitality" class="wws-card" data-ind="hospitality" data-img-key="home-ind-hospitality" data-img-label="Hospitality card image">
         <!-- IMAGE: POS terminal at hotel reception, "RECEPTION" sign visible, ~500×280px -->
         <div class="wws-img-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
