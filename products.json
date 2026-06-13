@@ -46,12 +46,14 @@
   "products": [
     {
       "model": "HPRT",
-      "name": "TP80NB-M69",
+      "name": "TP80NB-M6",
       "description": "Most affordable POS printer with USB + Ethernet, 100mm/s printing",
       "category": "pos-printers",
-      "image": "images/POS-PRINTER-TP80NB-M-1.png",
+      "image": "images/Copy-of-Kinatech-Website--9-.png",
       "images": [
-        "images/POS-PRINTER-TP80NB-M-1.png"
+        "images/Copy-of-Kinatech-Website--9-.png",
+        "images/Copy-of-Kinatech-Website--11-.png",
+        "images/Copy-of-Kinatech-Website--7-.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
