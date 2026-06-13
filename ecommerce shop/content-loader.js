@@ -538,8 +538,9 @@
     document.querySelectorAll('a.cat-card').forEach(function (a) {
       a._ktCatBlock = function (e) {
         e.preventDefault(); // always stop anchor navigation
-        // Still allow event to reach contenteditable fields for cursor placement
-        if (!e.target.closest('[data-cat-id][data-cat-field]')) {
+        // Allow clicks on text fields and image upload/remove buttons; stop everything else
+        if (!e.target.closest('[data-cat-id][data-cat-field]') &&
+            !e.target.closest('.kt-img-btns')) {
           e.stopImmediatePropagation();
         }
       };
