@@ -55,7 +55,10 @@
     var url = ghApiUrl(g, relPath);
     var sha = null;
     try {
-      var r = await fetch(url + '?ref=' + g.branch, { headers: authHeader(g) });
+      // cache:'no-store' + cache-buster: avoid a stale SHA right after a prior commit
+      var r = await fetch(url + '?ref=' + g.branch + '&_=' + Date.now(), {
+        headers: authHeader(g), cache: 'no-store'
+      });
       if (r.ok) sha = (await r.json()).sha;
     } catch (e) {}
     var body = {
@@ -80,7 +83,9 @@
   async function ghFetchJson(relPath) {
     var g = gh();
     var url = ghApiUrl(g, relPath);
-    var res = await fetch(url + '?ref=' + g.branch, { headers: authHeader(g) });
+    var res = await fetch(url + '?ref=' + g.branch + '&_=' + Date.now(), {
+      headers: authHeader(g), cache: 'no-store'
+    });
     if (!res.ok) throw new Error('Could not fetch ' + relPath);
     var file = await res.json();
     return { data: JSON.parse(atob(file.content.replace(/\n/g, ''))), sha: file.sha };
@@ -108,6 +113,54 @@
     return relPath;
   }
 
+  // Upload an image binary that's already encoded as base64 (used at Publish time
+  // for images that were staged into a draft rather than committed immediately).
+  async function ghPutBinary(relPath, base64, message) {
+    var g = gh();
+    var full = g.prefix ? g.prefix + '/' + relPath : relPath;
+    var url = 'https://api.github.com/repos/' + g.owner + '/' + g.repo +
+      '/contents/' + encodeURIComponent(full).replace(/%2F/g, '/');
+    var sha = null; // staged names are unique, but check anyway so re-publish is safe
+    try {
+      var r = await fetch(url + '?ref=' + g.branch + '&_=' + Date.now(), {
+        headers: authHeader(g), cache: 'no-store'
+      });
+      if (r.ok) sha = (await r.json()).sha;
+    } catch (e) {}
+    var body = { message: message, content: base64, branch: g.branch };
+    if (sha) body.sha = sha;
+    var res = await fetch(url, {
+      method: 'PUT',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader(g)),
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { var err = await res.json(); throw new Error(err.message || res.status); }
+    return relPath;
+  }
+
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function (e) { resolve(e.target.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ── Image draft staging ──────────────────────────
+     Image changes are staged into localStorage (just like text edits) and only
+     committed to GitHub when the user presses Publish. */
+  function getImagesDraft() { return getDraft('kt_images_draft') || {}; }
+  function stageImageDraft(key, entry) {
+    var d = getImagesDraft();
+    d[key] = entry;
+    try {
+      localStorage.setItem('kt_images_draft', JSON.stringify(d));
+    } catch (e) {
+      throw new Error('Image too large to stage — publish your current changes first, or use a smaller image.');
+    }
+  }
+
   /* ── Draft management ─────────────────────────── */
   function getDraft(key) {
     try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; }
@@ -119,7 +172,8 @@
     return !!(localStorage.getItem('kt_content_draft') ||
               localStorage.getItem('kt_products_draft') ||
               localStorage.getItem('kt_wws_draft') ||
-              localStorage.getItem('kt_categories_draft'));
+              localStorage.getItem('kt_categories_draft') ||
+              localStorage.getItem('kt_images_draft'));
   }
   function updateDraftBar() {
     var pubBtn = document.getElementById('kt-publish-btn');
@@ -284,82 +338,102 @@
     });
   }
 
+  /* Update the DOM to show an image preview for a given key (no commits). */
+  function applyImgPreview(key, el, src) {
+    if (key === 'hero') {
+      var hero = document.getElementById('heroSection');
+      if (hero) hero.style.backgroundImage = "url('" + src + "')";
+      var ph = document.querySelector('.hero-bg-placeholder');
+      if (ph) ph.style.display = 'none';
+
+    } else if (key.indexOf('cat-') === 0) {
+      var existing = el.querySelector('img');
+      if (existing) {
+        existing.src = src;
+      } else {
+        var ph2 = el.querySelector('[class*="placeholder"]');
+        if (ph2) ph2.remove();
+        var img = document.createElement('img');
+        img.src = src; img.className = 'cat-product-img'; img.alt = key.replace('cat-', '');
+        el.insertBefore(img, el.firstChild);
+      }
+
+    } else if (key.indexOf('home-ind-') === 0) {
+      var ph3 = el.querySelector('.wws-img-placeholder');
+      if (ph3) {
+        var img2 = document.createElement('img');
+        img2.className = 'wws-photo'; img2.src = src; img2.alt = '';
+        ph3.replaceWith(img2);
+      } else {
+        var existing2 = el.querySelector('.wws-photo');
+        if (existing2) existing2.src = src;
+      }
+
+    } else if (key.indexOf('ind-') === 0) {
+      var existing3 = el.querySelector('img');
+      if (existing3) {
+        existing3.src = src;
+      } else {
+        var ph4 = el.querySelector('.industry-img-placeholder');
+        if (ph4) ph4.remove();
+        var img3 = document.createElement('img');
+        img3.src = src; img3.alt = key.replace('ind-', '');
+        img3.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        el.insertBefore(img3, el.firstChild);
+      }
+    }
+  }
+
+  /* Update the DOM to reflect a removed image for a given key (no commits). */
+  function applyImgRemovePreview(key, el) {
+    if (key === 'hero') {
+      var hero = document.getElementById('heroSection');
+      if (hero) hero.style.backgroundImage = '';
+      var ph = document.querySelector('.hero-bg-placeholder');
+      if (ph) ph.style.display = '';
+    } else {
+      var img = el.querySelector('img, .wws-photo');
+      if (img) img.remove();
+    }
+  }
+
+  /* On page load, overlay any staged (unpublished) image changes so the admin
+     sees their pending edits across page navigations, just like text drafts. */
+  function applyImagesDraft() {
+    var d = getDraft('kt_images_draft');
+    if (!d) return;
+    Object.keys(d).forEach(function (key) {
+      var entry = d[key];
+      var el = document.querySelector('[data-img-key="' + key.replace(/"/g, '\\"') + '"]');
+      if (!el) return;
+      if (entry.action === 'remove') {
+        applyImgRemovePreview(key, el);
+      } else if (entry.action === 'upload') {
+        applyImgPreview(key, el, 'data:' + (entry.mime || 'image/png') + ';base64,' + entry.base64);
+      }
+    });
+  }
+
+  // Stage an image upload as a draft — committed to GitHub only on Publish.
   async function handleImgUpload(el, uploadBtn, file, removeBtn, wrap, fileInput, refreshRemove) {
     var key = el.dataset.imgKey;
-    var origLabel = uploadBtn.innerHTML;
-    uploadBtn.innerHTML = '⏳ Uploading…';
+    uploadBtn.innerHTML = '⏳ Loading…';
     uploadBtn.disabled = true;
 
     try {
-      var imgPath = await uploadImageFile(file);
-      // Blob URL gives an instant in-session preview without waiting for Vercel to deploy
-      var previewSrc = URL.createObjectURL(file);
+      var base64 = await fileToBase64(file);
+      var safeName = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var relPath = 'images/' + safeName;
 
-      if (key === 'hero') {
-        var f = await ghFetchJson('site-settings.json');
-        if (!f.data.hero) f.data.hero = {};
-        f.data.hero.image = imgPath;
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update hero image via inline editor');
-        var hero = document.getElementById('heroSection');
-        if (hero) hero.style.backgroundImage = "url('" + previewSrc + "')";
-        var ph = document.querySelector('.hero-bg-placeholder');
-        if (ph) ph.style.display = 'none';
+      stageImageDraft(key, { action: 'upload', relPath: relPath, base64: base64, mime: file.type || 'image/png' });
 
-      } else if (key.indexOf('cat-') === 0) {
-        var catId = key.replace('cat-', '');
-        var f = await ghFetchJson('products.json');
-        var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
-        if (cat) cat.image = imgPath;
-        await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update category image via inline editor');
-        var existing = el.querySelector('img');
-        if (existing) {
-          existing.src = previewSrc;
-        } else {
-          var ph = el.querySelector('[class*="placeholder"]');
-          if (ph) ph.remove();
-          var img = document.createElement('img');
-          img.src = previewSrc; img.className = 'cat-product-img'; img.alt = catId;
-          el.insertBefore(img, el.firstChild);
-        }
+      // Instant preview from a blob URL (no waiting on any commit)
+      applyImgPreview(key, el, URL.createObjectURL(file));
 
-      } else if (key.indexOf('home-ind-') === 0) {
-        var indId = key.replace('home-ind-', '');
-        var f = await ghFetchJson('site-settings.json');
-        if (!f.data.homeIndustryImages) f.data.homeIndustryImages = {};
-        f.data.homeIndustryImages[indId] = imgPath;
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update home industry image via inline editor');
-        var ph = el.querySelector('.wws-img-placeholder');
-        if (ph) {
-          var img = document.createElement('img');
-          img.className = 'wws-photo'; img.src = previewSrc; img.alt = '';
-          ph.replaceWith(img);
-        } else {
-          var existing = el.querySelector('.wws-photo');
-          if (existing) existing.src = previewSrc;
-        }
-
-      } else if (key.indexOf('ind-') === 0) {
-        var indId = key.replace('ind-', '');
-        var f = await ghFetchJson('site-settings.json');
-        if (!f.data.industryImages) f.data.industryImages = {};
-        f.data.industryImages[indId] = imgPath;
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update industry image via inline editor');
-        var existing = el.querySelector('img');
-        if (existing) {
-          existing.src = previewSrc;
-        } else {
-          var ph = el.querySelector('.industry-img-placeholder');
-          if (ph) ph.remove();
-          var img = document.createElement('img');
-          img.src = previewSrc; img.alt = indId;
-          img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-          el.insertBefore(img, el.firstChild);
-        }
-      }
-
-      uploadBtn.innerHTML = '✓ Saved';
+      uploadBtn.innerHTML = '✓ Staged';
       uploadBtn.style.background = 'rgba(39,174,96,0.88)';
       refreshRemove();
+      updateDraftBar();
       setTimeout(function () {
         uploadBtn.innerHTML = '📷 Upload';
         uploadBtn.style.background = 'rgba(0,0,0,0.72)';
@@ -367,16 +441,20 @@
       }, 2500);
 
     } catch (e) {
-      uploadBtn.innerHTML = '⚠️ ' + e.message;
+      console.error('Image stage failed:', e);
+      uploadBtn.title = e.message;
+      uploadBtn.innerHTML = '⚠️ Failed';
       uploadBtn.style.background = 'rgba(192,57,43,0.88)';
       setTimeout(function () {
         uploadBtn.innerHTML = '📷 Upload';
+        uploadBtn.title = '';
         uploadBtn.style.background = 'rgba(0,0,0,0.72)';
         uploadBtn.disabled = false;
       }, 3500);
     }
   }
 
+  // Stage an image removal as a draft — committed to GitHub only on Publish.
   async function handleImgRemove(el, removeBtn, refreshRemove) {
     var key = el.dataset.imgKey;
     var origLabel = removeBtn.innerHTML;
@@ -384,42 +462,13 @@
     removeBtn.disabled = true;
 
     try {
-      if (key === 'hero') {
-        var f = await ghFetchJson('site-settings.json');
-        if (f.data.hero) delete f.data.hero.image;
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Remove hero image via inline editor');
-        var hero = document.getElementById('heroSection');
-        if (hero) hero.style.backgroundImage = '';
-
-      } else if (key.indexOf('cat-') === 0) {
-        var catId = key.replace('cat-', '');
-        var f = await ghFetchJson('products.json');
-        var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
-        if (cat) delete cat.image;
-        await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Remove category image via inline editor');
-        var img = el.querySelector('img');
-        if (img) img.remove();
-
-      } else if (key.indexOf('home-ind-') === 0) {
-        var indId = key.replace('home-ind-', '');
-        var f = await ghFetchJson('site-settings.json');
-        if (f.data.homeIndustryImages) delete f.data.homeIndustryImages[indId];
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Remove home industry image via inline editor');
-        var img = el.querySelector('.wws-photo');
-        if (img) img.remove();
-
-      } else if (key.indexOf('ind-') === 0) {
-        var indId = key.replace('ind-', '');
-        var f = await ghFetchJson('site-settings.json');
-        if (f.data.industryImages) delete f.data.industryImages[indId];
-        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Remove industry image via inline editor');
-        var img = el.querySelector('img');
-        if (img) img.remove();
-      }
+      stageImageDraft(key, { action: 'remove' });
+      applyImgRemovePreview(key, el);
 
       removeBtn.innerHTML = '✓ Removed';
       removeBtn.style.background = 'rgba(39,174,96,0.88)';
       refreshRemove();
+      updateDraftBar();
       setTimeout(function () {
         removeBtn.innerHTML = origLabel;
         removeBtn.style.background = 'rgba(192,57,43,0.82)';
@@ -428,8 +477,10 @@
       }, 2000);
 
     } catch (e) {
-      removeBtn.innerHTML = '⚠️ ' + e.message;
-      setTimeout(function () { removeBtn.innerHTML = origLabel; removeBtn.disabled = false; }, 3500);
+      console.error('Image remove stage failed:', e);
+      removeBtn.title = e.message;          // full message on hover (button clips long text)
+      removeBtn.innerHTML = '⚠️ Failed';
+      setTimeout(function () { removeBtn.innerHTML = origLabel; removeBtn.title = ''; removeBtn.disabled = false; }, 3500);
     }
   }
 
@@ -741,6 +792,23 @@
     var productsDraft   = getDraft('kt_products_draft');
     var wwsDraft        = getDraft('kt_wws_draft');
     var categoriesDraft = getDraft('kt_categories_draft');
+    var imagesDraft     = getDraft('kt_images_draft') || {};
+
+    // Route staged image changes to the file that holds their reference.
+    // Category images live in products.json; everything else in site-settings.json.
+    var imgKeys      = Object.keys(imagesDraft);
+    var prodImgKeys  = imgKeys.filter(function (k) { return k.indexOf('cat-') === 0; });
+    var settingsImgKeys = imgKeys.filter(function (k) { return k.indexOf('cat-') !== 0; });
+
+    // Upload all staged image binaries (unique new paths → no SHA conflicts).
+    async function pushStagedBinaries(keys) {
+      for (var i = 0; i < keys.length; i++) {
+        var entry = imagesDraft[keys[i]];
+        if (entry && entry.action === 'upload') {
+          await ghPutBinary(entry.relPath, entry.base64, 'Upload image via inline editor');
+        }
+      }
+    }
 
     var tasks = [];
 
@@ -751,38 +819,49 @@
       );
     }
 
-    // Combine products + categories into ONE products.json commit to avoid 409 SHA conflicts
-    if (productsDraft || categoriesDraft) {
-      tasks.push(
-        ghFetchJson('products.json').then(async function (f) {
-          if (productsDraft) {
-            Object.keys(productsDraft).forEach(function (pid) {
-              var changes = productsDraft[pid];
-              var product = f.data.products && f.data.products.find(function (p) { return p.id === pid; });
-              if (!product) return;
-              if (changes.name        !== undefined) product.name        = changes.name;
-              if (changes.description !== undefined) product.description = changes.description;
-            });
-          }
-          if (categoriesDraft) {
-            Object.keys(categoriesDraft).forEach(function (catId) {
-              var changes = categoriesDraft[catId];
-              var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
-              if (!cat) return;
-              if (changes.label       !== undefined) cat.label       = changes.label;
-              if (changes.description !== undefined) cat.description = changes.description;
-            });
-          }
-          await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update product/category text via inline editor');
-          localStorage.removeItem('kt_products_draft');
-          localStorage.removeItem('kt_categories_draft');
-        })
-      );
+    // Combine product/category text + category images into ONE products.json commit
+    if (productsDraft || categoriesDraft || prodImgKeys.length) {
+      tasks.push((async function () {
+        await pushStagedBinaries(prodImgKeys);
+        var f = await ghFetchJson('products.json');
+        if (productsDraft) {
+          Object.keys(productsDraft).forEach(function (pid) {
+            var changes = productsDraft[pid];
+            var product = f.data.products && f.data.products.find(function (p) { return p.id === pid; });
+            if (!product) return;
+            if (changes.name        !== undefined) product.name        = changes.name;
+            if (changes.description !== undefined) product.description = changes.description;
+          });
+        }
+        if (categoriesDraft) {
+          Object.keys(categoriesDraft).forEach(function (catId) {
+            var changes = categoriesDraft[catId];
+            var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
+            if (!cat) return;
+            if (changes.label       !== undefined) cat.label       = changes.label;
+            if (changes.description !== undefined) cat.description = changes.description;
+          });
+        }
+        prodImgKeys.forEach(function (k) {
+          var entry = imagesDraft[k];
+          var catId = k.replace('cat-', '');
+          var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
+          if (!cat) return;
+          if (entry.action === 'upload') cat.image = entry.relPath;
+          else if (entry.action === 'remove') delete cat.image;
+        });
+        await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update products/categories via inline editor');
+        localStorage.removeItem('kt_products_draft');
+        localStorage.removeItem('kt_categories_draft');
+      })());
     }
 
-    if (wwsDraft) {
-      tasks.push(
-        ghFetchJson('site-settings.json').then(async function (f) {
+    // Combine industry text + hero/industry images into ONE site-settings.json commit
+    if (wwsDraft || settingsImgKeys.length) {
+      tasks.push((async function () {
+        await pushStagedBinaries(settingsImgKeys);
+        var f = await ghFetchJson('site-settings.json');
+        if (wwsDraft) {
           if (!f.data.industryContent) f.data.industryContent = {};
           Object.keys(wwsDraft).forEach(function (id) {
             var changes = wwsDraft[id];
@@ -791,14 +870,33 @@
             if (changes.desc        !== undefined) f.data.industryContent[id].desc        = changes.desc;
             if (changes.recommended !== undefined) f.data.industryContent[id].recommended = changes.recommended;
           });
-          await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update industry content via inline editor');
-          localStorage.removeItem('kt_wws_draft');
-        })
-      );
+        }
+        settingsImgKeys.forEach(function (k) {
+          var entry = imagesDraft[k];
+          if (k === 'hero') {
+            if (!f.data.hero) f.data.hero = {};
+            if (entry.action === 'upload') f.data.hero.image = entry.relPath;
+            else delete f.data.hero.image;
+          } else if (k.indexOf('home-ind-') === 0) {
+            var hid = k.replace('home-ind-', '');
+            if (!f.data.homeIndustryImages) f.data.homeIndustryImages = {};
+            if (entry.action === 'upload') f.data.homeIndustryImages[hid] = entry.relPath;
+            else delete f.data.homeIndustryImages[hid];
+          } else if (k.indexOf('ind-') === 0) {
+            var iid = k.replace('ind-', '');
+            if (!f.data.industryImages) f.data.industryImages = {};
+            if (entry.action === 'upload') f.data.industryImages[iid] = entry.relPath;
+            else delete f.data.industryImages[iid];
+          }
+        });
+        await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update site settings via inline editor');
+        localStorage.removeItem('kt_wws_draft');
+      })());
     }
 
     if (!tasks.length) throw new Error('No unpublished changes.');
     await Promise.all(tasks);
+    localStorage.removeItem('kt_images_draft');
   }
 
   /* ── Floating edit bar ────────────────────────── */
@@ -921,9 +1019,11 @@
       function boot() {
         applyContent(_content);
         applyWwsDraft();
-        // Re-apply WWS draft after settingsLoaded fires (settings-loader may overwrite industry text)
+        applyImagesDraft(); // overlay staged (unpublished) image previews
+        // Re-apply drafts after settingsLoaded fires (settings-loader may overwrite industry text/images)
         document.addEventListener('settingsLoaded', function () {
           applyWwsDraft();
+          applyImagesDraft();
         });
       }
 
