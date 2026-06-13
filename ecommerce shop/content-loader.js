@@ -539,10 +539,13 @@
     // 7) Block cat-card <a> navigation (capture phase, always preventDefault)
     document.querySelectorAll('a.cat-card').forEach(function (a) {
       a._ktCatBlock = function (e) {
-        e.preventDefault(); // always stop anchor navigation
-        // Allow clicks on text fields and image upload/remove buttons; stop everything else
-        if (!e.target.closest('[data-cat-id][data-cat-field]') &&
-            !e.target.closest('.kt-img-btns')) {
+        // Image upload/remove buttons: let the event through untouched.
+        // Calling preventDefault() here would cancel the hidden file input's
+        // click() default action, so the file picker would never open.
+        if (e.target.closest('.kt-img-btns')) return;
+        e.preventDefault(); // stop anchor navigation
+        // Allow clicks on text fields; stop everything else
+        if (!e.target.closest('[data-cat-id][data-cat-field]')) {
           e.stopImmediatePropagation();
         }
       };
