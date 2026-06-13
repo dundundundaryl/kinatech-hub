@@ -28,6 +28,10 @@
     });
     return result;
   }
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
   function gh() {
     return {
       token:  localStorage.getItem('kt_token')  || '',
@@ -114,7 +118,8 @@
   function hasDrafts() {
     return !!(localStorage.getItem('kt_content_draft') ||
               localStorage.getItem('kt_products_draft') ||
-              localStorage.getItem('kt_wws_draft'));
+              localStorage.getItem('kt_wws_draft') ||
+              localStorage.getItem('kt_categories_draft'));
   }
   function updateDraftBar() {
     var pubBtn = document.getElementById('kt-publish-btn');
@@ -137,10 +142,27 @@
     if (!draft) return;
     Object.keys(draft).forEach(function (pid) {
       var changes = draft[pid];
+      // Products page cards
       var card = document.querySelector('[data-product-id="' + pid + '"]');
-      if (!card) return;
-      if (changes.name) { var el = card.querySelector('[data-product-field="name"]'); if (el) el.textContent = changes.name; }
-      if (changes.description) { var el = card.querySelector('[data-product-field="description"]'); if (el) el.textContent = changes.description; }
+      if (card) {
+        if (changes.name !== undefined) {
+          var el = card.querySelector('[data-product-field="name"]');
+          if (el) el.textContent = changes.name;
+        }
+        if (changes.description !== undefined) {
+          var el = card.querySelector('[data-product-field="description"]');
+          if (el) el.textContent = changes.description;
+        }
+      }
+      // Product detail page (data-detail-id / data-detail-field)
+      if (changes.name !== undefined) {
+        var nameEl = document.querySelector('[data-detail-id="' + pid + '"][data-detail-field="name"]');
+        if (nameEl) nameEl.textContent = changes.name;
+      }
+      if (changes.description !== undefined) {
+        var descEl = document.querySelector('[data-detail-id="' + pid + '"][data-detail-field="description"]');
+        if (descEl) descEl.textContent = changes.description;
+      }
     });
   }
 
@@ -149,15 +171,46 @@
     if (!draft) return;
     Object.keys(draft).forEach(function (id) {
       var changes = draft[id];
-      if (changes.heading) { var el = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="heading"]'); if (el) el.textContent = changes.heading; }
-      if (changes.desc)    { var el = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="desc"]');    if (el) el.textContent = changes.desc;    }
+      if (changes.heading !== undefined) {
+        var el = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="heading"]');
+        if (el) el.textContent = changes.heading;
+      }
+      if (changes.desc !== undefined) {
+        var el = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="desc"]');
+        if (el) el.textContent = changes.desc;
+      }
+      if (changes.recommended !== undefined) {
+        var ul = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="recommended"]');
+        if (ul) {
+          var items = String(changes.recommended).split('\n')
+            .map(function (s) { return s.trim(); }).filter(Boolean);
+          ul.innerHTML = items.map(function (t) { return '<li>' + escHtml(t) + '</li>'; }).join('');
+        }
+      }
     });
   }
 
-  // Products.html calls this after dynamically rendering cards
+  function applyCategoriesDraft() {
+    var draft = getDraft('kt_categories_draft');
+    if (!draft) return;
+    Object.keys(draft).forEach(function (catId) {
+      var changes = draft[catId];
+      if (changes.label !== undefined) {
+        var el = document.querySelector('[data-cat-id="' + catId + '"][data-cat-field="label"]');
+        if (el) el.textContent = changes.label;
+      }
+      if (changes.description !== undefined) {
+        var el = document.querySelector('[data-cat-id="' + catId + '"][data-cat-field="description"]');
+        if (el) el.textContent = changes.description;
+      }
+    });
+  }
+
+  // products.html and product-detail.html call this after dynamically rendering cards
   window.__ktApplyDrafts = function () {
     applyProductsDraft();
     applyWwsDraft();
+    applyCategoriesDraft();
   };
 
   /* ── Image overlay ────────────────────────────── */
@@ -187,14 +240,15 @@
     el.dataset.imgAttached = '1';
     ensureRelativePos(el);
 
-    // Button container
+    // Button container — push below fixed nav for the hero section
+    var btnTop = el.dataset.imgKey === 'hero' ? '76px' : '8px';
     var wrap = document.createElement('div');
     wrap.className = 'kt-img-btns';
-    wrap.style.cssText = 'position:absolute;top:8px;right:8px;z-index:20;display:none;gap:5px;align-items:center;';
+    wrap.style.cssText = 'position:absolute;top:' + btnTop + ';right:8px;z-index:20;display:none;gap:5px;align-items:center;';
 
     var uploadBtn = document.createElement('button');
     uploadBtn.style.cssText = imgBtnCSS('rgba(0,0,0,0.72)', '#fff');
-    uploadBtn.innerHTML = '📷 ' + (el.dataset.imgLabel || 'Upload');
+    uploadBtn.innerHTML = '📷 Upload';
 
     var removeBtn = document.createElement('button');
     removeBtn.style.cssText = imgBtnCSS('rgba(192,57,43,0.82)', '#fff');
@@ -236,6 +290,8 @@
 
     try {
       var imgPath = await uploadImageFile(file);
+      // Blob URL gives an instant in-session preview without waiting for Vercel to deploy
+      var previewSrc = URL.createObjectURL(file);
 
       if (key === 'hero') {
         var f = await ghFetchJson('site-settings.json');
@@ -243,7 +299,7 @@
         f.data.hero.image = imgPath;
         await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update hero image via inline editor');
         var hero = document.getElementById('heroSection');
-        if (hero) hero.style.backgroundImage = "url('" + imgPath + "')";
+        if (hero) hero.style.backgroundImage = "url('" + previewSrc + "')";
         var ph = document.querySelector('.hero-bg-placeholder');
         if (ph) ph.style.display = 'none';
 
@@ -255,12 +311,12 @@
         await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update category image via inline editor');
         var existing = el.querySelector('img');
         if (existing) {
-          existing.src = imgPath;
+          existing.src = previewSrc;
         } else {
           var ph = el.querySelector('[class*="placeholder"]');
           if (ph) ph.remove();
           var img = document.createElement('img');
-          img.src = imgPath; img.className = 'cat-product-img'; img.alt = catId;
+          img.src = previewSrc; img.className = 'cat-product-img'; img.alt = catId;
           el.insertBefore(img, el.firstChild);
         }
 
@@ -273,11 +329,11 @@
         var ph = el.querySelector('.wws-img-placeholder');
         if (ph) {
           var img = document.createElement('img');
-          img.className = 'wws-photo'; img.src = imgPath; img.alt = '';
+          img.className = 'wws-photo'; img.src = previewSrc; img.alt = '';
           ph.replaceWith(img);
         } else {
           var existing = el.querySelector('.wws-photo');
-          if (existing) existing.src = imgPath;
+          if (existing) existing.src = previewSrc;
         }
 
       } else if (key.indexOf('ind-') === 0) {
@@ -288,12 +344,12 @@
         await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update industry image via inline editor');
         var existing = el.querySelector('img');
         if (existing) {
-          existing.src = imgPath;
+          existing.src = previewSrc;
         } else {
           var ph = el.querySelector('.industry-img-placeholder');
           if (ph) ph.remove();
           var img = document.createElement('img');
-          img.src = imgPath; img.alt = indId;
+          img.src = previewSrc; img.alt = indId;
           img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
           el.insertBefore(img, el.firstChild);
         }
@@ -303,7 +359,7 @@
       uploadBtn.style.background = 'rgba(39,174,96,0.88)';
       refreshRemove();
       setTimeout(function () {
-        uploadBtn.innerHTML = origLabel;
+        uploadBtn.innerHTML = '📷 Upload';
         uploadBtn.style.background = 'rgba(0,0,0,0.72)';
         uploadBtn.disabled = false;
       }, 2500);
@@ -312,7 +368,7 @@
       uploadBtn.innerHTML = '⚠️ ' + e.message;
       uploadBtn.style.background = 'rgba(192,57,43,0.88)';
       setTimeout(function () {
-        uploadBtn.innerHTML = origLabel;
+        uploadBtn.innerHTML = '📷 Upload';
         uploadBtn.style.background = 'rgba(0,0,0,0.72)';
         uploadBtn.disabled = false;
       }, 3500);
@@ -402,25 +458,73 @@
   function enterEditMode() {
     _inEditMode = true;
     _editOriginals = {};
+
     function capture(el, key) {
       _editOriginals[key] = el.textContent;
       applyEditStyle(el);
     }
+
+    // 1) Generic content.json fields
     document.querySelectorAll('[data-content]').forEach(function (el) {
       capture(el, 'c:' + el.dataset.content);
     });
+
+    // 2) Product card fields (products.html)
+    //    Also attach _ktStopBubble so clicks on these don't bubble to card's onclick
     document.querySelectorAll('[data-product-id] [data-product-field]').forEach(function (el) {
       var card = el.closest('[data-product-id]');
       var pid = card ? card.dataset.productId : '';
       capture(el, 'p:' + pid + ':' + el.dataset.productField);
+      el._ktStopBubble = function (e) { e.stopPropagation(); };
+      el.addEventListener('click', el._ktStopBubble);
     });
+
+    // 3) WWS fields — 'recommended' ul gets textarea injection instead of contenteditable
     document.querySelectorAll('[data-wws-id][data-wws-field]').forEach(function (el) {
-      capture(el, 'w:' + el.dataset.wwsId + ':' + el.dataset.wwsField);
+      var field = el.dataset.wwsField;
+      var id = el.dataset.wwsId;
+
+      if (field === 'recommended') {
+        // Capture current li items as newline-separated text
+        var items = Array.prototype.map.call(
+          el.querySelectorAll('li'),
+          function (li) { return li.textContent.trim(); }
+        ).join('\n');
+        _editOriginals['w:' + id + ':recommended'] = items;
+        // Hide ul and inject a textarea in its place
+        el.style.display = 'none';
+        var ta = document.createElement('textarea');
+        ta.className = 'kt-rec-textarea';
+        ta.dataset.ktRecId = id;
+        ta.value = items;
+        ta.placeholder = 'One item per line';
+        ta.style.cssText = [
+          'width:100%;min-height:70px;border:2px dashed #c9b89a;border-radius:4px',
+          'padding:8px 10px;font-family:inherit;font-size:0.88rem;resize:vertical',
+          'margin-bottom:12px;outline:none;box-sizing:border-box;display:block'
+        ].join(';');
+        el.insertAdjacentElement('afterend', ta);
+        return;
+      }
+
+      capture(el, 'w:' + id + ':' + field);
     });
-    // Block product card navigation so clicking editable text doesn't redirect
+
+    // 4) Category card fields (index.html)
+    //    _ktCatBlock on the <a> prevents navigation; we always preventDefault there.
+    document.querySelectorAll('[data-cat-id][data-cat-field]').forEach(function (el) {
+      capture(el, 'cat:' + el.dataset.catId + ':' + el.dataset.catField);
+    });
+
+    // 5) Product detail page fields (product-detail.html — no card onclick to block)
+    document.querySelectorAll('[data-detail-field]').forEach(function (el) {
+      var id = el.dataset.detailId || '';
+      capture(el, 'd:' + id + ':' + el.dataset.detailField);
+    });
+
+    // 6) Block product card onclick navigation (capture phase)
     document.querySelectorAll('[data-product-id]').forEach(function (card) {
       card._ktEditBlock = function (e) {
-        // Allow clicks on contenteditable fields to pass through; block everything else
         if (!e.target.closest('[contenteditable="true"]')) {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -429,7 +533,21 @@
       card.addEventListener('click', card._ktEditBlock, true);
       card.style.cursor = 'default';
     });
-    // Images
+
+    // 7) Block cat-card <a> navigation (capture phase, always preventDefault)
+    document.querySelectorAll('a.cat-card').forEach(function (a) {
+      a._ktCatBlock = function (e) {
+        e.preventDefault(); // always stop anchor navigation
+        // Still allow event to reach contenteditable fields for cursor placement
+        if (!e.target.closest('[data-cat-id][data-cat-field]')) {
+          e.stopImmediatePropagation();
+        }
+      };
+      a.addEventListener('click', a._ktCatBlock, true);
+      a.style.cursor = 'default';
+    });
+
+    // 8) Show image upload buttons
     document.querySelectorAll('[data-img-key]').forEach(function (el) {
       attachImgUpload(el);
       var wrap = el.querySelector('.kt-img-btns');
@@ -439,10 +557,17 @@
 
   function exitEditMode(restore) {
     _inEditMode = false;
+
+    // 1) Generic content.json fields
     document.querySelectorAll('[data-content]').forEach(function (el) {
-      if (restore) { var orig = _editOriginals['c:' + el.dataset.content]; if (orig !== undefined) el.textContent = orig; }
+      if (restore) {
+        var orig = _editOriginals['c:' + el.dataset.content];
+        if (orig !== undefined) el.textContent = orig;
+      }
       clearEditStyle(el);
     });
+
+    // 2) Product card fields
     document.querySelectorAll('[data-product-id] [data-product-field]').forEach(function (el) {
       if (restore) {
         var card = el.closest('[data-product-id]');
@@ -451,12 +576,54 @@
         if (orig !== undefined) el.textContent = orig;
       }
       clearEditStyle(el);
+      if (el._ktStopBubble) { el.removeEventListener('click', el._ktStopBubble); delete el._ktStopBubble; }
     });
+
+    // 3) WWS fields (non-recommended)
     document.querySelectorAll('[data-wws-id][data-wws-field]').forEach(function (el) {
-      if (restore) { var orig = _editOriginals['w:' + el.dataset.wwsId + ':' + el.dataset.wwsField]; if (orig !== undefined) el.textContent = orig; }
+      if (el.dataset.wwsField === 'recommended') return; // handled in 3b
+      if (restore) {
+        var orig = _editOriginals['w:' + el.dataset.wwsId + ':' + el.dataset.wwsField];
+        if (orig !== undefined) el.textContent = orig;
+      }
       clearEditStyle(el);
     });
-    // Restore product card click navigation
+
+    // 3b) Recommended textareas → update ul innerHTML, restore ul visibility, remove textarea
+    document.querySelectorAll('.kt-rec-textarea').forEach(function (ta) {
+      var id = ta.dataset.ktRecId;
+      var ul = document.querySelector('[data-wws-id="' + id + '"][data-wws-field="recommended"]');
+      if (ul) {
+        var rawText = restore
+          ? (_editOriginals['w:' + id + ':recommended'] || '')
+          : ta.value;
+        var items = rawText.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+        ul.innerHTML = items.map(function (t) { return '<li>' + escHtml(t) + '</li>'; }).join('');
+        ul.style.display = '';
+      }
+      ta.remove();
+    });
+
+    // 4) Category card fields
+    document.querySelectorAll('[data-cat-id][data-cat-field]').forEach(function (el) {
+      if (restore) {
+        var orig = _editOriginals['cat:' + el.dataset.catId + ':' + el.dataset.catField];
+        if (orig !== undefined) el.textContent = orig;
+      }
+      clearEditStyle(el);
+    });
+
+    // 5) Product detail page fields
+    document.querySelectorAll('[data-detail-field]').forEach(function (el) {
+      if (restore) {
+        var id = el.dataset.detailId || '';
+        var orig = _editOriginals['d:' + id + ':' + el.dataset.detailField];
+        if (orig !== undefined) el.textContent = orig;
+      }
+      clearEditStyle(el);
+    });
+
+    // 6) Restore product card click navigation
     document.querySelectorAll('[data-product-id]').forEach(function (card) {
       if (card._ktEditBlock) {
         card.removeEventListener('click', card._ktEditBlock, true);
@@ -464,6 +631,17 @@
       }
       card.style.cursor = '';
     });
+
+    // 7) Restore cat-card navigation
+    document.querySelectorAll('a.cat-card').forEach(function (a) {
+      if (a._ktCatBlock) {
+        a.removeEventListener('click', a._ktCatBlock, true);
+        delete a._ktCatBlock;
+      }
+      a.style.cursor = '';
+    });
+
+    // 8) Hide image upload buttons
     document.querySelectorAll('.kt-img-btns').forEach(function (wrap) {
       wrap.style.display = 'none';
     });
@@ -479,8 +657,9 @@
     setDraft('kt_content_draft', updatedContent);
     _content = updatedContent;
 
-    // 2) Product text fields — only save products whose text actually changed
+    // 2) Product card text fields — only save products whose text actually changed
     var productsDraft = getDraft('kt_products_draft') || {};
+
     document.querySelectorAll('[data-product-id]').forEach(function (card) {
       var pid = card.dataset.productId;
       var nameEl = card.querySelector('[data-product-field="name"]');
@@ -496,26 +675,66 @@
       if (nameChanged) productsDraft[pid].name = curName;
       if (descChanged) productsDraft[pid].description = curDesc;
     });
+
+    // 2b) Product detail page fields
+    document.querySelectorAll('[data-detail-field]').forEach(function (el) {
+      var id = el.dataset.detailId || '';
+      var field = el.dataset.detailField;
+      var cur = el.textContent.trim();
+      var orig = _editOriginals['d:' + id + ':' + field];
+      if (cur === orig) return;
+      if (!productsDraft[id]) productsDraft[id] = {};
+      productsDraft[id][field] = cur;
+    });
+
     if (Object.keys(productsDraft).length) setDraft('kt_products_draft', productsDraft);
 
     // 3) WWS text fields — only save industries whose text actually changed
     var wwsDraft = getDraft('kt_wws_draft') || {};
+
     document.querySelectorAll('[data-wws-id][data-wws-field]').forEach(function (el) {
       var id = el.dataset.wwsId, field = el.dataset.wwsField;
+      if (field === 'recommended') return; // handled via textarea below
       var cur = el.textContent.trim();
       var orig = _editOriginals['w:' + id + ':' + field];
       if (cur === orig) return;
       if (!wwsDraft[id]) wwsDraft[id] = {};
       wwsDraft[id][field] = cur;
     });
+
+    // Collect recommended from active textareas (still present before exitEditMode runs)
+    document.querySelectorAll('.kt-rec-textarea').forEach(function (ta) {
+      var id = ta.dataset.ktRecId;
+      var cur = ta.value;
+      var orig = _editOriginals['w:' + id + ':recommended'] || '';
+      if (cur === orig) return;
+      if (!wwsDraft[id]) wwsDraft[id] = {};
+      wwsDraft[id].recommended = cur;
+    });
+
     if (Object.keys(wwsDraft).length) setDraft('kt_wws_draft', wwsDraft);
+
+    // 4) Category text fields — only save categories whose text actually changed
+    var categoriesDraft = getDraft('kt_categories_draft') || {};
+
+    document.querySelectorAll('[data-cat-id][data-cat-field]').forEach(function (el) {
+      var catId = el.dataset.catId, field = el.dataset.catField;
+      var cur = el.textContent.trim();
+      var orig = _editOriginals['cat:' + catId + ':' + field];
+      if (cur === orig) return;
+      if (!categoriesDraft[catId]) categoriesDraft[catId] = {};
+      categoriesDraft[catId][field] = cur;
+    });
+
+    if (Object.keys(categoriesDraft).length) setDraft('kt_categories_draft', categoriesDraft);
   }
 
   /* ── Publish all drafts to GitHub ────────────── */
   async function publishDrafts() {
-    var contentDraft   = getDraft('kt_content_draft');
-    var productsDraft  = getDraft('kt_products_draft');
-    var wwsDraft       = getDraft('kt_wws_draft');
+    var contentDraft    = getDraft('kt_content_draft');
+    var productsDraft   = getDraft('kt_products_draft');
+    var wwsDraft        = getDraft('kt_wws_draft');
+    var categoriesDraft = getDraft('kt_categories_draft');
 
     var tasks = [];
 
@@ -526,18 +745,31 @@
       );
     }
 
-    if (productsDraft) {
+    // Combine products + categories into ONE products.json commit to avoid 409 SHA conflicts
+    if (productsDraft || categoriesDraft) {
       tasks.push(
         ghFetchJson('products.json').then(async function (f) {
-          Object.keys(productsDraft).forEach(function (pid) {
-            var changes = productsDraft[pid];
-            var product = f.data.products && f.data.products.find(function (p) { return p.id === pid; });
-            if (!product) return;
-            if (changes.name !== undefined)        product.name        = changes.name;
-            if (changes.description !== undefined) product.description = changes.description;
-          });
-          await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update product text via inline editor');
+          if (productsDraft) {
+            Object.keys(productsDraft).forEach(function (pid) {
+              var changes = productsDraft[pid];
+              var product = f.data.products && f.data.products.find(function (p) { return p.id === pid; });
+              if (!product) return;
+              if (changes.name        !== undefined) product.name        = changes.name;
+              if (changes.description !== undefined) product.description = changes.description;
+            });
+          }
+          if (categoriesDraft) {
+            Object.keys(categoriesDraft).forEach(function (catId) {
+              var changes = categoriesDraft[catId];
+              var cat = f.data.categories && f.data.categories.find(function (c) { return c.id === catId; });
+              if (!cat) return;
+              if (changes.label       !== undefined) cat.label       = changes.label;
+              if (changes.description !== undefined) cat.description = changes.description;
+            });
+          }
+          await ghCommit('products.json', JSON.stringify(f.data, null, 2), 'Update product/category text via inline editor');
           localStorage.removeItem('kt_products_draft');
+          localStorage.removeItem('kt_categories_draft');
         })
       );
     }
@@ -549,8 +781,9 @@
           Object.keys(wwsDraft).forEach(function (id) {
             var changes = wwsDraft[id];
             if (!f.data.industryContent[id]) f.data.industryContent[id] = {};
-            if (changes.heading !== undefined) f.data.industryContent[id].heading = changes.heading;
-            if (changes.desc    !== undefined) f.data.industryContent[id].desc    = changes.desc;
+            if (changes.heading     !== undefined) f.data.industryContent[id].heading     = changes.heading;
+            if (changes.desc        !== undefined) f.data.industryContent[id].desc        = changes.desc;
+            if (changes.recommended !== undefined) f.data.industryContent[id].recommended = changes.recommended;
           });
           await ghCommit('site-settings.json', JSON.stringify(f.data, null, 2), 'Update industry content via inline editor');
           localStorage.removeItem('kt_wws_draft');
