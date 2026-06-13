@@ -408,11 +408,11 @@
         : imgPlaceholder(p.model, p.name);
 
       return `
-        <div class="product-card" onclick="location.href='product-detail.html?id=${p.id}'" style="cursor:pointer;">
+        <div class="product-card" data-product-id="${p.id}" onclick="location.href='product-detail.html?id=${p.id}'" style="cursor:pointer;">
           <div class="product-img-wrap">${imgHtml}</div>
           <span class="model">${p.model}</span>
-          <h3>${p.name}</h3>
-          <p class="card-desc">${p.description}</p>
+          <h3 data-product-field="name">${p.name}</h3>
+          <p class="card-desc" data-product-field="description">${p.description}</p>
           <div class="card-foot">
             <span class="learn-more">Learn More &rsaquo;</span>
             <button class="sl-card-btn"
@@ -529,6 +529,8 @@
       });
 
       main.innerHTML = html || '<p style="padding:48px;color:var(--text-muted)">No products found.</p>';
+      // Apply any saved drafts (product name/desc edits)
+      window.__ktApplyDrafts?.();
       // Update inquiry button states (in case items already in list)
       window.Shortlist?.refreshWidget?.();
       // Reversible scroll-reveal on the rendered sections

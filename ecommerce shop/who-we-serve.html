@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
   <script src="content-loader.js"></script>
+  <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -226,8 +227,8 @@
   <!-- ROW 1 — E-Commerce (text left, image right) ── -->
   <div class="industry-row" id="ecommerce">
     <div class="industry-text">
-      <h2>Ecommerce &amp; Fulfillment</h2>
-      <p>Streamline shipping, packing, and order processing with industry-leading hardware solutions.</p>
+      <h2 data-wws-id="ecommerce" data-wws-field="heading">Ecommerce &amp; Fulfillment</h2>
+      <p data-wws-id="ecommerce" data-wws-field="desc">Streamline shipping, packing, and order processing with industry-leading hardware solutions.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>Label &amp; Waybill Printers</li>
@@ -235,7 +236,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-ecommerce" data-img-label="Ecommerce Image">
       <!-- IMAGE: Woman smiling, packing/scanning boxes in warehouse, warm lighting, ~500×300px
            REPLACE placeholder with: <img src="images/ecommerce.jpg" alt="E-Commerce & Fulfillment"> -->
       <div class="industry-img-placeholder">
@@ -251,8 +252,8 @@
   <!-- ROW 2 — Retail (image left, text right) ── -->
   <div class="industry-row flip" id="retail">
     <div class="industry-text">
-      <h2>Retail Stores</h2>
-      <p>Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.</p>
+      <h2 data-wws-id="retail" data-wws-field="heading">Retail Stores</h2>
+      <p data-wws-id="retail" data-wws-field="desc">Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>POS Terminal</li>
@@ -261,7 +262,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-retail" data-img-label="Retail Image">
       <!-- IMAGE: Person holding barcode scanner near clothing rack, retail store setting, ~500×300px
            REPLACE with: <img src="images/retail.jpg" alt="Retail Stores"> -->
       <div class="industry-img-placeholder">
@@ -277,8 +278,8 @@
   <!-- ROW 3 — Food & Beverage (text left, image right) ── -->
   <div class="industry-row" id="fnb">
     <div class="industry-text">
-      <h2>Food &amp; Beverage</h2>
-      <p>POS and payment solutions for seamless food service operations.</p>
+      <h2 data-wws-id="fnb" data-wws-field="heading">Food &amp; Beverage</h2>
+      <p data-wws-id="fnb" data-wws-field="desc">POS and payment solutions for seamless food service operations.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>POS Terminal</li>
@@ -288,7 +289,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-fnb" data-img-label="F&amp;B Image">
       <!-- IMAGE: Label printer beside bubble tea cups on counter, café/milk tea setting, ~500×300px
            REPLACE with: <img src="images/fnb.jpg" alt="Food & Beverage"> -->
       <div class="industry-img-placeholder">
@@ -304,8 +305,8 @@
   <!-- ROW 4 — Warehousing (image left, text right) ── -->
   <div class="industry-row flip" id="warehouse">
     <div class="industry-text">
-      <h2>Warehousing &amp; Logistics</h2>
-      <p>Industrial-grade tracking and labeling solutions for efficient operations at scale.</p>
+      <h2 data-wws-id="warehouse" data-wws-field="heading">Warehousing &amp; Logistics</h2>
+      <p data-wws-id="warehouse" data-wws-field="desc">Industrial-grade tracking and labeling solutions for efficient operations at scale.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>Scanners</li>
@@ -314,7 +315,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-warehouse" data-img-label="Warehouse Image">
       <!-- IMAGE: Barcode scanner + laptop on shelf in large warehouse, cardboard boxes background, ~500×300px
            REPLACE with: <img src="images/warehouse.jpg" alt="Warehousing & Logistics"> -->
       <div class="industry-img-placeholder">
@@ -330,8 +331,8 @@
   <!-- ROW 5 — Office (text left, image right) ── -->
   <div class="industry-row" id="office">
     <div class="industry-text">
-      <h2>Office &amp; Professional Services</h2>
-      <p>Printing and storage solutions for efficient office operations.</p>
+      <h2 data-wws-id="office" data-wws-field="heading">Office &amp; Professional Services</h2>
+      <p data-wws-id="office" data-wws-field="desc">Printing and storage solutions for efficient office operations.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>POS Printers</li>
@@ -340,7 +341,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-office" data-img-label="Office Image">
       <!-- IMAGE: Slim portable HDD next to open laptop on clean office desk, reports visible, ~500×300px
            REPLACE with: <img src="images/office.jpg" alt="Office & Professional Services"> -->
       <div class="industry-img-placeholder">
@@ -356,8 +357,8 @@
   <!-- ROW 6 — Hospitality (image left, text right) ── -->
   <div class="industry-row flip" id="hospitality">
     <div class="industry-text">
-      <h2>Hospitality</h2>
-      <p>Front-desk and payment systems for seamless guest experiences.</p>
+      <h2 data-wws-id="hospitality" data-wws-field="heading">Hospitality</h2>
+      <p data-wws-id="hospitality" data-wws-field="desc">Front-desk and payment systems for seamless guest experiences.</p>
       <h4>Recommended Products</h4>
       <ul>
         <li>POS Terminal</li>
@@ -366,7 +367,7 @@
       </ul>
       <a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>
     </div>
-    <div class="industry-img">
+    <div class="industry-img" data-img-key="ind-hospitality" data-img-label="Hospitality Image">
       <!-- IMAGE: POS terminal at hotel reception/front desk, "RECEPTION" sign in background, ~500×300px
            REPLACE with: <img src="images/hospitality.jpg" alt="Hospitality"> -->
       <div class="industry-img-placeholder">

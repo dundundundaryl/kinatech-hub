@@ -507,11 +507,11 @@
       <div id="panelSiteContent" style="display:none;">
         <div class="main-header">
           <h2>Site Content</h2>
-          <button class="btn btn-success" onclick="savePageContent()">💾 Save &amp; Publish</button>
+          <button class="btn btn-success" onclick="savePageContent()">💾 Save</button>
         </div>
         <p style="font-size:0.84rem;color:var(--muted);margin-bottom:20px;">
-          Edit the text shown on each page of your website. Changes publish to <code style="background:#f0ece6;padding:2px 6px;border-radius:4px;">content.json</code> on GitHub.<br>
-          Tip: you can also click <strong>✏️ Edit Text</strong> on any page when signed in to edit inline.
+          Edit the text shown on each page. Click <strong>💾 Save</strong> to store changes, then go to <strong>Publish</strong> to push everything to GitHub.<br>
+          Tip: you can also click <strong>✏️ Edit Page</strong> on any live page to edit inline.
         </p>
 
         <div class="settings-card">
@@ -614,7 +614,7 @@
         </div>
 
         <div style="margin-bottom:32px;">
-          <button class="btn btn-success btn-full" onclick="savePageContent()">💾 Save &amp; Publish All Changes</button>
+          <button class="btn btn-success" onclick="savePageContent()">💾 Save All Changes</button>
         </div>
       </div>
 
@@ -1256,7 +1256,6 @@ async function handleHeroUpload(input) {
     document.getElementById('clearHeroBtn').style.display = 'inline-flex';
     progress.textContent = `✅ Hero image updated: ${path}`; progress.className = 'upload-progress done';
     showToast('Hero image published!', 'success');
-    markDirty();
   } catch(e) {
     progress.textContent = `❌ ${e.message}`; progress.className = 'upload-progress err';
     showToast('Upload failed: ' + e.message, 'error');
@@ -1293,7 +1292,6 @@ async function handleLogoUpload(input) {
     updateLogoPreview();
     progress.textContent = `✅ Logo updated: ${path}`; progress.className = 'upload-progress done';
     showToast('Logo published!', 'success');
-    markDirty();
   } catch(e) {
     progress.textContent = `❌ ${e.message}`; progress.className = 'upload-progress err';
     showToast('Upload failed: ' + e.message, 'error');
@@ -1484,6 +1482,7 @@ function commitFileToGitHub(path, content, message) {
 
 async function _commitFileToGitHub(path, content, message, _retries = 5) {
   const owner = localStorage.getItem('kt_owner'), repo = localStorage.getItem('kt_repo'), branch = localStorage.getItem('kt_branch') || 'main';
+  const token = localStorage.getItem('kt_token') || '';
   const prefix = localStorage.getItem('kt_prefix') || '';
   const repoPath = prefix ? `${prefix}/${path}` : path;
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}`;
@@ -1523,6 +1522,10 @@ async function publishToGitHub() {
   try {
     const result = await commitFileToGitHub('products.json', JSON.stringify({ categories, products }, null, 2), msg);
     await publishSiteSettings();
+    if (_contentDirty && Object.keys(siteContent).length) {
+      await commitFileToGitHub('content.json', JSON.stringify(siteContent, null, 2), 'Update site content via admin');
+      _contentDirty = false;
+    }
     markClean();
     const commitUrl = result?.commit?.html_url || `https://github.com/${owner}/${repo}/commits`;
     const repoPath = prefix ? `${prefix}/products.json` : 'products.json';
@@ -1532,7 +1535,6 @@ async function publishToGitHub() {
       <span style="color:#4a8a5a">Vercel will redeploy automatically — usually live in ~30–60 seconds.</span></div>`;
     showToast('Published to GitHub!', 'success');
   } catch(e) {
-    const prefix = localStorage.getItem('kt_prefix') || '';
     status.innerHTML = `<div style="background:#fff0f0;border:1px solid #f5c0c0;border-radius:8px;padding:16px;font-size:0.85rem;color:#a33;margin-top:8px">
       ❌ <strong>Publish failed:</strong> ${e.message}<br>
       <strong>Tip:</strong> Go to Settings → click "Test Connection" to verify the repo subdirectory is correct.</div>`;
@@ -1597,6 +1599,7 @@ async function resetColors() {
 
 /* ══ SITE CONTENT ══ */
 var siteContent = {};
+var _contentDirty = false;
 const CONTENT_FIELD_MAP = {
   'ct-home-heroHeadline':    'home.heroHeadline',
   'ct-home-heroSubtitle':    'home.heroSubtitle',
@@ -1636,10 +1639,12 @@ async function loadSiteContent() {
   const token = localStorage.getItem('kt_token');
   const branch = localStorage.getItem('kt_branch') || 'main';
   if (prefix && owner && repo && token) {
-    const repoPath = `${prefix}/content.json`;
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`;
-    const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
-    if (res.ok) { const file = await res.json(); siteContent = JSON.parse(atob(file.content.replace(/\n/g,''))); return; }
+    try {
+      const repoPath = `${prefix}/content.json`;
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(repoPath).replace(/%2F/g,'/')}?ref=${branch}`;
+      const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+      if (res.ok) { const file = await res.json(); siteContent = JSON.parse(atob(file.content.replace(/\n/g,''))); return; }
+    } catch(e) {}
   }
   try { const res = await fetch('content.json?v=' + Date.now()); if (res.ok) siteContent = await res.json(); } catch(e) {}
 }
@@ -1651,19 +1656,15 @@ function loadSiteContentUI() {
     if (val !== undefined) el.value = val;
   });
 }
-async function savePageContent() {
+function savePageContent() {
   const updated = JSON.parse(JSON.stringify(siteContent));
   Object.entries(CONTENT_FIELD_MAP).forEach(([id, path]) => {
     const el = document.getElementById(id);
     if (el) contentDeepSet(updated, path, el.value.trim());
   });
-  try {
-    await commitFileToGitHub('content.json', JSON.stringify(updated, null, 2), 'Update site content via admin');
-    siteContent = updated;
-    showToast('Site content saved & published!', 'success');
-  } catch(e) {
-    showToast('Save failed: ' + e.message, 'error');
-  }
+  siteContent = updated;
+  _contentDirty = true;
+  showToast('Site content saved. Use Publish to push to GitHub.', 'success');
 }
 
 /* ══ CONTACT SETTINGS ══ */

@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
   <script src="content-loader.js"></script>
+  <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -661,8 +662,21 @@
           const card = document.querySelector('[data-cat="' + cat.id + '"]');
           if (!card) return;
           const imgWrap = card.querySelector('.cat-card-img');
-          if (imgWrap) {
-            imgWrap.innerHTML = '<img src="' + cat.image + '" class="cat-product-img" alt="' + cat.label + '" onerror="this.style.display=\'none\'">';
+          if (!imgWrap) return;
+          // Update existing img if present, otherwise swap out the placeholder
+          // (avoids clearing data-img-attached / upload buttons if admin is in edit mode)
+          const existing = imgWrap.querySelector('img.cat-product-img');
+          if (existing) {
+            existing.src = cat.image;
+          } else {
+            const ph = imgWrap.querySelector('.img-placeholder');
+            if (ph) ph.remove();
+            const img = document.createElement('img');
+            img.src = cat.image;
+            img.className = 'cat-product-img';
+            img.alt = cat.label;
+            img.onerror = function () { this.style.display = 'none'; };
+            imgWrap.insertBefore(img, imgWrap.firstChild);
           }
         });
       })
@@ -710,6 +724,7 @@
       // Inject custom-added cards (ids in order that aren't default cards)
       const grid = document.querySelector('.wws-grid');
       if (grid) {
+        function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
         order.forEach(function(id) {
           if (HOME_DEFAULT_IDS.indexOf(id) !== -1) return;
           if (grid.querySelector('[data-ind="' + id + '"]')) return;
@@ -723,9 +738,9 @@
           a.setAttribute('data-ind', id);
           a.innerHTML =
             (src
-              ? '<img class="wws-photo" src="' + src + '" alt="" onerror="this.style.display=\'none\'">'
-              : '<div class="wws-img-placeholder">' + label + '</div>') +
-            '<div class="wws-label">' + label + '</div>';
+              ? '<img class="wws-photo" src="' + escHtml(src) + '" alt="" onerror="this.style.display=\'none\'">'
+              : '<div class="wws-img-placeholder">' + escHtml(label) + '</div>') +
+            '<div class="wws-label">' + escHtml(label) + '</div>';
           grid.appendChild(a);
         });
       }
