@@ -6,10 +6,10 @@
     "heroCtaSecondary": "INQUIRE NOW",
     "categoriesTitle": "Shop by Category",
     "categoriesSub": "Browse our comprehensive range of business hardware solutions",
-    "categoriesLink": "View All Products →",
+    "categoriesLink": "View All Products â",
     "wwsTitle": "Who We Serve",
     "wwsSub": "One hardware partner for every stage of business growth",
-    "wwsLink": "Explore industries and use cases →"
+    "wwsLink": "Explore industries and use cases â"
   },
   "products": {
     "pageTitle": "Products",
@@ -23,6 +23,6 @@
     "heroHeadline": "Get in Touch",
     "heroTagline": "Let's discuss your hardware needs and find the perfect solution for your business",
     "formTitle": "Contact Form",
-    "formNote": "We'll get back to you within 1–2 business days."
+    "formNote": "We'll get back to you within 2 business days."
   }
 }
