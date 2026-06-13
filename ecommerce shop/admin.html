@@ -632,10 +632,25 @@ function showAuthError(msg) { const el = document.getElementById('authError'); e
 function signOut() { localStorage.removeItem('kt_token'); location.reload(); }
 
 /* ══ BOOT ══ */
+async function loadAdminConfig() {
+  // Load shared config from repo so any browser/device gets the right settings automatically
+  try {
+    const res = await fetch('admin-config.json?v=' + Date.now());
+    if (!res.ok) return;
+    const cfg = await res.json();
+    // Only fill in values that aren't already set in localStorage
+    if (cfg.owner  && !localStorage.getItem('kt_owner'))  localStorage.setItem('kt_owner',  cfg.owner);
+    if (cfg.repo   && !localStorage.getItem('kt_repo'))   localStorage.setItem('kt_repo',   cfg.repo);
+    if (cfg.branch && !localStorage.getItem('kt_branch')) localStorage.setItem('kt_branch', cfg.branch);
+    if (cfg.prefix !== undefined && !localStorage.getItem('kt_prefix')) localStorage.setItem('kt_prefix', cfg.prefix);
+  } catch(e) {}
+}
+
 async function bootAdmin() {
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('topBar').style.display = 'flex';
   document.getElementById('adminUI').style.display = 'block';
+  await loadAdminConfig(); // ← load shared config before anything else
   loadSettings();
   await loadProductsData();
   await loadSiteSettings();
@@ -1169,6 +1184,16 @@ function saveSettings() {
   document.getElementById('repoLabel').textContent = owner && repo ? `${owner}/${repo}` : '';
   document.getElementById('connectionTestResult').textContent = '';
   showToast('Settings saved!', 'success');
+  // Commit admin-config.json so other devices auto-load these settings
+  if (owner && repo && token) {
+    const cfg = {
+      owner: localStorage.getItem('kt_owner'),
+      repo:  localStorage.getItem('kt_repo'),
+      branch: localStorage.getItem('kt_branch') || 'main',
+      prefix: localStorage.getItem('kt_prefix') || ''
+    };
+    commitFileToGitHub('admin-config.json', JSON.stringify(cfg, null, 2), 'Update admin config').catch(() => {});
+  }
 }
 
 async function testGitHubConnection() {
