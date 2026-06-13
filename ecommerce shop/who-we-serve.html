@@ -230,7 +230,7 @@
       <h2 data-wws-id="ecommerce" data-wws-field="heading">Ecommerce &amp; Fulfillment</h2>
       <p data-wws-id="ecommerce" data-wws-field="desc">Streamline shipping, packing, and order processing with industry-leading hardware solutions.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="ecommerce" data-wws-field="recommended">
         <li>Label &amp; Waybill Printers</li>
         <li>Mobile Label Printer</li>
       </ul>
@@ -255,7 +255,7 @@
       <h2 data-wws-id="retail" data-wws-field="heading">Retail Stores</h2>
       <p data-wws-id="retail" data-wws-field="desc">Speed up checkout, manage inventory, and create a smoother customer experience with reliable POS and payment hardware.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="retail" data-wws-field="recommended">
         <li>POS Terminal</li>
         <li>EFTPOS Terminal</li>
         <li>POS Printers</li>
@@ -281,7 +281,7 @@
       <h2 data-wws-id="fnb" data-wws-field="heading">Food &amp; Beverage</h2>
       <p data-wws-id="fnb" data-wws-field="desc">POS and payment solutions for seamless food service operations.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="fnb" data-wws-field="recommended">
         <li>POS Terminal</li>
         <li>EFTPOS Terminal</li>
         <li>POS Printers</li>
@@ -308,7 +308,7 @@
       <h2 data-wws-id="warehouse" data-wws-field="heading">Warehousing &amp; Logistics</h2>
       <p data-wws-id="warehouse" data-wws-field="desc">Industrial-grade tracking and labeling solutions for efficient operations at scale.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="warehouse" data-wws-field="recommended">
         <li>Scanners</li>
         <li>Label &amp; Waybill Printers</li>
         <li>Mobile Label Printer</li>
@@ -334,7 +334,7 @@
       <h2 data-wws-id="office" data-wws-field="heading">Office &amp; Professional Services</h2>
       <p data-wws-id="office" data-wws-field="desc">Printing and storage solutions for efficient office operations.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="office" data-wws-field="recommended">
         <li>POS Printers</li>
         <li>Scanners</li>
         <li>Hard Drives</li>
@@ -360,7 +360,7 @@
       <h2 data-wws-id="hospitality" data-wws-field="heading">Hospitality</h2>
       <p data-wws-id="hospitality" data-wws-field="desc">Front-desk and payment systems for seamless guest experiences.</p>
       <h4>Recommended Products</h4>
-      <ul>
+      <ul data-wws-id="hospitality" data-wws-field="recommended">
         <li>POS Terminal</li>
         <li>EFTPOS Terminal</li>
         <li>POS Printers</li>
@@ -476,10 +476,11 @@
         .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
-    function recommendedListHtml(rec) {
+    function recommendedListHtml(rec, id) {
       var items = String(rec || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
       if (!items.length) return '';
-      return '<h4>Recommended Products</h4><ul>' +
+      var dataAttrs = id ? ' data-wws-id="' + escapeHtml(id) + '" data-wws-field="recommended"' : '';
+      return '<h4>Recommended Products</h4><ul' + dataAttrs + '>' +
         items.map(function (t) { return '<li>' + escapeHtml(t) + '</li>'; }).join('') + '</ul>';
     }
 
@@ -544,7 +545,7 @@
           '<div class="industry-text">' +
             '<h2>' + escapeHtml(c.heading || c.homeLabel || id) + '</h2>' +
             '<p>' + escapeHtml(c.desc || '') + '</p>' +
-            recommendedListHtml(c.recommended) +
+            recommendedListHtml(c.recommended, id) +
             '<a href="contact.html" class="btn btn-tan">INQUIRE NOW</a>' +
           '</div>' +
           '<div class="industry-img">' +

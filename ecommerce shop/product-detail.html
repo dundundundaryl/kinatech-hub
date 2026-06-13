@@ -6,6 +6,7 @@
   <title>Product — Kinatech Hub</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="settings-loader.js"></script>
+  <script src="content-loader.js"></script>
   <script src="shortlist.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -812,8 +813,8 @@
           <div class="product-info">
             <div>
               <p class="product-category">${catLabel}</p>
-              <h1>${product.name}</h1>
-              <p class="product-tagline">${product.description}</p>
+              <h1 data-detail-id="${product.id}" data-detail-field="name">${product.name}</h1>
+              <p class="product-tagline" data-detail-id="${product.id}" data-detail-field="description">${product.description}</p>
             </div>
 
             ${badgeHtml}
@@ -888,6 +889,8 @@
 
       const category = data.categories.find(c => c.id === product.category);
       renderPage(product, category);
+      // Apply any local draft text to the rendered product fields
+      if (window.__ktApplyDrafts) window.__ktApplyDrafts();
       // Update inquiry button state after render
       window.Shortlist?.refreshWidget?.();
     }

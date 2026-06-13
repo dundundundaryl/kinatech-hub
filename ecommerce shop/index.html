@@ -403,8 +403,8 @@
 
       <a href="products.html#pos-printers" class="cat-card" data-cat="pos-printers">
         <div class="cat-card-top">
-          <h3>POS Printers</h3>
-          <p>Receipt printing for daily transactions</p>
+          <h3 data-cat-id="pos-printers" data-cat-field="label">POS Printers</h3>
+          <p data-cat-id="pos-printers" data-cat-field="description">Receipt printing for daily transactions</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-pos-printers" data-img-label="POS Printers image">
           <!-- REPLACE with: <img src="images/pos-printer.png" class="cat-product-img" alt="POS Printer"> -->
@@ -421,8 +421,8 @@
 
       <a href="products.html#scanners" class="cat-card" data-cat="scanners">
         <div class="cat-card-top">
-          <h3>Scanners</h3>
-          <p>Faster checkout and stock handling</p>
+          <h3 data-cat-id="scanners" data-cat-field="label">Scanners</h3>
+          <p data-cat-id="scanners" data-cat-field="description">Faster checkout and stock handling</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-scanners" data-img-label="Scanners image">
           <!-- IMAGE: HPRT N150 handheld scanner, transparent bg PNG, ~300×200px -->
@@ -438,8 +438,8 @@
 
       <a href="products.html#label-printers" class="cat-card" data-cat="label-printers">
         <div class="cat-card-top">
-          <h3>Label &amp; Waybill Printers</h3>
-          <p>Shipping labels and order fulfillment</p>
+          <h3 data-cat-id="label-printers" data-cat-field="label">Label &amp; Waybill Printers</h3>
+          <p data-cat-id="label-printers" data-cat-field="description">Shipping labels and order fulfillment</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-label-printers" data-img-label="Label Printers image">
           <!-- IMAGE: HPRT N43BT white label printer, transparent bg PNG, ~300×200px -->
@@ -455,8 +455,8 @@
 
       <a href="products.html#hard-drives" class="cat-card" data-cat="hard-drives">
         <div class="cat-card-top">
-          <h3>Hard Drives</h3>
-          <p>Portable storage and file backup</p>
+          <h3 data-cat-id="hard-drives" data-cat-field="label">Hard Drives</h3>
+          <p data-cat-id="hard-drives" data-cat-field="description">Portable storage and file backup</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-hard-drives" data-img-label="Hard Drives image">
           <!-- IMAGE: Seagate One Touch HDD, slim black, transparent bg PNG, ~300×200px -->
@@ -472,8 +472,8 @@
 
       <a href="products.html#pos-terminal" class="cat-card" data-cat="pos-terminal">
         <div class="cat-card-top">
-          <h3>POS Terminals</h3>
-          <p>Customer-facing and cashier displays</p>
+          <h3 data-cat-id="pos-terminal" data-cat-field="label">POS Terminals</h3>
+          <p data-cat-id="pos-terminal" data-cat-field="description">Customer-facing and cashier displays</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-pos-terminal" data-img-label="POS Terminals image">
           <!-- IMAGE: HPRT ZQ200 dual-screen POS terminal, transparent bg PNG, ~300×200px -->
@@ -489,8 +489,8 @@
 
       <a href="products.html#eftpos" class="cat-card" data-cat="eftpos">
         <div class="cat-card-top">
-          <h3>EFTPOS Terminals</h3>
-          <p>All-in-one POS systems for restaurants</p>
+          <h3 data-cat-id="eftpos" data-cat-field="label">EFTPOS Terminals</h3>
+          <p data-cat-id="eftpos" data-cat-field="description">All-in-one POS systems for restaurants</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-eftpos" data-img-label="EFTPOS Terminals image">
           <!-- IMAGE: HPRT Android EFTPOS handheld terminal, transparent bg PNG, ~300×200px -->
@@ -506,8 +506,8 @@
 
       <a href="products.html#mobile-label" class="cat-card" data-cat="mobile-label">
         <div class="cat-card-top">
-          <h3>Mobile Label Printer</h3>
-          <p>Portable labeling</p>
+          <h3 data-cat-id="mobile-label" data-cat-field="label">Mobile Label Printer</h3>
+          <p data-cat-id="mobile-label" data-cat-field="description">Portable labeling</p>
         </div>
         <div class="cat-card-img" data-img-key="cat-mobile-label" data-img-label="Mobile Label Printer image">
           <!-- IMAGE: HPRT HM-A300E mobile label printer (orange+black), transparent bg PNG, ~300×200px -->
@@ -653,14 +653,26 @@
   </script>
 
   <script>
-    // Load category card images from products.json
+    // Load category card text + images from products.json
     fetch('products.json?v=' + Date.now())
       .then(r => r.json())
       .then(data => {
         data.categories.forEach(cat => {
-          if (!cat.image) return;
           const card = document.querySelector('[data-cat="' + cat.id + '"]');
           if (!card) return;
+
+          // Apply server label / description text to editable elements
+          if (cat.label) {
+            const h3 = card.querySelector('[data-cat-id][data-cat-field="label"]');
+            if (h3) h3.textContent = cat.label;
+          }
+          if (cat.description) {
+            const p = card.querySelector('[data-cat-id][data-cat-field="description"]');
+            if (p) p.textContent = cat.description;
+          }
+
+          // Apply category image
+          if (!cat.image) return;
           const imgWrap = card.querySelector('.cat-card-img');
           if (!imgWrap) return;
           // Update existing img if present, otherwise swap out the placeholder
@@ -674,11 +686,13 @@
             const img = document.createElement('img');
             img.src = cat.image;
             img.className = 'cat-product-img';
-            img.alt = cat.label;
+            img.alt = cat.label || cat.id;
             img.onerror = function () { this.style.display = 'none'; };
             imgWrap.insertBefore(img, imgWrap.firstChild);
           }
         });
+        // Overlay any local drafts on top of server data
+        if (window.__ktApplyDrafts) window.__ktApplyDrafts();
       })
       .catch(() => {});
 
