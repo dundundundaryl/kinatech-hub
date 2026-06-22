@@ -39,7 +39,10 @@
       "category": "pos-printers",
       "image": "images/POS-TP80NB-M.png",
       "images": [
-        "images/POS-TP80NB-M.png"
+        "images/POS-TP80NB-M.png",
+        "images/POS-TP80NB-M-2.png",
+        "images/POS-TP80NB-M-3.png",
+        "images/POS-TP80NB-M-4.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
