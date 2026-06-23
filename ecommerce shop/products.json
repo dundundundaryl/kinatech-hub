@@ -49,27 +49,27 @@
         {
           "title": "Key Features",
           "items": [
-            "- Fast printing up to 200mm/s",
-            "- USB + Ethernet connectivity",
-            "- Supports 1D & 2D barcode printing",
-            "- Compact design with easy paper loading",
-            "- Most affordable entry-level POS printer"
+            "Fast printing up to 200mm/s",
+            "USB + Ethernet connectivity",
+            "Supports 1D & 2D barcode printing",
+            "Compact design with easy paper loading",
+            "Most affordable entry-level POS printer"
           ]
         },
         {
           "title": "Specifications",
           "items": [
-            "- Print Method: Direct Thermal",
-            "- Resolution: 203 DPI",
-            "- Paper Width: Up to 80mm",
-            "- Interface: USB, Ethernet"
+            "Print Method: Direct Thermal",
+            "Resolution: 203 DPI",
+            "Paper Width: Up to 80mm",
+            "Interface: USB, Ethernet"
           ]
         },
         {
           "title": "Durability",
           "items": [
-            "- Print Head Life: 100 km",
-            "- Cutter Life: 1 million cuts"
+            "Print Head Life: 100 km",
+            "Cutter Life: 1 million cuts"
           ]
         }
       ],
@@ -82,7 +82,10 @@
       "category": "pos-printers",
       "image": "images/POS-TP80K-L.png",
       "images": [
-        "images/POS-TP80K-L.png"
+        "images/POS-TP80K-L.png",
+        "images/POS-TP80K-L-2.png",
+        "images/POS-TP80K-L-3.png",
+        "images/POS-TP80K-L-4.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
@@ -120,9 +123,12 @@
       "name": "TP80RL",
       "description": "Durable POS printer with USB, Ethernet, and fast everyday checkout",
       "category": "pos-printers",
-      "image": "images/3.png",
+      "image": "images/POS-TP80RL.png",
       "images": [
-        "images/3.png"
+        "images/POS-TP80RL.png",
+        "images/POS-TP80RL-2.png",
+        "images/POS-TP80RL-3.png",
+        "images/POS-TP80RL-4.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
@@ -162,7 +168,10 @@
       "category": "pos-printers",
       "image": "images/POS-TP808S.png",
       "images": [
-        "images/POS-TP808S.png"
+        "images/POS-TP808S.png",
+        "images/POS-TP808S-2.png",
+        "images/POS-TP808S-3.png",
+        "images/POS-TP808S-4.png"
       ],
       "badge": "1 Year Warranty",
       "sections": [
