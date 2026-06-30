@@ -33,7 +33,7 @@
     {
       "id": "laptops",
       "label": "Laptops",
-      "description": "",
+      "description": "hello",
       "image": ""
     }
   ],
@@ -509,6 +509,17 @@
       "badge": "1 Year Warranty",
       "sections": [],
       "id": "hprt-p400"
+    },
+    {
+      "model": "Lenovo",
+      "name": "add",
+      "description": "daldklf",
+      "category": "laptops",
+      "image": "",
+      "images": [],
+      "badge": "1 Year Warranty",
+      "sections": [],
+      "id": "lenovo-add"
     }
   ]
 }
