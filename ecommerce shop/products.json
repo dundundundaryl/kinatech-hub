@@ -241,14 +241,18 @@
       "id": "n90"
     },
     {
-      "id": "n102",
       "model": "HPRT",
       "name": "N102",
       "description": "Affordable handheld scanner with stand-capable and reliable 1D reading",
       "category": "scanners",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Scanner-N102.png",
+      "images": [
+        "images/Scanner-N102.png",
+        "images/Scanner-N102-2.png",
+        "images/Scanner-N102-3.png",
+        "images/Scanner-N102-4.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -269,17 +273,22 @@
             "Stand Compatible: Yes (optional)"
           ]
         }
-      ]
+      ],
+      "id": "n102"
     },
     {
-      "id": "n150",
       "model": "HPRT",
       "name": "N150",
       "description": "Durable 2D scanner with improved speed and vibration feedback",
       "category": "scanners",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Scanner-N150.png",
+      "images": [
+        "images/Scanner-N150.png",
+        "images/Scanner-N150-2.png",
+        "images/Scanner-N150-3.png",
+        "images/Scanner-N150-4.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -300,16 +309,21 @@
             "Feedback: Vibration + Beep + LED"
           ]
         }
-      ]
+      ],
+      "id": "n150"
     },
     {
-      "id": "n150bt",
       "model": "HPRT",
       "name": "N150BT",
       "description": "Wireless Bluetooth scanner with long range and tenacious performance",
       "category": "scanners",
-      "image": "",
-      "images": [],
+      "image": "images/Scanner-N150BT.png",
+      "images": [
+        "images/Scanner-N150BT.png",
+        "images/Scanner-N150-2.png",
+        "images/Scanner-N150-3.png",
+        "images/Scanner-N150-4.png"
+      ],
       "badge": "",
       "sections": [
         {
@@ -331,7 +345,8 @@
             "Battery: 2600mAh rechargeable"
           ]
         }
-      ]
+      ],
+      "id": "n150bt"
     },
     {
       "id": "p400",
