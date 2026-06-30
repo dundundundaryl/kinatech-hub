@@ -324,7 +324,7 @@
         "images/Scanner-N150-3.png",
         "images/Scanner-N150-4.png"
       ],
-      "badge": "",
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -380,14 +380,17 @@
       ]
     },
     {
-      "id": "n43bt",
       "model": "HPRT",
       "name": "N43BT",
       "description": "High-speed wireless label printer with Bluetooth for seamless labeling",
       "category": "label-printers",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Waybill-N43BT.png",
+      "images": [
+        "images/Waybill-N43BT.png",
+        "images/Waybill-N43BT-2.png",
+        "images/Waybill-N43BT-3.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -408,17 +411,21 @@
             "Label Width: Up to 58mm"
           ]
         }
-      ]
+      ],
+      "id": "n43bt"
     },
     {
-      "id": "d25",
       "model": "HPRT",
       "name": "D25",
       "description": "Compact dual-mode printer for labels and receipts in one device",
       "category": "label-printers",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Label-D25.png",
+      "images": [
+        "images/Label-D25.png",
+        "images/Label-D25-2.png",
+        "images/Label-D25-3.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -439,7 +446,8 @@
             "Modes: Label + Receipt"
           ]
         }
-      ]
+      ],
+      "id": "d25"
     },
     {
       "id": "one-touch-hdd",
@@ -473,14 +481,18 @@
       ]
     },
     {
-      "id": "hm-a300e",
       "model": "HPRT",
       "name": "HM-A300E",
       "description": "Portable mobile label printer for field and warehouse use",
       "category": "mobile-label",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Mobile-Printer-HM-A300E.png",
+      "images": [
+        "images/Mobile-Printer-HM-A300E.png",
+        "images/Mobile-Printer-HM-A300E-2.png",
+        "images/Mobile-Printer-HM-A300E-3.png",
+        "images/Mobile-Printer-HM-A300E-4.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -502,7 +514,8 @@
             "Compatibility: iOS, Android, Windows"
           ]
         }
-      ]
+      ],
+      "id": "hm-a300e"
     }
   ]
 }
