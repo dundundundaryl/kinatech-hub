@@ -29,6 +29,12 @@
       "label": "Mobile Label Printers",
       "description": "Portable labeling for on-the-go workflows",
       "image": "images/Mobile-Printer-HM-A300E.png"
+    },
+    {
+      "id": "laptops",
+      "label": "Laptops",
+      "description": "",
+      "image": ""
     }
   ],
   "products": [
