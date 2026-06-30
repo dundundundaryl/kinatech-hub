@@ -205,14 +205,18 @@
       "id": "tp80bs"
     },
     {
-      "id": "n90",
       "model": "HPRT",
-      "name": "N90",
+      "name": "N80",
       "description": "Affordable handheld scanner with fast and accurate 1D reading",
       "category": "scanners",
-      "image": "",
-      "images": [],
-      "badge": "",
+      "image": "images/Scanner-N80.png",
+      "images": [
+        "images/Scanner-N80.png",
+        "images/Scanner-N80-2.png",
+        "images/Scanner-N80-3.png",
+        "images/Scanner-N80-4.png"
+      ],
+      "badge": "1 Year Warranty",
       "sections": [
         {
           "title": "Key Features",
@@ -233,7 +237,8 @@
             "Scan Rate: Up to 100 scans/sec"
           ]
         }
-      ]
+      ],
+      "id": "n90"
     },
     {
       "id": "n102",
