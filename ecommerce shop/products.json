@@ -4,31 +4,31 @@
       "id": "pos-printers",
       "label": "POS Printers",
       "description": "Reliable thermal and line printers designed for high-volume point-of-sale environments",
-      "image": "images/POS-Printers.png"
+      "image": "images/POS-TP80NB-M.png"
     },
     {
       "id": "scanners",
       "label": "Barcode Scanners",
       "description": "Fast, accurate scanning solutions for inventory management and checkout operations",
-      "image": "images/Copy-of-Kinatech-Website--7-.png"
+      "image": "images/Scanner-N150BT.png"
     },
     {
       "id": "label-printers",
       "label": "Label & Waybill Printers",
       "description": "Professional labeling and shipping solutions for e-commerce and logistics operations",
-      "image": "images/1781336342580-Copy_of_Kinatech_Website__12_.png"
+      "image": "images/Label-D25.png"
     },
     {
       "id": "hard-drives",
       "label": "Storage Solutions",
       "description": "High-capacity drives and storage systems for data backup",
-      "image": "images/1781577693960-IMG_9363.png"
+      "image": "images/hhd-1T-1.png"
     },
     {
       "id": "mobile-label",
       "label": "Mobile Label Printers",
       "description": "Portable labeling for on-the-go workflows",
-      "image": ""
+      "image": "images/Mobile-Printer-HM-A300E.png"
     }
   ],
   "products": [
